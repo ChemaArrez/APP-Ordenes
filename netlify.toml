@@ -1,0 +1,9 @@
+[build]
+  publish = "."
+  functions = "."
+
+# Si algún teléfono abre la app con el nombre de archivo viejo, lo manda a la dirección principal
+[[redirects]]
+  from = "/Orden_Recepcion_Arsan_Motors_App.html"
+  to = "/"
+  status = 301

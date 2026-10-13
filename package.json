@@ -1,0 +1,10 @@
+{
+  "name": "arsan-ordenes",
+  "version": "24.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Órdenes de servicio · Arsan Motors (Netlify Functions + Netlify Blobs)",
+  "dependencies": {
+    "@netlify/blobs": "10.7.13"
+  }
+}
