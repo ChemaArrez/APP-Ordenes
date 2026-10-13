@@ -4987,7 +4987,7 @@ async function subirCobranza(inp){
 }
 function paintCobSettings(){
   var el = $('cob_estado'); if (!el) return;
-  var esGer = SES && String(SES.rol || '').toLowerCase() === 'gerencia';
+  var esGer = SES && ['gerencia','gerente','ceo','director','direccion','dirección','admin','administrador','dueño','dueno'].indexOf(String(SES.rol || '').trim().toLowerCase()) >= 0;
   $('cob_carga').classList.toggle('hide', !esGer);
   el.innerHTML = COB ? ('Corte cargado: <b>' + esc(COB.corte) + '</b> · ' + Object.keys(COB.data || {}).length + ' folios · ' + esc(COB.por || '') + ' · ' + new Date(COB.cargado).toLocaleString('es-MX'))
                      : 'Todavía no hay ningún corte cargado.';

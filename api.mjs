@@ -539,9 +539,11 @@ async function getConfig() {
 }
 
 /* ------------------------- cobranza GS ------------------------- */
+const ROLES_DIRECCION = ["gerencia", "gerente", "ceo", "director", "direccion", "dirección", "admin", "administrador", "dueño", "dueno"];
+const esDireccion = (rol) => ROLES_DIRECCION.includes(String(rol || "").trim().toLowerCase());
 async function cargarCobranza(b, ses) {
-  if (!ses || String(ses.rol || "").toLowerCase() !== "gerencia")
-    return { ok: false, error: "Solo un usuario con rol gerencia puede cargar la cobranza" };
+  if (!ses || !esDireccion(ses.rol))
+    return { ok: false, error: "Solo un usuario con rol de dirección (CEO, gerencia, director, admin) puede cargar la cobranza" };
   const arr = Array.isArray(b.data) ? b.data : [];
   if (!arr.length) return { ok: false, error: "El archivo no trae folios" };
   const data = {};
