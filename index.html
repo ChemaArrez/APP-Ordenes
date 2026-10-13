@@ -628,6 +628,84 @@ body.locked { background:#0c0c0d; }
 .lgbrand img{ width:150px; margin-bottom:10px; }
 .lgcfg{ margin-top:14px; text-align:center; }
 .lgcfg button{ background:none; border:none; color:var(--muted); font-size:11.5px; font-weight:700; text-decoration:underline; }
+
+/* ===================== v24 ===================== */
+.navtabs{gap:6px;}
+.navtabs button{padding:10px 4px;font-size:13px;min-width:0;}
+#pruebaBar{background:#fff4d6;color:#6b4a00;border-bottom:2px solid var(--gold);font-size:12.5px;font-weight:700;padding:8px 14px;text-align:center;line-height:1.35;}
+/* cobranza GS */
+.gsb{display:inline-block;margin:6px 4px 0 0;padding:2px 8px;border-radius:999px;font-size:10.5px;font-weight:800;line-height:1.5;border:1px solid transparent;white-space:nowrap;}
+.gs-pag{background:#e5f5e3;color:#16632e;border-color:#bfe5bb;}
+.gs-pen{background:#fdf0d5;color:#7a5200;border-color:#f3d79a;}
+.gs-rech{background:#fde7e7;color:#a11b1b;border-color:#f3baba;}
+.gs-none{background:#f0f1f3;color:#5c6068;border-color:var(--line);}
+.gs-alert{background:#fde7e7;border:1px solid #f3baba;color:#7d1313;border-radius:10px;padding:9px 11px;font-size:12.5px;margin-bottom:10px;line-height:1.4;}
+.gs-alert.amb{background:#fdf0d5;border-color:#f3d79a;color:#6b4a00;}
+.gs-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.gs-k{border-radius:11px;padding:10px;display:flex;flex-direction:column;gap:2px;border:1px solid transparent;}
+.gs-k b{font-size:16px;font-variant-numeric:tabular-nums;}
+.gs-k span{font-size:11px;font-weight:700;}
+.gs-sub{font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--ink);margin:12px 0 4px;}
+/* tablero del taller */
+.pz-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px;}
+.pz-k{background:var(--card);border-radius:12px;box-shadow:var(--shadow);padding:11px 12px;display:flex;flex-direction:column;}
+.pz-k b{font-size:20px;font-weight:800;color:var(--black);font-variant-numeric:tabular-nums;line-height:1.15;}
+.pz-k span{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;margin-top:3px;}
+.pz-k.r b{color:#c01d1d;} .pz-k.g b{color:var(--ok);}
+.pz-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;color:var(--muted);margin-bottom:10px;flex-wrap:wrap;}
+.pz-bar button{border:1px solid var(--line);background:var(--card);border-radius:9px;padding:7px 11px;font-weight:800;font-size:12px;color:var(--ink);}
+.pz-late-box{background:#fff;border:2px solid #f3baba;border-radius:12px;padding:10px 12px;margin-bottom:12px;}
+.pz-late-h{font-size:12px;font-weight:800;color:#a11b1b;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;}
+.pz-late-row{display:flex;gap:10px;align-items:baseline;padding:6px 0;border-top:1px solid #f6e1e1;font-size:13px;cursor:pointer;}
+.pz-late-row:first-of-type{border-top:none;}
+.pz-late-row b{min-width:84px;font-family:ui-monospace,Menlo,Consolas,monospace;}
+.pz-late-row span{flex:1;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.pz-late-row span.r{flex:none;color:#a11b1b;font-weight:800;}
+.pz-cols{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-items:start;}
+.pz-col{background:#e9ebef;border-radius:13px;padding:9px;min-height:120px;}
+.pz-colh{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:800;color:var(--ink);padding:2px 3px 2px;}
+.pz-lim{font-size:10.5px;color:var(--muted);padding:0 3px 8px;}
+.pz-card{background:var(--card);border-radius:11px;padding:10px 11px;box-shadow:var(--shadow);margin-bottom:8px;border-left:4px solid var(--ok);cursor:pointer;}
+.pz-card.pz-late{border-left-color:#c01d1d;background:#fffafa;}
+.pz-top{display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.pz-placa{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:800;font-size:15px;letter-spacing:.5px;background:#f3f4f6;border:1px solid var(--line);border-radius:6px;padding:1px 7px;}
+.pz-dias{font-size:12px;font-weight:800;color:var(--ok);white-space:nowrap;}
+.pz-dias.r{color:#c01d1d;}
+.pz-veh{font-weight:700;font-size:13.5px;margin-top:6px;}
+.pz-cli,.pz-meta{font-size:12px;color:var(--muted);margin-top:2px;}
+.pz-mot{font-size:12px;margin-top:5px;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.pz-why{margin-top:6px;font-size:11.5px;font-weight:800;color:#a11b1b;}
+@media (max-width:900px){ .pz-cols{grid-template-columns:1fr 1fr;} }
+@media (max-width:560px){ .pz-cols{grid-template-columns:1fr;} .pz-kpis{grid-template-columns:1fr 1fr;} .gs-kpis{grid-template-columns:1fr 1fr 1fr;} .gs-k b{font-size:13.5px;} }
+/* modo pantalla (TV del taller) */
+body.tv .appbar, body.tv #view-piso .navtabs, body.tv #pzSuc{display:none!important;}
+body.tv #view-piso{max-width:none;padding:14px 18px;}
+body.tv .pz-cols{grid-template-columns:repeat(4,minmax(0,1fr));}
+body.tv .pz-placa{font-size:19px;} body.tv .pz-veh{font-size:16px;} body.tv .pz-cli,body.tv .pz-meta,body.tv .pz-mot{font-size:14px;}
+body.tv .pz-k b{font-size:28px;} body.tv .pz-dias{font-size:15px;}
+/* historial por placa */
+.pl-search{display:flex;gap:8px;margin-bottom:12px;}
+.pl-search input{flex:1;min-width:0;padding:11px 12px;border:1.5px solid var(--line);border-radius:11px;background:var(--card);color:var(--ink);font-size:17px;font-weight:800;letter-spacing:1px;text-transform:uppercase;font-family:ui-monospace,Menlo,Consolas,monospace;}
+.pl-search button{background:var(--ink);color:#fff;border-radius:11px;padding:0 16px;font-weight:800;}
+.pl-veh{background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:13px 14px;margin-bottom:10px;}
+.pl-placa{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:22px;font-weight:800;letter-spacing:1px;}
+.pl-desc{font-size:13px;color:var(--muted);margin-top:2px;}
+.pl-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-top:10px;}
+.pl-stats div{background:#f6f7f9;border-radius:9px;padding:7px 9px;display:flex;flex-direction:column;}
+.pl-stats b{font-size:14.5px;font-variant-numeric:tabular-nums;} .pl-stats span{font-size:10.5px;color:var(--muted);font-weight:700;text-transform:uppercase;}
+.pl-tl{margin:0 0 18px 6px;border-left:2px solid var(--line);padding-left:12px;}
+.pl-item{background:var(--card);border-radius:11px;box-shadow:var(--shadow);margin-bottom:8px;overflow:hidden;}
+.pl-row{display:flex;gap:10px;padding:10px 12px;cursor:pointer;}
+.pl-f{font-size:12px;font-weight:800;color:var(--muted);min-width:74px;padding-top:2px;}
+.pl-main{flex:1;min-width:0;font-size:13px;}
+.pl-mot{margin-top:3px;color:var(--ink);} .pl-sm{font-size:11.5px;color:var(--muted);margin-top:3px;}
+.pl-ev{padding:0 12px 12px;border-top:1px solid var(--line);}
+.pl-ft{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin:10px 0 4px;}
+.pl-txt{font-size:13px;line-height:1.45;}
+.pl-ph{display:flex;gap:6px;flex-wrap:wrap;}
+.pl-ph img{width:86px;height:86px;object-fit:cover;border-radius:8px;border:1px solid var(--line);background:#f3f4f6;}
+.pl-regreso{font-size:11.5px;font-weight:800;color:#7a5200;background:#fdf0d5;border:1px solid #f3d79a;border-radius:8px;padding:5px 9px;margin:0 0 8px;}
+.pl-ev .pl-open{margin-top:10px;width:100%;padding:10px;border:1.5px solid var(--ink);border-radius:10px;background:var(--card);font-weight:800;font-size:13px;color:var(--ink);}
 </style>
 </head>
 <body>
@@ -643,9 +721,11 @@ body.locked { background:#0c0c0d; }
   <button class="gear" id="gearBtn" onclick="openSettings()">&#9881;</button>
 </div>
 
+<div id="pruebaBar" class="hide">🧪 MODO PRUEBA · versión 24 en ensayo. Lo que captures aquí se retira el día del cambio; para trabajar de verdad usa la app de siempre.</div>
+
 <!-- ============ HOME ============ -->
 <div id="view-kanban" class="wrap hide">
-  <div class="navtabs"><button onclick="goDash()">Panel</button><button class="on" onclick="goKanban()">Tablero</button><button onclick="goHome()">Órdenes</button></div>
+  <div class="navtabs"><button onclick="goDash()">Panel</button><button class="on" onclick="goKanban()">Tablero</button><button onclick="goPiso()">Taller</button><button onclick="goPlaca()">Placas</button><button onclick="goHome()">Órdenes</button></div>
   <div id="kbSuc"></div>
   <div id="kbKpis" class="kb-kpis"></div>
   <div class="kb-actions"><button class="bignew" style="margin:0" onclick="newOrder()"><span class="plus">+</span> Registrar recepción</button>
@@ -676,7 +756,7 @@ body.locked { background:#0c0c0d; }
 </div></div>
 
 <div id="view-dashboard" class="wrap hide">
-  <div class="navtabs"><button class="on" onclick="goDash()">Panel</button><button onclick="goKanban()">Tablero</button><button onclick="goHome()">Órdenes</button></div>
+  <div class="navtabs"><button class="on" onclick="goDash()">Panel</button><button onclick="goKanban()">Tablero</button><button onclick="goPiso()">Taller</button><button onclick="goPlaca()">Placas</button><button onclick="goHome()">Órdenes</button></div>
   <div class="dashhdr"><div class="t">Desempeño y análisis</div>
     <select id="dashPeriod" onchange="renderDashboard()">
       <option value="all">Todo el histórico</option>
@@ -689,8 +769,20 @@ body.locked { background:#0c0c0d; }
   <div id="dashBody"><div class="loading">Cargando panel…</div></div>
 </div>
 
+<div id="view-piso" class="wrap hide">
+  <div class="navtabs"><button onclick="goDash()">Panel</button><button onclick="goKanban()">Tablero</button><button class="on" onclick="goPiso()">Taller</button><button onclick="goPlaca()">Placas</button><button onclick="goHome()">Órdenes</button></div>
+  <div id="pzSuc"></div>
+  <div id="pzBody"><div class="loading">Cargando taller…</div></div>
+</div>
+
+<div id="view-placa" class="wrap hide">
+  <div class="navtabs"><button onclick="goDash()">Panel</button><button onclick="goKanban()">Tablero</button><button onclick="goPiso()">Taller</button><button class="on" onclick="goPlaca()">Placas</button><button onclick="goHome()">Órdenes</button></div>
+  <div class="pl-search"><input id="pl_q" list="dl_placas" placeholder="Placa, económico, VIN o folio GS" autocapitalize="characters" autocorrect="off" oninput="buscarPlaca()" onkeydown="if(event.key==='Enter')buscarPlaca()"><datalist id="dl_placas"></datalist><button onclick="buscarPlaca()">Buscar</button></div>
+  <div id="plBody"></div>
+</div>
+
 <div id="view-home" class="wrap">
-  <div class="navtabs"><button onclick="goDash()">Panel</button><button onclick="goKanban()">Tablero</button><button class="on" onclick="goHome()">Órdenes</button></div>
+  <div class="navtabs"><button onclick="goDash()">Panel</button><button onclick="goKanban()">Tablero</button><button onclick="goPiso()">Taller</button><button onclick="goPlaca()">Placas</button><button class="on" onclick="goHome()">Órdenes</button></div>
   <button class="bignew" onclick="newOrder()"><span class="plus">+</span> Nueva orden</button>
   <div id="homeSuc"></div>
   <div class="stats">
@@ -835,8 +927,8 @@ body.locked { background:#0c0c0d; }
 <!-- ============ SETTINGS ============ -->
 <div id="view-settings" class="wrap hide">
   <div class="section"><div class="head">Sincronización en la nube</div><div class="body">
-    <p style="font-size:13px;color:#54585f;margin:0 0 12px;line-height:1.5">Conecta la app a tu Google Sheet para que <b>todas las órdenes de todos los celulares se guarden en un solo lugar</b>. Pega la URL que obtienes al publicar el script de Google (termina en <b>/exec</b>) y la misma clave que pusiste en el script.</p>
-    <div class="field"><label>URL del Web App (Google)</label><input type="text" id="s_url" placeholder="https://script.google.com/macros/s/.../exec" autocapitalize="off" autocorrect="off"></div>
+    <p style="font-size:13px;color:#54585f;margin:0 0 12px;line-height:1.5">Desde la versión 24 la app guarda en <b>Netlify</b>, en el mismo sitio donde vive la app: <b>todas las órdenes de todos los celulares en un solo lugar</b>, sin configurar nada. Google se queda como respaldo (fotos en Drive y copia en Sheets cada 10 minutos).</p><div id="srv_estado" style="font-size:12.5px;margin:0 0 10px"></div>
+    <div class="field hide"><label>Servidor</label><input type="text" id="s_url" readonly></div>
     <div class="field"><label>Clave</label><input type="text" id="s_clave" placeholder="arsan" autocapitalize="off" autocorrect="off"></div>
     <div style="display:flex;gap:10px;margin-top:4px">
       <button class="sbtn btn-light" onclick="testConn()">Probar conexión</button>
@@ -844,6 +936,15 @@ body.locked { background:#0c0c0d; }
     </div>
     <div id="s_status" style="font-size:13px;margin-top:12px;font-weight:600;line-height:1.4"></div>
     <div style="font-size:12px;color:var(--muted);margin-top:12px;padding-top:10px;border-top:1px solid var(--line)">Versión de la app: <b id="appVer"></b><br><span style="font-size:11px">Si aquí no ves la versión más reciente, la app no se actualizó en este equipo (borra caché o vuelve a subir el HTML a Netlify).</span></div>
+  </div></div>
+  <div class="section"><div class="head">Cobranza Grupo Salinas</div><div class="body">
+    <div id="cob_estado" style="font-size:13px;margin-bottom:10px;line-height:1.45"></div>
+    <div id="cob_carga" class="hide">
+      <div style="font-size:12.5px;color:#54585f;margin-bottom:8px;line-height:1.45">Carga el tablero <b>Cuentas por Cobrar GS</b> (.html) o un .json con los folios. Cada orden con folio GS mostrará si está pagada, pendiente o rechazada.</div>
+      <div class="field"><label>Fecha del corte</label><input type="text" id="cob_corte" placeholder="ej. 29-sep-2026"></div>
+      <label class="sbtn btn-primary" style="display:block;text-align:center;cursor:pointer">Elegir archivo y cargar<input type="file" accept=".html,.htm,.json" style="display:none" onchange="subirCobranza(this)"></label>
+      <div id="cob_msg" style="font-size:13px;margin-top:10px;font-weight:600"></div>
+    </div>
   </div></div>
   <div class="section"><div class="head">Sesión</div><div class="body">
     <div id="s_sesion" style="font-size:13px;font-weight:700;margin-bottom:10px"></div>
@@ -1294,7 +1395,7 @@ var IDB=(function(){
   };
 })();
 var hasIDB = IDB.avail();
-var APP_VERSION='2026-08-24-v23';
+var APP_VERSION='2026-10-13-v24';
 
 /* ---- Manifiesto de app (se genera al vuelo para no romper el archivo unico) ----
    'maskable' es la clave: sin esto Android encoge el icono y le pone
@@ -1448,8 +1549,9 @@ async function cerrarSesion(){
   mostrarLogin('Sesión cerrada.');
 }
 
-var BUILTIN_CFG = { url:'', clave:'arsan' }; // opcional: pega aquí tu URL para auto-configurar todos los equipos
-function getCfg(){var b=Object.assign({},BUILTIN_CFG);try{var x=JSON.parse(localStorage.getItem('am_cfg')||'{}');return Object.assign(b,x);}catch(e){return b;}}
+var BUILTIN_CFG = { url:'', clave:'arsan' };
+/* v24: el servidor es siempre el de Netlify (mismo sitio). Se ignora cualquier URL vieja de Google guardada en el equipo. */
+function getCfg(){var b=Object.assign({},BUILTIN_CFG);try{var x=JSON.parse(localStorage.getItem('am_cfg')||'{}');b=Object.assign(b,x);}catch(e){} b.url=(typeof API_URL!=='undefined'?API_URL:''); return b;}
 function setCfg(c){try{localStorage.setItem('am_cfg',JSON.stringify(c));}catch(e){}}
 function cloudOn(){return !!getCfg().url;}
 var cloudStatus='off';
@@ -1474,11 +1576,11 @@ function onClienteName(v){
   toast('Cliente cargado: '+c.nombre);
 }
 async function cloudList(){var c=getCfg();if(!c.url)return null;try{var r=await fetchT(c.url+'?action=list&clave='+encodeURIComponent(c.clave||'')+'&sesion='+encodeURIComponent(SESION()),{},45000);var j=await r.json();if(checkAuth(j))return null;return (j&&j.ok)?(j.ordenes||[]):null;}catch(e){return null;}}
-async function cloudSave(o){var c=getCfg();if(!c.url)return false;window._lastCloudErr=null;window._lastCloudRes=null;try{var r=await fetchT(c.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'save',clave:c.clave||'',sesion:SESION(),orden:o,token:EDIT_TOKEN||''})},60000);var j=await r.json();window._lastCloudRes=j;if(checkAuth(j))return false;if(!(j&&j.ok))window._lastCloudErr=j;return !!(j&&j.ok);}catch(e){return false;}}
+async function cloudSave(o){var c=getCfg();if(!c.url)return false;window._lastCloudErr=null;window._lastCloudRes=null;try{var r=await fetchT(c.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'save',clave:c.clave||'',sesion:SESION(),orden:await prepararEnvio(o),token:EDIT_TOKEN||''})},60000);var j=await r.json();window._lastCloudRes=j;if(checkAuth(j))return false;if(!(j&&j.ok))window._lastCloudErr=j;return !!(j&&j.ok);}catch(e){return false;}}
 async function cloudDelete(id,folio,pin){var c=getCfg();if(!c.url)return {ok:false,error:'Sin conexión a la nube'};try{var r=await fetchT(c.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'delete',clave:c.clave||'',sesion:SESION(),id:id,folio:folio,pin:pin,token:EDIT_TOKEN||''})},30000);return await r.json();}catch(e){return {ok:false,error:String(e)};}}
 async function cloudUnlock(pin){var c=getCfg();if(!c.url)return {ok:false,error:'Sin conexión a la nube'};try{var r=await fetchT(c.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'unlock',clave:c.clave||'',sesion:SESION(),pin:pin})},20000);return await r.json();}catch(e){return {ok:false,error:String(e)};}}
 async function cloudPatch(id,salida,estatus){var c=getCfg();if(!c.url)return false;try{var r=await fetchT(c.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'patch',clave:c.clave||'',sesion:SESION(),id:id,salida:salida,estatus:estatus})});var j=await r.json();return !!(j&&j.ok);}catch(e){return false;}}
-async function cloudMachote(id){var c=getCfg();if(!c.url)return {ok:false};try{var r=await fetchT(c.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'machote',clave:c.clave||'',sesion:SESION(),id:id})},60000);return await r.json();}catch(e){return {ok:false,error:String(e)};}}
+/* cloudMachote → ver bloque v24 (lo genera el Apps Script puente) */
 async function cloudGet(id,folio){var c=getCfg();if(!c.url)return null;window._getFail=null;try{var r=await fetchT(c.url+'?action=get&clave='+encodeURIComponent(c.clave||'')+'&sesion='+encodeURIComponent(SESION())+'&id='+encodeURIComponent(id)+(folio?'&folio='+encodeURIComponent(folio):''),{},45000);var j=await r.json();if(checkAuth(j))return null;if(j&&j.ok)return j.orden;window._getFail=(j&&j.error)||'respuesta inválida';return null;}catch(e){window._getFail='sin conexión o tardó demasiado';return null;}}
 async function cloudPing(){var c=getCfg();if(!c.url)return {ok:false,error:'Falta la URL'};try{var r=await fetchT(c.url+'?action=ping&clave='+encodeURIComponent(c.clave||''));return await r.json();}catch(e){return {ok:false,error:'No se pudo conectar (revisa la URL)'};}}
 function getPending(){try{return JSON.parse(localStorage.getItem('am_pending')||'[]');}catch(e){return [];}}
@@ -1510,16 +1612,16 @@ async function openSettings(){
   if(cloudOn()){
     if(!(await requireUnlock())) return;
   }
-  var c=getCfg();$('s_url').value=c.url||'';$('s_clave').value=c.clave||'';$('s_status').textContent='';paintVer();paintSesion();$('barTitle').innerHTML='Configuración<small>Sincronización</small>';show('settings');
+  var c=getCfg();$('s_url').value=c.url||'';$('s_clave').value=c.clave||'';paintCobSettings();if(!SRV)srvInit().then(paintCobSettings);$('s_status').textContent='';paintVer();paintSesion();$('barTitle').innerHTML='Configuración<small>Sincronización</small>';show('settings');
 }
-function saveSettings(){var url=$('s_url').value.trim();var clave=$('s_clave').value.trim()||'arsan';setCfg({url:url,clave:clave});toast('Configuración guardada');goHome();}
+function saveSettings(){var clave=$('s_clave').value.trim()||'arsan';var c={};try{c=JSON.parse(localStorage.getItem('am_cfg')||'{}');}catch(e){} c.clave=clave; delete c.url; setCfg(c);toast('Configuración guardada');goHome();}
 function paintVer(){ var e=$('appVer'); if(e) e.textContent=APP_VERSION; }
 function paintSesion(){
   var e=$('s_sesion'); if(!e) return;
   if(SESION()) e.innerHTML='Sesión activa: <b>'+esc(usuarioNombre()||'—')+'</b>'+(SES&&SES.rol?' <span style="color:var(--muted);font-weight:600">('+esc(SES.rol)+')</span>':'');
   else e.innerHTML='<span style="color:var(--red)">Sin sesión activa</span>';
 }
-async function testConn(){var url=$('s_url').value.trim();var clave=$('s_clave').value.trim()||'arsan';if(!url){$('s_status').textContent='Pega primero la URL del Web App.';return;}setCfg({url:url,clave:clave});$('s_status').textContent='Probando conexión…';var r=await cloudPing();if(r&&r.ok){ var ver=r.version?(' · versión '+r.version):' · versión antigua'; var del=r.borrado?'':' ⚠ Esta versión NO tiene el borrado: publica una Nueva versión en Apps Script.'; $('s_status').textContent='\u2705 Conexión correcta'+ver+'.'+del; } else { $('s_status').textContent='\u274C '+((r&&r.error)||'No se pudo conectar')+'. Revisa la URL (debe terminar en /exec) y la clave.'; } }
+async function testConn(){var clave=$('s_clave').value.trim()||'arsan';var c={};try{c=JSON.parse(localStorage.getItem('am_cfg')||'{}');}catch(e){} c.clave=clave; delete c.url; setCfg(c);$('s_status').textContent='Probando conexión…';var r=await cloudPing();if(r&&r.ok){ var ver=r.version?(' · versión '+r.version):' · versión antigua'; var del=r.borrado?'':' ⚠ Esta versión NO tiene el borrado: publica una Nueva versión en Apps Script.'; $('s_status').textContent='\u2705 Conexión correcta'+ver+'.'+del; } else { $('s_status').textContent='\u274C '+((r&&r.error)||'No se pudo conectar')+'. Revisa tu conexión a internet y la clave.'; } paintCobSettings(); }
 async function syncNow(){toast('Sincronizando…');try{await flushPending();}catch(e){}await loadHome();toast('Listo');}
 function clearCloud(){if(!confirm('¿Quitar la conexión a la nube en este equipo? Las órdenes seguirán guardándose localmente.'))return;try{localStorage.removeItem('am_cfg');}catch(e){}setCfg({url:'',clave:'arsan'});toast('Modo local activado');goHome();}
 
@@ -1536,9 +1638,11 @@ function show(v){
   // Sin sesión no se muestra ninguna pantalla, sólo el acceso (o la configuración inicial)
   if(!accesoOk() && v!=='settings'){ mostrarLogin(''); return; }
   window._view=v;
-  ['home','form','detail','settings','cotizacion','finalizar','encuesta','factura','dashboard','kanban','multipuntos','entregacheck'].forEach(function(x){$('view-'+x).classList.toggle('hide',x!==v);});
-  $('backBtn').classList.toggle('hide',v==='home'||v==='dashboard'||v==='kanban');
-  $('gearBtn').classList.toggle('hide',v!=='home'&&v!=='dashboard'&&v!=='kanban');
+  if(!window._srvInit){window._srvInit=1;srvInit();}
+  if(v!=='piso')document.body.classList.remove('tv');
+  ['home','form','detail','settings','cotizacion','finalizar','encuesta','factura','dashboard','kanban','multipuntos','entregacheck','piso','placa'].forEach(function(x){$('view-'+x).classList.toggle('hide',x!==v);});
+  $('backBtn').classList.toggle('hide',v==='home'||v==='dashboard'||v==='kanban'||v==='piso'||v==='placa');
+  $('gearBtn').classList.toggle('hide',v!=='home'&&v!=='dashboard'&&v!=='kanban'&&v!=='piso'&&v!=='placa');
   window.scrollTo(0,0);
 }
 async function goHome(){
@@ -1563,7 +1667,7 @@ async function slimLocal(o){
 }
 /* Trae de la nube las fotos REALES (base64) cuando este equipo no las tiene,
    para que el expediente exportado las lleve dentro. */
-async function cloudMedia(id){var c=getCfg();if(!c.url)return null;try{var r=await fetchT(c.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'media',clave:c.clave||'',sesion:SESION(),id:id})},120000);var j=await r.json();return (j&&j.ok)?j:null;}catch(e){return null;}}
+/* cloudMedia → ver bloque v24 (descarga las fotos de Netlify en el teléfono) */
 function needsHydrate(o){
   var http=function(a){ return Array.isArray(a) && a.some(function(p){ return typeof p==='string' && p.indexOf('http')===0; }); };
   var ec=o.entregaCheck||{};
@@ -2533,8 +2637,11 @@ async function refreshData(){
   toast('Actualizando desde la nube…');
   await ensureIDX(true);
   var v=window._view;
+  await cargarCob();
   if(v==='dashboard') renderDashboard();
   else if(v==='kanban') renderKanban();
+  else if(v==='piso') renderPiso();
+  else if(v==='placa') buscarPlaca();
   else if(v==='detail' && detailOrder){          // ↻ en una orden = traer sus fotos reales
     await hydrateMedia(detailOrder);
     $('detailHost').innerHTML=renderDetail(detailOrder);
@@ -2596,7 +2703,7 @@ function kcard(o){
   }
   return '<div class="kb-item" onclick="openDetail(\''+o.id+'\')"><div class="kb-folio">'+esc(o.folio||'(sin folio)')+'</div>'
     +'<div class="kb-cli">'+esc(o.cliente||'—')+'</div>'
-    +'<div class="kb-veh">'+esc(veh||'')+(o.placas?' · '+esc(o.placas):'')+'</div>'+diasBadge(o)+'</div>';
+    +'<div class="kb-veh">'+esc(veh||'')+(o.placas?' · '+esc(o.placas):'')+'</div>'+diasBadge(o)+gsBadge(o)+'</div>';
 }
 function kcol(title,count,groups){
   var h='<div class="kb-col"><div class="kb-colh"><span>'+title+'</span><span class="kb-badge">'+count+'</span></div>';
@@ -3083,7 +3190,7 @@ function renderDashboard(){
    +'<div style="font-size:22px;font-weight:800;color:var(--black)">'+(s.calif.length?s.satis.toFixed(1):'—')+'</div>'
    +'<div style="font-size:12px;color:var(--muted)">'+s.calif.length+' encuesta(s)</div></div></div>';
   h+=renderTodos();
-  $('dashBody').innerHTML=sucBar()+h;
+  $('dashBody').innerHTML=sucBar()+h+renderCobranzaPanel();
 }
 function renderTodos(){
   var porAprobar=IDX.filter(function(o){return (o.estatus||'')==='cotizado';}).slice(0,5);
@@ -3195,7 +3302,7 @@ function renderList(){
   var h='<div class="list">';
   rows.forEach(function(o){
     var veh=[o.marca,o.modelo,o.anio].filter(Boolean).join(' ');
-    var chip=stageChip(o.estatus||'recepcion')+chipCobro(o);
+    var chip=stageChip(o.estatus||'recepcion')+chipCobro(o)+gsBadge(o);
     h+='<div class="ocard" onclick="openDetail(\''+o.id+'\')">'
       +'<div class="top"><span class="folio">'+esc(o.folio||'')+'</span>'+chip+'</div>'
       +'<div class="cli">'+esc(o.cliente||'(Sin nombre)')+'</div>'
@@ -3613,7 +3720,9 @@ function renderDetail(o){
 
   // ---- Encabezado: fijo arriba, fuera de las pestañas, para no perderlo al navegar ----
   h+='<div class="dsec"><div class="h">Encabezado</div><div class="b"><div style="margin-bottom:8px">'+chip+'</div><div class="dgrid">'
-    +di('Folio',o.folio)+di('Sucursal',o.sucursal)+di('No. evento / OS',o.evento)+di('Fecha y hora',fmtDate(o.fecha)+' '+(o.hora||''))+'</div></div></div>';
+    +di('Folio',o.folio)+di('Sucursal',o.sucursal)+di('No. evento / OS',o.evento)+di('Fecha y hora',fmtDate(o.fecha)+' '+(o.hora||''))+'</div>'
+    +(v.placas?'<button class="btn-light" style="margin-top:10px;width:100%" onclick="goPlaca(\''+esc(normPl(v.placas))+'\')">🚗 Historial de la placa '+esc(v.placas)+'</button>':'')+'</div></div>';
+  h+=gsPanel(o);
   if(st==='cita'){
     h+='<div class="miniinfo" style="background:#eef4ff;border-color:#c9dcff;color:#26436b"><b>Cita / pendiente de recepción.</b> El folio definitivo se asigna al recibir el vehículo.</div>';
     h+='<button class="btn-primary" onclick="convertirARecepcion(\''+o.id+'\')">Convertir a recepción (asignar folio)</button>';
@@ -4658,6 +4767,378 @@ function shareQuote(){
   if(navigator.share){navigator.share({title:'Cotización '+o.folio,text:t}).catch(function(){});}
   else{navigator.clipboard&&navigator.clipboard.writeText(t);toast('Cotización copiada');}
 }
+
+/* =====================================================================
+ *  v24 · NETLIFY — lo nuevo de esta versión
+ *   1) Conexión fija al backend de Netlify (ya no se configura URL)
+ *   2) Fotos: se suben una por una antes de guardar (rápido y sin límite de tamaño)
+ *   3) Tablero del taller en vivo (vista "Taller")
+ *   4) Historial por placa (vista "Placas")
+ *   5) Cobranza Grupo Salinas ligada a cada orden
+ *   6) Rescate de fotos del checklist de entrega que v23 nunca subió
+ * ===================================================================== */
+var API_URL = (location.protocol === 'http:' || location.protocol === 'https:') ? (location.origin + '/api') : '';
+var SRV = null;           // {modo, puente, version}
+var COB = null;           // corte de cobranza GS cargado
+
+async function srvInit(){
+  try{
+    var r = await fetchT(API_URL + '?action=ping&clave=' + encodeURIComponent(getCfg().clave || 'arsan'), {}, 15000);
+    SRV = await r.json();
+  }catch(e){ SRV = null; }
+  var bar = $('pruebaBar');
+  if (bar) bar.classList.toggle('hide', !(SRV && SRV.modo === 'prueba'));
+  await cargarCob();
+  try{ await rescateEntrega(); }catch(e){}
+}
+
+/* ---------- 2) subir fotos antes de guardar ---------- */
+var _upCache = null;
+function upCache(){ if(_upCache) return _upCache; try{ _upCache = JSON.parse(localStorage.getItem('am_up') || '{}'); }catch(e){ _upCache = {}; } return _upCache; }
+function upCacheSave(){ try{ var k = Object.keys(_upCache); if (k.length > 3000) k.slice(0, k.length - 3000).forEach(function(x){ delete _upCache[x]; }); localStorage.setItem('am_up', JSON.stringify(_upCache)); }catch(e){} }
+async function huella(s){
+  try{
+    var b = await crypto.subtle.digest('SHA-1', new TextEncoder().encode(s));
+    return Array.prototype.map.call(new Uint8Array(b), function(x){ return ('0' + x.toString(16)).slice(-2); }).join('');
+  }catch(e){ return s.length + ':' + s.slice(-80); }
+}
+async function subirUno(v){
+  if (typeof v !== 'string' || v.indexOf('data:') !== 0) return v;
+  var k = await huella(v), m = upCache();
+  if (m[k]) return m[k];
+  var r = await fetchT(API_URL, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body: JSON.stringify({action:'subir', clave:getCfg().clave || '', sesion:SESION(), data:v})}, 45000);
+  var j = await r.json();
+  if (!(j && j.ok && j.url)) throw new Error((j && j.error) || 'No se pudo subir una foto');
+  m[k] = j.url; upCacheSave();
+  return j.url;
+}
+// Copia de la orden lista para mandar: fotos de las etapas marcadas → enlaces; las demás no viajan
+async function prepararEnvio(o){
+  var m = o.media || {}, c = JSON.parse(JSON.stringify(o));
+  var marca = function(v){ return (typeof v === 'string' && v.indexOf('data:') === 0) ? 'local' : v; };
+  var lista = async function(a, sube){ if (!Array.isArray(a)) return a; var out = []; for (var i=0; i<a.length; i++) out.push(sube ? await subirUno(a[i]) : marca(a[i])); return out; };
+  c.fotos = await lista(c.fotos, m.reception);
+  c.firmaRecibe = m.reception ? await subirUno(c.firmaRecibe) : marca(c.firmaRecibe);
+  c.firmaCliente = m.reception ? await subirUno(c.firmaCliente) : marca(c.firmaCliente);
+  if (c.diagnostico) c.diagnostico.fotos = await lista(c.diagnostico.fotos, m.diagnostico);
+  if (c.finalizado) c.finalizado.fotos = await lista(c.finalizado.fotos, m.finalizado);
+  var ec = c.entregaCheck, subeEc = m.entrega || m.finalizado;
+  if (ec){
+    if (ec.fotos && typeof ec.fotos === 'object'){ for (var k in ec.fotos) ec.fotos[k] = subeEc ? await subirUno(ec.fotos[k]) : marca(ec.fotos[k]); }
+    ec.firmaTecnico = subeEc ? await subirUno(ec.firmaTecnico) : marca(ec.firmaTecnico);
+    ec.firmaCliente = subeEc ? await subirUno(ec.firmaCliente) : marca(ec.firmaCliente);
+  }
+  return c;
+}
+
+/* ---------- fotos reales para los PDF (antes las mandaba el Apps Script en base64) ---------- */
+async function urlADataUrl(u){
+  if (!u || typeof u !== 'string') return '';
+  if (u.indexOf('data:') === 0) return u;
+  try{
+    if (/\/api\/m\//.test(u)){
+      var r = await fetchT(u, {}, 30000); if (!r.ok) return '';
+      var b = await r.blob();
+      return await new Promise(function(res){ var fr = new FileReader(); fr.onload = function(){ res(fr.result); }; fr.onerror = function(){ res(''); }; fr.readAsDataURL(b); });
+    }
+    var p = await fetchT(API_URL, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({action:'proxy', clave:getCfg().clave || '', sesion:SESION(), url:u})}, 30000);
+    var j = await p.json(); return (j && j.ok) ? j.data : '';
+  }catch(e){ return ''; }
+}
+async function cloudMedia(id){
+  var o = await cloudGet(id); if (!o) return null;
+  var all = async function(a){ return (await Promise.all((a || []).map(urlADataUrl))).filter(Boolean); };
+  var ec = o.entregaCheck || {}, sal = {}, su = ec.fotosUrls || {};
+  for (var k in su){ var d = await urlADataUrl(su[k]); if (d) sal[k] = d; }
+  return {ok:true, fotos: await all(o.fotosUrls), diag: await all((o.diagnostico || {}).fotosUrls), fin: await all((o.finalizado || {}).fotosUrls),
+    firmaR: await urlADataUrl(o.firmaRecibeUrl), firmaC: await urlADataUrl(o.firmaClienteUrl), salida: sal,
+    firmaT: await urlADataUrl(ec.firmaTecnicoUrl), firmaE: await urlADataUrl(ec.firmaClienteUrl)};
+}
+/* Machote GS: lo sigue generando Google (Apps Script) */
+async function cloudMachote(id){
+  if (!SRV) await srvInit();
+  var pu = SRV && SRV.puente;
+  if (!pu) return {ok:false, error:'Falta configurar PUENTE_URL en Netlify (la URL /exec del Apps Script)'};
+  try{
+    var r = await fetchT(pu, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({action:'machoteNetlify', clave:getCfg().clave || '', id:id})}, 90000);
+    return await r.json();
+  }catch(e){ return {ok:false, error:String(e)}; }
+}
+
+/* ---------- 6) rescate de fotos de entrega (una vez por teléfono) ---------- */
+async function rescateEntrega(){
+  if (!SRV || SRV.modo !== 'produccion' || !accesoOk()) return;
+  try{ if (localStorage.getItem('am_rescate_v24')) return; }catch(e){ return; }
+  var idx = await gIndex(), pend = 0, bien = 0, total = 0;
+  for (var i=0; i<(idx || []).length; i++){
+    var o = await gOrder(idx[i].id); if (!o || !o.entregaCheck) continue;
+    var ec = o.entregaCheck, fotos = {}, hay = false;
+    if (ec.fotos && typeof ec.fotos === 'object') for (var k in ec.fotos){ if (typeof ec.fotos[k] === 'string' && ec.fotos[k].indexOf('data:') === 0){ fotos[k] = ec.fotos[k]; hay = true; } }
+    var ft = (typeof ec.firmaTecnico === 'string' && ec.firmaTecnico.indexOf('data:') === 0) ? ec.firmaTecnico : '';
+    var fc = (typeof ec.firmaCliente === 'string' && ec.firmaCliente.indexOf('data:') === 0) ? ec.firmaCliente : '';
+    if (!hay && !ft && !fc) continue;
+    pend++;
+    try{
+      var r = await fetchT(API_URL, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body: JSON.stringify({action:'rescatarEntrega', clave:getCfg().clave || '', sesion:SESION(), id:o.id, fotos:fotos, firmaTecnico:ft, firmaCliente:fc})}, 60000);
+      var j = await r.json(); if (j && j.ok){ bien++; total += j.rescatadas || 0; }
+    }catch(e){}
+  }
+  if (bien === pend){ try{ localStorage.setItem('am_rescate_v24', String(Date.now())); }catch(e){} }
+  if (total) toast('Se respaldaron ' + total + ' fotos/firmas de entrega que sólo estaban en este teléfono');
+}
+
+/* ---------- 5) Cobranza Grupo Salinas ---------- */
+async function cargarCob(){
+  if (!accesoOk()) return;
+  try{
+    var r = await fetchT(API_URL + '?action=cobranza&clave=' + encodeURIComponent(getCfg().clave || '') + '&sesion=' + encodeURIComponent(SESION()), {}, 20000);
+    var j = await r.json(); if (j && j.ok) COB = j.cobranza;
+  }catch(e){}
+}
+function folioGS(o){ var m = (String(o.evento || '') + ' ' + String(o.folio || '')).match(/(?:^|\D)(\d{6})(?!\d)/); return m ? m[1] : ''; }
+function cobDe(o){ var f = folioGS(o); return (f && COB && COB.data) ? (COB.data[f] || null) : null; }
+var GS_CLS = {Pagado:'gs-pag', Pendiente:'gs-pen', Rechazado:'gs-rech'};
+function gsBadge(o){
+  var f = folioGS(o); if (!f || !COB) return '';
+  var r = cobDe(o);
+  if (!r) return '<span class="gsb gs-none" title="El folio ' + f + ' no aparece en el corte ' + esc(COB.corte) + '">GS · sin registro</span>';
+  var t = r.categoria === 'Pendiente' && r.estatus ? ('Pendiente · ' + r.estatus) : r.categoria;
+  return '<span class="gsb ' + (GS_CLS[r.categoria] || 'gs-none') + '" title="Folio GS ' + f + ' · corte ' + esc(COB.corte) + '">GS · ' + esc(t) + (r.advertencia ? ' ⚠' : '') + '</span>';
+}
+function gsPanel(o){
+  var f = folioGS(o); if (!f) return '';
+  if (!COB) return '';
+  var r = cobDe(o), h = '<div class="dsec"><div class="h">Cobranza Grupo Salinas</div><div class="b">';
+  if (!r){
+    h += '<div class="miniinfo" style="margin:0">El folio <b>' + f + '</b> no aparece en el corte <b>' + esc(COB.corte) + '</b>. ' +
+      (['finalizado','entregado'].indexOf(o.estatus) >= 0 ? '<b>Trabajo terminado sin registro en GS:</b> revisar que el folio esté dado de alta y con evidencias.' : 'Puede ser un folio nuevo que todavía no entra al estado de cuenta.') + '</div>';
+    return h + '</div></div>';
+  }
+  var totApp = Number((o.cotizacion || {}).total) || 0, dif = r.total ? Math.round((totApp - r.total) * 100) / 100 : 0;
+  if (r.categoria === 'Rechazado' && ['aprobado','finalizado','entregado'].indexOf(o.estatus) >= 0)
+    h += '<div class="gs-alert">⚠ <b>Trabajo hecho en el taller pero GS tiene el folio rechazado.</b> Revisar autorización antes de dar por perdido el cobro.</div>';
+  if (r.advertencia) h += '<div class="gs-alert amb">⚠ ' + esc(r.advertencia) + '</div>';
+  h += '<div class="dgrid">' + di('Folio GS', f) + di('Estado', r.categoria) + di('Estatus en GS', r.estatus || r.flujo || '—') +
+    di('Total en GS', r.total ? money(r.total) : '—') + di('Total en la app', money(totApp)) +
+    di('Diferencia', r.total ? (Math.abs(dif) < 1 ? 'Cuadra' : money(dif)) : '—') +
+    di('Factura', r.no_factura || '—') + di('Documento de pago', r.documento_pago || '—') +
+    di('Comprobante SPEI', r.confirmado_pdf ? 'Sí' : 'No') + (r.responsable ? di('Siguiente paso de', r.responsable) : '') + '</div>';
+  h += '<div class="fmini" style="margin-top:6px">Corte ' + esc(COB.corte) + ' · cargado ' + new Date(COB.cargado).toLocaleDateString('es-MX') + '</div>';
+  return h + '</div></div>';
+}
+function renderCobranzaPanel(){
+  if (!COB || !COB.data) return '';
+  var rows = sucRows(IDX).filter(function(o){ return folioGS(o); });
+  if (!rows.length) return '';
+  var s = {Pagado:{n:0,m:0}, Pendiente:{n:0,m:0}, Rechazado:{n:0,m:0}}, rech = [], sinReg = [], dif = [];
+  var vistos = {};
+  rows.forEach(function(o){
+    var r = cobDe(o);
+    if (!r){ if (['finalizado','entregado'].indexOf(o.estatus) >= 0) sinReg.push(o); return; }
+    if (s[r.categoria] && !vistos[r.folio]){ vistos[r.folio] = 1; s[r.categoria].n++; s[r.categoria].m += r.total || 0; }   // cada folio GS cuenta una vez
+    if (r.categoria === 'Rechazado' && ['aprobado','finalizado','entregado'].indexOf(o.estatus) >= 0) rech.push(o);
+    if (r.total && Number(o.total) > 0 && Math.abs(Number(o.total) - r.total) >= 1) dif.push(o);   // sin cotización en la app no se compara
+  });
+  var item = function(o, extra){ return '<div class="todo" onclick="openDetail(\'' + o.id + '\')">' + gsBadge(o) + '<div><div class="f">' + esc(o.folio || '') + ' · Ev ' + esc(folioGS(o)) + '</div><div class="m">' + esc(o.placas || '') + ' · ' + esc([o.marca, o.modelo].filter(Boolean).join(' ')) + (extra ? ' · ' + extra : '') + '</div></div></div>'; };
+  var h = '<div class="panel"><div class="ph">Cobranza Grupo Salinas <span style="font-weight:600;text-transform:none;color:var(--muted)">corte ' + esc(COB.corte) + '</span></div>';
+  h += '<div class="gs-kpis"><div class="gs-k gs-pag"><b>' + money(s.Pagado.m) + '</b><span>Pagado · ' + s.Pagado.n + '</span></div>' +
+       '<div class="gs-k gs-pen"><b>' + money(s.Pendiente.m) + '</b><span>Pendiente · ' + s.Pendiente.n + '</span></div>' +
+       '<div class="gs-k gs-rech"><b>' + s.Rechazado.n + '</b><span>Rechazados</span></div></div>';
+  h += '<div class="fmini" style="margin:6px 0 4px">Sólo folios que también están en la app (' + rows.length + ').</div>';
+  if (rech.length){ h += '<div class="gs-sub">Trabajados en taller y rechazados en GS (' + rech.length + ')</div>'; rech.slice(0, 8).forEach(function(o){ h += item(o); }); }
+  if (sinReg.length){ h += '<div class="gs-sub">Terminados en taller sin aparecer en el corte (' + sinReg.length + ')</div>'; sinReg.slice(0, 8).forEach(function(o){ h += item(o, estLabel(o.estatus)); }); }
+  if (dif.length){ h += '<div class="gs-sub">Monto distinto entre la app y GS (' + dif.length + ')</div>'; dif.slice(0, 8).forEach(function(o){ var r = cobDe(o); h += item(o, 'app ' + money(o.total) + ' vs GS ' + money(r.total)); }); }
+  if (!rech.length && !sinReg.length && !dif.length) h += '<div class="empty-sm">Sin diferencias entre la app y el corte ✓</div>';
+  return h + '</div>';
+}
+function estLabel(k){ var s = STAGES.find(function(x){ return x.k === k; }); return s ? s.label : (k || ''); }
+// Saca el arreglo DATA del tablero de cobranza (.html) o lee un .json
+function extraerCobranza(txt){
+  var t = txt.trim();
+  if (t[0] === '[' || t[0] === '{'){ var j = JSON.parse(t); return Array.isArray(j) ? j : (j.data || j.DATA || []); }
+  var i = txt.search(/(?:const|var|let)\s+DATA\s*=\s*\[/); if (i < 0) throw new Error('El archivo no trae el arreglo DATA del tablero de cobranza');
+  i = txt.indexOf('[', i);
+  var dep = 0, str = false, esc2 = false;
+  for (var k = i; k < txt.length; k++){
+    var ch = txt[k];
+    if (str){ if (esc2) esc2 = false; else if (ch === '\\') esc2 = true; else if (ch === '"') str = false; continue; }
+    if (ch === '"') str = true; else if (ch === '[') dep++; else if (ch === ']'){ dep--; if (!dep) return JSON.parse(txt.slice(i, k + 1)); }
+  }
+  throw new Error('No se pudo leer el arreglo DATA');
+}
+async function subirCobranza(inp){
+  var f = inp.files && inp.files[0]; inp.value = ''; if (!f) return;
+  var msg = $('cob_msg');
+  try{
+    var data = extraerCobranza(await f.text());
+    var corte = ($('cob_corte').value || '').trim() || todayISO();
+    msg.textContent = 'Subiendo ' + data.length + ' folios…';
+    var r = await fetchT(API_URL, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({action:'cargarCobranza', clave:getCfg().clave || '', sesion:SESION(), corte:corte, archivo:f.name, data:data})}, 60000);
+    var j = await r.json();
+    if (!j.ok) throw new Error(j.error || 'error');
+    msg.textContent = '✅ Corte ' + j.corte + ' cargado · ' + j.folios + ' folios';
+    await cargarCob(); paintCobSettings();
+  }catch(e){ msg.textContent = '❌ ' + e.message; }
+}
+function paintCobSettings(){
+  var el = $('cob_estado'); if (!el) return;
+  var esGer = SES && ['gerencia','gerente','ceo','director','direccion','dirección','admin','administrador','dueño','dueno'].indexOf(String(SES.rol || '').trim().toLowerCase()) >= 0;
+  $('cob_carga').classList.toggle('hide', !esGer);
+  el.innerHTML = COB ? ('Corte cargado: <b>' + esc(COB.corte) + '</b> · ' + Object.keys(COB.data || {}).length + ' folios · ' + esc(COB.por || '') + ' · ' + new Date(COB.cargado).toLocaleString('es-MX'))
+                     : 'Todavía no hay ningún corte cargado.';
+  var sv = $('srv_estado');
+  if (sv) sv.innerHTML = SRV ? ('Servidor: <b>Netlify</b> · backend ' + esc(SRV.version || '') + ' · modo <b>' + (SRV.modo === 'prueba' ? 'PRUEBA' : 'producción') + '</b>' + (SRV.puente ? ' · machote GS conectado' : ' · <span style="color:#c01d1d">machote GS sin conectar (falta PUENTE_URL)</span>')) : 'Servidor sin respuesta';
+}
+
+/* ---------- 3) Tablero del taller en vivo ---------- */
+var PISO_LIM = {recepcion:{d:1, txt:'sin diagnóstico'}, cotizado:{d:2, txt:'esperando aprobación'}, aprobado:{d:5, txt:'en reparación'}, finalizado:{d:1, txt:'terminado sin entregar'}};
+var PISO_COLS = [['recepcion','Recepción y diagnóstico','🔍'], ['cotizado','Esperando aprobación','⏳'], ['aprobado','En reparación','🔧'], ['finalizado','Listo para entregar','✅']];
+var _pisoTimer = null, _pisoAt = 0;
+function diasDesde(ms){ if (!ms) return null; var a = new Date(ms); a.setHours(0,0,0,0); var h = new Date(); h.setHours(0,0,0,0); return Math.max(0, Math.round((h - a) / 864e5)); }
+function diasTxt(d){ return d == null ? '' : (d === 0 ? 'hoy' : d + (d === 1 ? ' día' : ' días')); }
+function pisoInfo(o){
+  var st = o.estatus || 'recepcion', lim = PISO_LIM[st];
+  var de = diasDesde(o.etapaDesde || (o.fecha ? new Date(o.fecha + 'T00:00:00').getTime() : 0));
+  var tot = o.fecha ? diasDesde(new Date(o.fecha + 'T00:00:00').getTime()) : null;
+  return {st:st, de:de, tot:tot, lim:lim, late: !!(lim && de != null && de > lim.d), exceso: lim && de != null ? de - lim.d : 0};
+}
+async function goPiso(){
+  $('barTitle').innerHTML = 'Taller<small>Tablero en vivo</small>';
+  show('piso');
+  await ensureIDX(false);
+  renderPiso();
+  if (_pisoTimer) clearInterval(_pisoTimer);
+  _pisoTimer = setInterval(async function(){
+    if (window._view !== 'piso'){ clearInterval(_pisoTimer); _pisoTimer = null; return; }
+    try{ await ensureIDX(true); renderPiso(); }catch(e){}
+  }, 60000);
+}
+function pisoCard(o){
+  var i = pisoInfo(o), veh = [o.marca, o.modelo].filter(Boolean).join(' ');
+  var quien = o.tecnico || o.asesor;
+  return '<div class="pz-card' + (i.late ? ' pz-late' : '') + '" onclick="openDetail(\'' + o.id + '\')">' +
+    '<div class="pz-top"><span class="pz-placa">' + esc(o.placas || 'SIN PLACA') + '</span><span class="pz-dias ' + (i.late ? 'r' : '') + '">' + diasTxt(i.de) + '</span></div>' +
+    '<div class="pz-veh">' + esc(veh || 'Vehículo') + (o.eco ? ' · Eco ' + esc(o.eco) : '') + '</div>' +
+    '<div class="pz-cli">' + esc(o.flotilla || o.cliente || '—') + (o.evento ? ' · Ev ' + esc(o.evento) : '') + '</div>' +
+    '<div class="pz-meta">' + esc(o.folio || '') + (quien ? ' · 🧑‍🔧 ' + esc(quien) : '') + (i.tot != null && i.tot !== i.de ? ' · ' + diasTxt(i.tot) + ' en taller' : '') + '</div>' +
+    (o.motivo ? '<div class="pz-mot">' + esc(o.motivo) + '</div>' : '') +
+    (i.late ? '<div class="pz-why">⚠ ' + diasTxt(i.de) + ' ' + i.lim.txt + ' (máx. ' + i.lim.d + ')</div>' : '') +
+    gsBadge(o) + '</div>';
+}
+function renderPiso(){
+  if (!Array.isArray(IDX)) IDX = [];
+  if ($('pzSuc')) $('pzSuc').innerHTML = sucBar();
+  var piso = sucRows(IDX).filter(function(o){ return PISO_LIM[o.estatus || 'recepcion']; });
+  var late = piso.filter(function(o){ return pisoInfo(o).late; }).sort(function(a, b){ return pisoInfo(b).exceso - pisoInfo(a).exceso; });
+  var porAprobar = piso.filter(function(o){ return o.estatus === 'cotizado'; });
+  var monto = porAprobar.reduce(function(a, o){ return a + (Number(o.total) || 0); }, 0);
+  var listos = piso.filter(function(o){ return o.estatus === 'finalizado'; }).length;
+  _pisoAt = Date.now();
+  var h = '<div class="pz-kpis">' +
+    '<div class="pz-k"><b>' + piso.length + '</b><span>En el taller</span></div>' +
+    '<div class="pz-k ' + (late.length ? 'r' : 'g') + '"><b>' + late.length + '</b><span>Atorados</span></div>' +
+    '<div class="pz-k"><b>' + money(monto) + '</b><span>Por aprobar · ' + porAprobar.length + '</span></div>' +
+    '<div class="pz-k"><b>' + listos + '</b><span>Listos para entregar</span></div></div>';
+  h += '<div class="pz-bar"><span>Actualizado ' + new Date(_pisoAt).toLocaleTimeString('es-MX', {hour:'2-digit', minute:'2-digit'}) + ' · se actualiza solo cada minuto</span>' +
+       '<button onclick="pisoTV()">' + (document.body.classList.contains('tv') ? 'Salir de pantalla completa' : '⛶ Pantalla completa') + '</button></div>';
+  if (late.length){
+    h += '<div class="pz-late-box"><div class="pz-late-h">⚠ Atorados — ordenados por lo que más se pasó</div>';
+    late.slice(0, 6).forEach(function(o){ var i = pisoInfo(o); h += '<div class="pz-late-row" onclick="openDetail(\'' + o.id + '\')"><b>' + esc(o.placas || o.folio) + '</b><span>' + esc([o.marca, o.modelo].filter(Boolean).join(' ')) + '</span><span class="r">' + diasTxt(i.de) + ' ' + i.lim.txt + '</span></div>'; });
+    if (late.length > 6) h += '<div class="fmini">y ' + (late.length - 6) + ' más</div>';
+    h += '</div>';
+  }
+  h += '<div class="pz-cols">';
+  PISO_COLS.forEach(function(c){
+    var items = piso.filter(function(o){ return (o.estatus || 'recepcion') === c[0]; })
+      .sort(function(a, b){ return (pisoInfo(b).de || 0) - (pisoInfo(a).de || 0); });
+    h += '<div class="pz-col"><div class="pz-colh"><span>' + c[2] + ' ' + c[1] + '</span><span class="kb-badge">' + items.length + '</span></div>';
+    h += '<div class="pz-lim">Máximo ' + PISO_LIM[c[0]].d + (PISO_LIM[c[0]].d === 1 ? ' día' : ' días') + ' en esta etapa</div>';
+    h += items.length ? items.map(pisoCard).join('') : '<div class="kb-empty">—</div>';
+    h += '</div>';
+  });
+  h += '</div>';
+  $('pzBody').innerHTML = h;
+}
+function pisoTV(){
+  var on = !document.body.classList.contains('tv');
+  document.body.classList.toggle('tv', on);
+  try{ if (on && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen(); else if (!on && document.fullscreenElement) document.exitFullscreen(); }catch(e){}
+  renderPiso();
+}
+document.addEventListener('fullscreenchange', function(){ if (!document.fullscreenElement && document.body.classList.contains('tv')){ document.body.classList.remove('tv'); if (window._view === 'piso') renderPiso(); } });
+
+/* ---------- 4) Historial por placa ---------- */
+function normPl(s){ return String(s || '').toUpperCase().replace(/[\s\-\.]/g, ''); }
+async function goPlaca(q){
+  $('barTitle').innerHTML = 'Placas<small>Historial por vehículo</small>';
+  show('placa');
+  await ensureIDX(false);
+  var dl = $('dl_placas');
+  if (dl){ var seen = {}; dl.innerHTML = IDX.map(function(o){ var p = normPl(o.placas); if (!p || seen[p]) return ''; seen[p] = 1; return '<option value="' + esc(p) + '">'; }).join(''); }
+  if (typeof q === 'string'){ $('pl_q').value = q; }
+  buscarPlaca();
+}
+function buscarPlaca(){
+  var q = normPl($('pl_q').value);
+  var host = $('plBody');
+  if (!q){ host.innerHTML = '<div class="empty-sm" style="padding:18px 6px">Escribe una placa, número económico, VIN o folio GS para ver todo lo que se le ha hecho al vehículo.</div>'; return; }
+  var match = function(o){ return normPl(o.placas) === q || (q.length >= 6 && normPl(o.vin).slice(-q.length) === q) || (o.eco && normPl(o.eco) === q) || folioGS(o) === q; };
+  var rows = IDX.filter(match);
+  if (!rows.length) rows = IDX.filter(function(o){ return q.length >= 3 && normPl(o.placas).indexOf(q) >= 0; });
+  if (!rows.length){ host.innerHTML = '<div class="empty-sm" style="padding:18px 6px">Sin servicios para <b>' + esc(q) + '</b>.</div>'; return; }
+  var grupos = {};
+  rows.forEach(function(o){ var k = normPl(o.placas) || ('SIN PLACA · ' + (o.vin || o.id)); (grupos[k] = grupos[k] || []).push(o); });
+  var h = '';
+  Object.keys(grupos).forEach(function(k){
+    var g = grupos[k].filter(function(o){ return o.estatus !== 'cita'; }).sort(function(a, b){ return (b.fecha || '').localeCompare(a.fecha || '') || (b.createdAt || 0) - (a.createdAt || 0); });
+    if (!g.length) return;
+    var u = g[0], total = g.reduce(function(a, o){ return a + (Number(o.total) || 0); }, 0);
+    var kmUlt = (g.find(function(o){ return o.km; }) || {}).km;
+    h += '<div class="pl-veh"><div class="pl-placa">' + esc(k) + '</div><div class="pl-desc">' + esc([u.marca, u.modelo, u.anio].filter(Boolean).join(' ') || 'Vehículo') +
+      (u.flotilla ? ' · ' + esc(u.flotilla) : '') + (u.eco ? ' · Eco ' + esc(u.eco) : '') + '</div>' +
+      '<div class="pl-stats"><div><b>' + g.length + '</b><span>servicios</span></div><div><b>' + money(total) + '</b><span>cotizado total</span></div>' +
+      '<div><b>' + fmtDate(g[g.length - 1].fecha) + '</b><span>primera visita</span></div>' + (kmUlt ? '<div><b>' + Number(kmUlt).toLocaleString('es-MX') + '</b><span>km última visita</span></div>' : '') + '</div></div>';
+    h += '<div class="pl-tl">';
+    g.forEach(function(o, i){
+      var prev = g[i + 1];   // visita anterior (la lista va de la más nueva a la más vieja)
+      if (prev && prev.fecha && o.fecha){
+        var dias = Math.round((new Date(o.fecha + 'T00:00:00') - new Date(prev.fecha + 'T00:00:00')) / 864e5);
+        if (dias >= 0 && dias <= 90) h += '<div class="pl-regreso">↩ Regresó a los ' + dias + (dias === 1 ? ' día' : ' días') + ' · dentro de la garantía de mano de obra (90 días)</div>';
+      }
+      h += '<div class="pl-item" id="pli_' + o.id + '"><div class="pl-row" onclick="plExpand(\'' + o.id + '\')">' +
+        '<div class="pl-f">' + fmtDate(o.fecha) + '</div><div class="pl-main"><div><b>' + esc(o.folio || '') + '</b>' + (o.evento ? ' · Ev ' + esc(o.evento) : '') + ' ' + stageChip(o.estatus || 'recepcion') + ' ' + gsBadge(o) + '</div>' +
+        '<div class="pl-mot">' + esc(o.motivo || '') + (o.dx ? ' — <i>' + esc(o.dx) + '</i>' : '') + '</div>' +
+        '<div class="pl-sm">' + esc(o.sucursal || '') + (o.km ? ' · ' + Number(o.km).toLocaleString('es-MX') + ' km' : '') + (o.total ? ' · ' + money(o.total) : '') + '</div></div></div>' +
+        '<div class="pl-ev hide"></div></div>';
+    });
+    h += '</div>';
+  });
+  host.innerHTML = h;
+}
+async function plExpand(id){
+  var box = document.querySelector('#pli_' + id + ' .pl-ev'); if (!box) return;
+  if (!box.classList.contains('hide')){ box.classList.add('hide'); return; }
+  box.classList.remove('hide'); box.innerHTML = '<div class="loading" style="padding:10px">Cargando evidencia…</div>';
+  var o = await gOrder(id); var tieneUrls = o && (o.fotosUrls || (o.diagnostico && o.diagnostico.fotosUrls));
+  if (!tieneUrls){ try{ o = (await cloudGet(id)) || o; }catch(e){} }
+  if (!o){ box.innerHTML = '<div class="fmini">No se pudo cargar.</div>'; return; }
+  var fotos = function(lbl, a){ a = (a || []).filter(function(x){ return typeof x === 'string' && x; }); if (!a.length) return ''; return '<div class="pl-ft">' + lbl + '</div><div class="pl-ph">' + a.map(function(u){ return '<a href="' + esc(u) + '" target="_blank" rel="noopener"><img loading="lazy" src="' + esc(u) + '"></a>'; }).join('') + '</div>'; };
+  var arr = function(x, y){ return Array.isArray(x) ? x : (y || []); };
+  var co = o.cotizacion || {}, items = co.items || [];
+  var h = '';
+  if ((o.diagnostico || {}).texto) h += '<div class="pl-ft">Diagnóstico</div><div class="pl-txt">' + esc(o.diagnostico.texto) + '</div>';
+  if (items.length) h += '<div class="pl-ft">Trabajos cotizados</div><div class="pl-txt">' + items.map(function(it){ return '• ' + esc(it.concepto || it.componente || '') + (it.cantidad ? ' ×' + esc(it.cantidad) : ''); }).join('<br>') + '</div>';
+  if ((o.finalizado || {}).notas) h += '<div class="pl-ft">Notas del trabajo terminado</div><div class="pl-txt">' + esc(o.finalizado.notas) + '</div>';
+  h += fotos('Recepción', arr(o.fotos, o.fotosUrls)) + fotos('Diagnóstico', arr((o.diagnostico || {}).fotos, (o.diagnostico || {}).fotosUrls)) + fotos('Trabajo terminado', arr((o.finalizado || {}).fotos, (o.finalizado || {}).fotosUrls));
+  h += '<button class="pl-open" onclick="openDetail(\'' + id + '\')">Abrir orden completa</button>';
+  box.innerHTML = h || '<div class="fmini">Sin evidencia registrada.</div>';
+}
+
 
 /* ============ INIT ============ */
 window.addEventListener('error',function(){var lh=$('listHost');if(lh&&/Cargando/.test(lh.innerHTML)){lh.innerHTML='<div class="empty"><div style="font-weight:700">Ya puedes empezar</div><div style="font-size:13px;margin-top:4px">Toca “Nueva orden”.</div></div>';}});
