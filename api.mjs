@@ -25,7 +25,7 @@
  ****************************************************************/
 import { getStore } from "@netlify/blobs";
 
-const BACKEND_VERSION = "2026-10-13-v24";
+const BACKEND_VERSION = "2026-10-14-v25";
 const ETAPAS_ORDEN = ["cita", "recepcion", "cotizado", "aprobado", "finalizado", "entregado"];
 const CANDADO_DESDE = "aprobado";
 const HORAS_SESION = 12;
@@ -111,8 +111,10 @@ async function guardarMedio(dataUrl) {
 async function listaMedios(arr) {
   const out = [];
   for (const x of arr || []) {
-    if (esUrl(x)) out.push(x);
-    else if (typeof x === "string" && x.indexOf("data:") === 0) { const u = await guardarMedio(x); if (u) out.push(u); }
+    let u = "";
+    if (esUrl(x)) u = x;
+    else if (typeof x === "string" && x.indexOf("data:") === 0) u = await guardarMedio(x);
+    if (u) out.push(u);
   }
   return out;
 }
@@ -280,7 +282,220 @@ function resumen(o) {
     fDx: di.fecha || "", fAp: ap.fecha || "", fFin: fi.fecha || "", fSal: sal.fecha || "",
     km: v.km || "", dx: String(di.texto || "").slice(0, 160),
     etapaDesde: o._etapaDesde || etapaDesdeDerivada(o), _u: o._u || 0, prueba: !!o._prueba,
+    // v25: fotos del taller
+    rev: o._rev || 0, color: v.color || "", fotosRec: fotosDeSeccion(o, "recepcion").length || nz(o.fotos), v25: !!o._v25, tf: o._tf || 0,
+    sol: (o.solicitudesFotos || []).filter((s) => s.estado === "pendiente" || s.estado === "recibida")
+      .map((s) => ({ id: s.id, sec: s.sec, para: s.para || "", paraNombre: s.paraNombre || "", estado: s.estado, nota: String(s.nota || "").slice(0, 160),
+        ts: s.ts || 0, tsSubida: s.tsSubida || 0, subioNombre: s.subioNombre || "", n: (s.fotos || []).length, origen: s.origen || "admin" })),
   };
+}
+
+/* =====================================================================
+   v25 · FOTOS DEL TALLER
+   Administración (en oficinas) pide fotos de una orden; el técnico (en el
+   taller) las toma y las sube. El técnico NO ve cliente, diagnóstico,
+   cotización ni pagos: con rol "tecnico" sólo puede usar las acciones tec*.
+   Las fotos del técnico entran a la sección que pidió administración:
+     recepcion   → evidencia de recepción     (o.fotosUrls)
+     diagnostico → evidencia del diagnóstico  (o.diagnostico.fotosUrls)
+     evidencias  → evidencia del trabajo      (o.finalizado.fotosUrls)
+   o._tecFotos guarda qué fotos subió el taller, para que un teléfono de
+   oficina que todavía no las ha visto no las borre al guardar la orden.
+   ===================================================================== */
+const SECCIONES = { recepcion: "Recepción", diagnostico: "Diagnóstico", evidencias: "Evidencias del trabajo" };
+const SEC_MEDIA = { recepcion: "reception", diagnostico: "diagnostico", evidencias: "finalizado" };
+const ROLES_TECNICO = ["tecnico", "técnico", "tecnicos", "técnicos", "mecanico", "mecánico", "taller"];
+const esTecnico = (rol) => ROLES_TECNICO.includes(String(rol || "").trim().toLowerCase());
+const ETAPAS_TALLER = ["recepcion", "cotizado", "aprobado", "finalizado"];
+const ETAPAS_AVANCE = ["cotizado", "aprobado", "finalizado", "entregado"];
+const ETAPAS_BLOQUEO = ["cotizado", "aprobado", "finalizado"]; // entregar sin servicio (salida directa) sí se permite
+const MAX_TEC_FOTOS = 24;
+
+// Lista de URLs guardadas de una sección (formato del servidor)
+function fotosDeSeccion(o, sec) {
+  if (!o) return [];
+  const a = sec === "recepcion" ? o.fotosUrls : sec === "diagnostico" ? (o.diagnostico || {}).fotosUrls : (o.finalizado || {}).fotosUrls;
+  return Array.isArray(a) ? a : [];
+}
+function ponerFotosSeccion(o, sec, lista) {
+  if (sec === "recepcion") { o.fotosUrls = lista; o.fotos = lista.length; return; }
+  const k = sec === "diagnostico" ? "diagnostico" : "finalizado";
+  o[k] = o[k] || {};
+  o[k].fotosUrls = lista; o[k].fotos = lista.length;
+}
+// Lista de la sección tal como la manda la app (fotos: data:/URL/'local')
+function arrCliente(o, sec) {
+  if (sec === "recepcion") return o.fotos;
+  const k = sec === "diagnostico" ? "diagnostico" : "finalizado";
+  return o[k] ? o[k].fotos : undefined;
+}
+function ponerArrCliente(o, sec, arr) {
+  if (sec === "recepcion") { o.fotos = arr; return; }
+  const k = sec === "diagnostico" ? "diagnostico" : "finalizado";
+  o[k] = o[k] || {};
+  o[k].fotos = arr;
+}
+// Fotos que subió el taller y que este teléfono todavía no ha visto → se agregan a lo que manda
+function mezclarFotosTaller(o, prev) {
+  const tf = (prev && prev._tecFotos) || {};
+  const vistos = (o && o._tecFotos) || {};
+  for (const sec in SECCIONES) {
+    const nuevas = (tf[sec] || []).filter((u) => (vistos[sec] || []).indexOf(u) < 0);
+    if (!nuevas.length) continue;
+    const arr = arrCliente(o, sec);
+    if (!Array.isArray(arr)) { ponerArrCliente(o, sec, fotosDeSeccion(prev, sec).slice()); continue; }
+    for (const u of nuevas) if (arr.indexOf(u) < 0) arr.push(u);
+  }
+}
+const nuevoId = () => "s" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const sinFotosRecepcion = (o) => !fotosDeSeccion(o, "recepcion").length && !nz(o.fotos);
+
+async function actualizarIdx(o) {
+  await mutate(S(), "idx", idxInit, async (idx) => { if (!idx.o[o.id]) return undefined; idx.o[o.id] = resumen(o); return true; });
+}
+// Lee-modifica-escribe una orden sin pisar a otro equipo que guarde al mismo tiempo
+async function mutarOrden(id, fn) {
+  const st = S();
+  for (let i = 0; i < 15; i++) {
+    const r = await st.getWithMetadata("o/" + id, { type: "json" });
+    if (!r || !r.data) return { ok: false, error: "Orden no encontrada" };
+    const res = await fn(r.data);
+    if (!res || res.ok === false) return res || { ok: false, error: "Sin cambios" };
+    const w = await st.setJSON("o/" + id, r.data, { onlyIfMatch: r.etag });
+    if (w && w.modified) { await actualizarIdx(r.data); return { ...res, orden: r.data }; }
+    await sleep(60 + Math.random() * 200);
+  }
+  throw new Error("La orden se está guardando en otro equipo. Intenta de nuevo en unos segundos.");
+}
+
+/* ---- Administración: pedir, revisar, cerrar ---- */
+async function pedirFotos(b, ses) {
+  const sec = String(b.sec || "");
+  if (!SECCIONES[sec]) return { ok: false, error: "Sección inválida" };
+  const sol = {
+    id: nuevoId(), sec, para: String(b.para || "").trim().toLowerCase(), paraNombre: String(b.paraNombre || "").slice(0, 80),
+    nota: String(b.nota || "").slice(0, 500), pidio: ses.usuario, pidioNombre: ses.nombre, ts: now(), estado: "pendiente",
+    fotos: [], origen: "admin", rondas: 1,
+  };
+  const r = await mutarOrden(b.id, (o) => {
+    if (o.estatus === "entregado") return { ok: false, error: "La orden ya se entregó" };
+    o.solicitudesFotos = o.solicitudesFotos || [];
+    o.solicitudesFotos.push(sol);
+    return { ok: true };
+  });
+  if (!r.ok) return r;
+  await logBitacora({ ...ctxOrden(r.orden), etapa: r.orden.estatus || "", que: "SOLICITUD DE FOTOS AL TALLER",
+    antes: `${SECCIONES[sec]} · para: ${sol.paraNombre || "cualquier técnico"} · pidió: ${usuarioTxt(ses)}`, despues: sol.nota });
+  return { ok: true, solicitud: sol };
+}
+async function cambiarSolicitud(b, ses) {
+  const acc = String(b.accion || "");
+  if (["cerrar", "repetir", "cancelar"].indexOf(acc) < 0) return { ok: false, error: "Acción inválida" };
+  let sol = null;
+  const r = await mutarOrden(b.id, (o) => {
+    sol = (o.solicitudesFotos || []).find((s) => s.id === b.sol);
+    if (!sol) return { ok: false, error: "Solicitud no encontrada" };
+    if (acc === "cerrar") { sol.estado = "cerrada"; sol.tsCierre = now(); sol.cerro = ses.nombre; }
+    if (acc === "cancelar") { sol.estado = "cancelada"; sol.tsCierre = now(); sol.cerro = ses.nombre; }
+    if (acc === "repetir") {
+      sol.estado = "pendiente"; sol.rondas = (sol.rondas || 1) + 1; sol.ts = now();
+      sol.historial = (sol.historial || []).concat([{ nota: sol.nota, fotos: (sol.fotos || []).length, subio: sol.subioNombre || "", ts: sol.tsSubida || 0 }]);
+      if (b.nota != null && String(b.nota).trim()) sol.nota = String(b.nota).slice(0, 500);
+      sol.tsSubida = 0;
+    }
+    return { ok: true };
+  });
+  if (!r.ok) return r;
+  await logBitacora({ ...ctxOrden(r.orden), etapa: r.orden.estatus || "", que: "SOLICITUD DE FOTOS · " + acc.toUpperCase(),
+    antes: `${SECCIONES[sol.sec] || sol.sec} · ${usuarioTxt(ses)}`, despues: acc === "repetir" ? sol.nota : "" });
+  return { ok: true, solicitud: sol };
+}
+async function listaSolicitudes() {
+  const idx = (await getJSON(S(), "idx")) || idxInit();
+  const out = [];
+  for (const r of Object.values(idx.o)) for (const s of r.sol || [])
+    out.push({ ...s, orden: r.id, folio: r.folio, placas: r.placas, marca: r.marca, modelo: r.modelo, estatus: r.estatus, sucursal: r.sucursal });
+  return { ok: true, solicitudes: out.sort((a, b) => (b.tsSubida || b.ts) - (a.tsSubida || a.ts)) };
+}
+async function listaTecnicos() {
+  const u = await getJSON(S(), "usuarios");
+  return { ok: true, tecnicos: ((u && u.lista) || []).filter((x) => esTecnico(x.rol) && String(x.activo || "si").toLowerCase() !== "no")
+    .map((x) => ({ usuario: x.usuario, nombre: x.nombre || x.usuario })) };
+}
+
+/* ---- Técnico: sólo ve lo mínimo ---- */
+const unidadTec = (r) => ({ id: r.id, folio: r.folio, placas: r.placas, marca: r.marca, modelo: r.modelo, anio: r.anio, color: r.color || "",
+  estatus: r.estatus, sucursal: r.sucursal });
+async function vistaTecnico(ses) {
+  const idx = (await getJSON(S(), "idx")) || idxInit();
+  const pendientes = [], unidades = [];
+  for (const r of Object.values(idx.o)) {
+    if (ETAPAS_TALLER.indexOf(r.estatus || "recepcion") < 0) continue;
+    unidades.push(unidadTec(r));
+    for (const s of r.sol || [])
+      if (s.estado === "pendiente" && (!s.para || s.para === ses.usuario))
+        pendientes.push({ ...unidadTec(r), sol: s.id, sec: s.sec, secNombre: SECCIONES[s.sec] || s.sec, nota: s.nota, ts: s.ts, paraMi: !!s.para });
+  }
+  pendientes.sort((a, b) => a.ts - b.ts);
+  unidades.sort((a, b) => String(a.placas).localeCompare(String(b.placas)));
+  return { ok: true, pendientes, unidades };
+}
+async function ordenTecnico(id, ses) {
+  const o = await getJSON(S(), "o/" + id);
+  if (!o || ETAPAS_TALLER.indexOf(o.estatus || "recepcion") < 0) return { ok: false, error: "Esta unidad ya no está en el taller" };
+  const v = o.vehiculo || {}, s = o.servicio || {};
+  return { ok: true, orden: {
+    id: o.id, folio: o.folio || "", sucursal: o.sucursal || "", estatus: o.estatus || "recepcion",
+    placas: v.placas || "", marca: v.marca || "", modelo: v.modelo || "", anio: v.anio || "", color: v.color || "",
+    motivo: s.motivo || "", danos: o.estado || "",
+    solicitudes: (o.solicitudesFotos || []).filter((x) => x.estado === "pendiente" && (!x.para || x.para === ses.usuario))
+      .map((x) => ({ id: x.id, sec: x.sec, secNombre: SECCIONES[x.sec] || x.sec, nota: x.nota, ts: x.ts, pidio: x.pidioNombre || "" })),
+  } };
+}
+async function tecAgregar(b, ses, origin) {
+  const fotos = (Array.isArray(b.fotos) ? b.fotos : []).map((u) => { const m = ABS.exec(String(u)); return m ? m[1] : String(u); })
+    .filter((u, i, a) => REL.test(u) && a.indexOf(u) === i).slice(0, MAX_TEC_FOTOS);
+  if (!fotos.length) return { ok: false, error: "No llegaron fotos" };
+  const ms = M();
+  const existen = await Promise.all(fotos.map((u) => ms.getMetadata(u.slice(7)).catch(() => null)));
+  if (existen.some((x) => !x)) return { ok: false, error: "Alguna foto no terminó de subir. Intenta de nuevo." };
+  let sol = null, sec = "", nuevas = 0;
+  const r = await mutarOrden(b.id, (o) => {
+    if (ETAPAS_TALLER.indexOf(o.estatus || "recepcion") < 0) return { ok: false, error: "Esta unidad ya no está en el taller" };
+    o.solicitudesFotos = o.solicitudesFotos || [];
+    if (b.sol) {
+      sol = o.solicitudesFotos.find((s) => s.id === b.sol);
+      if (!sol) return { ok: false, error: "La solicitud ya no existe" };
+      if (sol.estado === "cancelada") return { ok: false, error: "Administración canceló esta solicitud" };
+    } else {
+      if (!SECCIONES[b.sec]) return { ok: false, error: "Elige en qué sección van las fotos" };
+      // Si el teléfono ya mandó este mismo paquete (se cortó la señal en la respuesta) no se duplica
+      sol = o.solicitudesFotos.find((s) => s.lote && s.lote === b.lote) || null;
+      if (!sol) { sol = { id: nuevoId(), sec: b.sec, para: ses.usuario, paraNombre: ses.nombre, nota: "", pidio: ses.usuario, pidioNombre: ses.nombre,
+        ts: now(), estado: "pendiente", fotos: [], origen: "tecnico", rondas: 1, lote: String(b.lote || "").slice(0, 40) }; o.solicitudesFotos.push(sol); }
+    }
+    sec = sol.sec;
+    const lista = fotosDeSeccion(o, sec).slice();
+    o._tecFotos = o._tecFotos || {};
+    const tf = (o._tecFotos[sec] = o._tecFotos[sec] || []);
+    nuevas = 0;
+    for (const u of fotos) {
+      if (lista.indexOf(u) < 0) { lista.push(u); nuevas++; }
+      if (tf.indexOf(u) < 0) tf.push(u);
+      if ((sol.fotos || []).indexOf(u) < 0) (sol.fotos = sol.fotos || []).push(u);
+    }
+    ponerFotosSeccion(o, sec, lista);
+    sol.estado = "recibida"; sol.tsSubida = now(); sol.subio = ses.usuario; sol.subioNombre = ses.nombre;
+    if (b.notaTec != null) sol.notaTec = String(b.notaTec || "").slice(0, 500);
+    o._tf = now();
+    o._u = now(); // el Apps Script respalda las fotos nuevas en Drive
+    return { ok: true };
+  });
+  if (!r.ok) return r;
+  await logBitacora({ ...ctxOrden(r.orden), etapa: r.orden.estatus || "", que: "FOTOS DEL TALLER",
+    antes: `${fotos.length} foto(s) a ${SECCIONES[sec]} · subió: ${usuarioTxt(ses)}`, despues: sol.notaTec || "" });
+  return { ok: true, sec, secNombre: SECCIONES[sec], fotos: fotos.length, nuevas, sol: sol.id, folio: r.orden.folio || "",
+    placas: ((r.orden.vehiculo || {}).placas) || "" };
 }
 const idxInit = () => ({ o: {} });
 
@@ -338,12 +553,39 @@ function resolverFolio(idx, id, folio) {
   return f;
 }
 
+/* ------------- v25: choque entre dos computadoras en la misma orden ------------- */
+function esChoque(prev, o) {
+  const pr = nz(prev._rev);
+  if (!pr) return false;                                   // nadie la ha guardado con v25 todavía
+  if (nz(o._base) === pr) return false;                    // trabajó sobre la última versión
+  if (prev._revDev && o._dev && prev._revDev === String(o._dev)) return false; // el último cambio lo hizo este mismo equipo
+  return true;
+}
+const sinBase64 = (o) => deepMap(o, (v) => (typeof v === "string" && v.indexOf("data:") === 0 ? "(foto no enviada)" : v));
+async function rechazarChoque(o, actual, ses) {
+  const t = now();
+  const cambios = diffProtegido(actual, normIn(o)).filter((k) => k.indexOf("evidencia") < 0);
+  try { await S().setJSON(`conflictos/${o.id}/${t}`, { ts: t, por: usuarioTxt(ses), dev: o._dev || "", base: nz(o._base), rev: nz(actual._rev), orden: sinBase64(o) }); } catch {}
+  await logBitacora({ ...ctxOrden(actual), etapa: actual.estatus || "", que: "CAMBIO NO GUARDADO: OTRA COMPUTADORA YA HABÍA CAMBIADO LA ORDEN",
+    antes: `Intentó: ${usuarioTxt(ses)} · Último cambio: ${actual._revPor || "—"}`,
+    despues: (cambios.length ? "Lo que traía distinto: " + cambios.join(", ") : "Sin diferencias en datos principales") + ` · respaldo: conflictos/${o.id}/${t}` });
+  return { ok: false, conflicto: true, rev: nz(actual._rev), por: actual._revPor || "", etapa: actual.estatus || "",
+    error: "Otra computadora (" + (actual._revPor || "otro usuario") + ") cambió esta orden mientras la tenías abierta. Tu cambio no se guardó para no borrar el suyo." };
+}
+
 /* ------------------------- GUARDAR ------------------------- */
 async function guardar(o, token, ses) {
   if (!o || !o.id) return { ok: false, error: "Orden sin id" };
   o = normIn(o);
   const st = S();
-  const prev = await getJSON(st, "o/" + o.id);
+  const prevR = await st.getWithMetadata("o/" + o.id, { type: "json" }).catch(() => null);
+  const prev = prevR && prevR.data ? prevR.data : null;
+  // v25: fotos del taller que este teléfono todavía no ha visto (antes de comparar el candado)
+  // v25: dos computadoras en la misma orden. La app v25 manda la revisión sobre la que trabajó (_base);
+  // si otra computadora guardó después, NO se pisa: se rechaza, se respalda y se anota en la bitácora.
+  if (prev && o._cli === "v25" && esChoque(prev, o)) return await rechazarChoque(o, prev, ses);
+  const vistosCli = JSON.parse(JSON.stringify(o._tecFotos || {}));
+  mezclarFotosTaller(o, prev);
 
   if (prev && estaBloqueada(prev.estatus)) {
     const cambios = diffProtegido(prev, o);
@@ -400,6 +642,23 @@ async function guardar(o, token, ses) {
   }
 
   const x = stripMedia(o, urls);
+  // v25: lo de "fotos del taller" lo decide el servidor, nunca lo que traiga el teléfono
+  delete x._cli; delete x._base; delete x._dev;
+  x._rev = nz(prev && prev._rev) + 1; x._revPor = usuarioTxt(ses); x._revDev = String(o._dev || ""); x._revTs = now();
+  x.machote = (prev && prev.machote) || null; // lo escribe el Apps Script (ackMachote)
+  x.solicitudesFotos = (prev && prev.solicitudesFotos) || [];
+  x._tf = (prev && prev._tf) || 0;
+  x._v25 = prev ? !!prev._v25 : o._cli === "v25";
+  x._tecFotos = JSON.parse(JSON.stringify((prev && prev._tecFotos) || {}));
+  // Si un teléfono que SÍ vio una foto del taller la quitó a propósito, deja de contarse como del taller
+  for (const sec in SECCIONES) {
+    if (!m[SEC_MEDIA[sec]] || !x._tecFotos[sec]) continue;
+    const quedan = fotosDeSeccion(x, sec);
+    x._tecFotos[sec] = x._tecFotos[sec].filter((u) => quedan.indexOf(u) >= 0 || (vistosCli[sec] || []).indexOf(u) < 0);
+  }
+  // v25: una orden nueva no avanza de recepción sin fotos de recepción
+  if (x._v25 && ETAPAS_BLOQUEO.indexOf(x.estatus) >= 0 && (!prev || ETAPAS_AVANCE.indexOf(prev.estatus) < 0) && sinFotosRecepcion(x))
+    return { ok: false, faltanFotos: true, error: "Faltan las fotos de recepción. Pídelas al taller antes de pasar la orden a cotización." };
   const t = now();
   x.driveUrl = (prev && prev.driveUrl) || o.driveUrl || "";
   x._u = t;
@@ -420,7 +679,31 @@ async function guardar(o, token, ses) {
     idx.o[x.id] = resumen(x);
     return true;
   });
-  await st.setJSON("o/" + x.id, x);
+  // v25: escritura condicional. Si el taller subió fotos mientras tanto, se integran y se reintenta.
+  let etag = prevR && prevR.data ? prevR.etag : null;
+  for (let i = 0; ; i++) {
+    const w = await st.setJSON("o/" + x.id, x, etag ? { onlyIfMatch: etag } : { onlyIfNew: true });
+    if (w && w.modified) break;
+    if (i >= 12) throw new Error("La orden se está guardando en otro equipo. Intenta de nuevo en unos segundos.");
+    await sleep(60 + Math.random() * 200);
+    const cur = await st.getWithMetadata("o/" + x.id, { type: "json" }).catch(() => null);
+    if (!cur || !cur.data) { etag = null; continue; }
+    etag = cur.etag;
+    const c = cur.data;
+    if (nz(c._rev) !== nz(prev && prev._rev)) { // otra computadora guardó en este mismo instante
+      await actualizarIdx(c);
+      return await rechazarChoque(o, c, ses);
+    }
+    for (const sec in SECCIONES) {
+      const lista = fotosDeSeccion(x, sec).slice();
+      let cambio = false;
+      for (const u of (c._tecFotos || {})[sec] || []) if (((x._tecFotos || {})[sec] || []).indexOf(u) < 0 && lista.indexOf(u) < 0) { lista.push(u); cambio = true; }
+      if (cambio) { ponerFotosSeccion(x, sec, lista); urls[{ recepcion: "fotos", diagnostico: "diag", evidencias: "fin" }[sec]] = lista; }
+    }
+    x._tecFotos = c._tecFotos || {}; x.solicitudesFotos = c.solicitudesFotos || []; x._tf = c._tf || 0;
+    x.driveUrl = c.driveUrl || x.driveUrl; x.machote = c.machote || x.machote;
+    await actualizarIdx(x);
+  }
 
   try {
     if (o.cliente && o.cliente.nombre) {
@@ -430,7 +713,7 @@ async function guardar(o, token, ses) {
     }
   } catch {}
   try { await registrarComponentes((o.cotizacion || {}).items); } catch {}
-  return { ok: true, folio: folioFinal, drive: x.driveUrl, urls };
+  return { ok: true, folio: folioFinal, drive: x.driveUrl, urls, v25: x._v25, rev: x._rev };
 }
 
 async function obtener(id, folio) {
@@ -492,9 +775,9 @@ async function rescatarEntrega(b) {
   }
   if (!n) return { ok: true, rescatadas: 0 };
   ec.fotos = Object.keys(ec.fotosUrls).length;
-  o._u = now(); // para que el Apps Script la respalde en Drive
-  await st.setJSON("o/" + o.id, o);
-  await mutate(st, "idx", idxInit, async (idx) => { if (idx.o[o.id]) idx.o[o.id]._u = o._u; return true; });
+  // v25: se aplica sobre la versión más reciente (escritura condicional)
+  const fin = await mutarOrden(o.id, (cur) => { cur.entregaCheck = ec; cur._u = now(); return { ok: true }; });
+  if (!fin.ok) return { ok: true, rescatadas: 0 };
   await logBitacora({ ...ctxOrden(o), etapa: o.estatus || "", que: "RESCATE DE FOTOS DE ENTREGA", antes: `${n} archivo(s) que sólo estaban en un teléfono` });
   return { ok: true, rescatadas: n };
 }
@@ -642,13 +925,19 @@ async function puente(b, origin) {
   if (a === "ackDrive") {
     const m = b.ids || {};
     for (const id in m) {
-      const o = await getJSON(st, "o/" + id);
-      if (!o || o.driveUrl === m[id]) continue;
-      o.driveUrl = String(m[id]);
-      await st.setJSON("o/" + id, o); // no cambia _u: no es un cambio de la orden
-      await mutate(st, "idx", idxInit, async (idx) => { if (idx.o[id]) idx.o[id].driveUrl = o.driveUrl; return true; });
+      // v25: escritura condicional (no pisa fotos que el taller suba en ese momento); no cambia _u
+      await mutarOrden(id, (o) => (o.driveUrl === m[id] ? null : ((o.driveUrl = String(m[id])), { ok: true })));
     }
     return { ok: true };
+  }
+  if (a === "ackMachote") {
+    // v25: el Apps Script avisa dónde quedó el Excel; no es un cambio de la orden (no cambia _rev ni _u)
+    const r = await mutarOrden(b.id, (o) => {
+      o.machote = { excel: String(b.excel || ""), pdf: String(b.pdf || ""), folder: String(b.folder || ""), ts: now() };
+      if (b.folder) o.driveUrl = String(b.folder);
+      return { ok: true };
+    });
+    return { ok: !!r.ok };
   }
   if (a === "bitacora") {
     const desde = String(b.desde || "");
@@ -718,6 +1007,12 @@ export default async (req) => {
       }
       const s = await sesionValida(p.sesion);
       if (!s.ok) return json({ ok: false, auth: true, error: "Sesión no válida. Inicia sesión de nuevo." });
+      // v25: el técnico sólo ve lo mínimo para tomar fotos
+      if (a === "tec") return json(await vistaTecnico(s));
+      if (a === "tecOrden") return json(await ordenTecnico(p.id, s));
+      if (esTecnico(s.rol)) return json({ ok: false, soloTaller: true, error: "Tu usuario es de taller: sólo puedes subir fotos." });
+      if (a === "solicitudes") return json(await listaSolicitudes());
+      if (a === "tecnicos") return json(await listaTecnicos());
       if (a === "list") return json({ ok: true, ordenes: await listar() });
       if (a === "get") { const o = await obtener(p.id, p.folio); return json({ ok: true, orden: o ? absOut(o, origin) : null }); }
       if (a === "componentes") return json(await listComponentes());
@@ -741,7 +1036,13 @@ export default async (req) => {
     if (b.action === "logout") { if (b.sesion) await S().delete("ses/" + b.sesion).catch(() => {}); return json({ ok: true }); }
     const ses = await sesionValida(b.sesion);
     if (!ses.ok) return json({ ok: false, auth: true, error: "Sesión no válida. Inicia sesión de nuevo." });
+    // v25: acciones del taller
+    if (b.action === "subir" || b.action === "tecAgregar") {
+      if (b.action === "tecAgregar") return json(await tecAgregar(b, ses, origin));
+    } else if (esTecnico(ses.rol)) return json({ ok: false, soloTaller: true, error: "Tu usuario es de taller: sólo puedes subir fotos." });
     switch (b.action) {
+      case "pedirFotos": return json(await pedirFotos(b, ses));
+      case "solicitud": return json(await cambiarSolicitud(b, ses));
       case "save": return json(await guardar(b.orden, b.token, ses));
       case "subir": { const u = await guardarMedio(b.data); return json(u ? { ok: true, url: origin + u } : { ok: false, error: "No se pudo guardar la foto" }); }
       case "clientes": return json(await listClientes());

@@ -706,6 +706,136 @@ body.tv .pz-k b{font-size:28px;} body.tv .pz-dias{font-size:15px;}
 .pl-ph img{width:86px;height:86px;object-fit:cover;border-radius:8px;border:1px solid var(--line);background:#f3f4f6;}
 .pl-regreso{font-size:11.5px;font-weight:800;color:#7a5200;background:#fdf0d5;border:1px solid #f3d79a;border-radius:8px;padding:5px 9px;margin:0 0 8px;}
 .pl-ev .pl-open{margin-top:10px;width:100%;padding:10px;border:1.5px solid var(--ink);border-radius:10px;background:var(--card);font-weight:800;font-size:13px;color:var(--ink);}
+
+/* ================= v25 · FOTOS DEL TALLER ================= */
+/* --- botón del contador en la barra --- */
+.topbtn.fot{position:relative;}
+.fot-n{position:absolute;top:-3px;right:-5px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--red);color:#fff;font-size:10.5px;font-weight:900;line-height:17px;text-align:center;box-shadow:0 0 0 2px var(--black);}
+.fot-n.gris{background:#5b5e66;}
+/* --- etiqueta en listas y tablero --- */
+.tlb{display:inline-block;font-size:10.5px;font-weight:800;border-radius:6px;padding:2px 7px;margin-left:4px;vertical-align:middle;white-space:nowrap;}
+.tlb.falta{background:#fde9ea;color:var(--dred);border:1px solid #f6c3c6;}
+.tlb.rev{background:#e5f5ec;color:#11683b;border:1px solid #b8e2c9;}
+.tlb.esp{background:#f1f2f4;color:#4a4d55;border:1px solid var(--line);}
+/* --- panel dentro de la orden --- */
+.tl-alert{background:#fde9ea;border:1px solid #f6c3c6;color:#8d1015;border-radius:10px;padding:10px 12px;font-size:13px;font-weight:700;margin-bottom:10px;line-height:1.4;}
+.tl-sol{border:1px solid var(--line);border-radius:12px;padding:10px 11px;margin-bottom:9px;background:#fafbfc;}
+.tl-sol.recibida{border-color:#9fd6b6;background:#f3fbf6;}
+.tl-sol.pendiente{border-color:#f3d79a;background:#fffaf0;}
+.tl-top{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:5px;}
+.tl-sec{font-size:11px;font-weight:900;letter-spacing:.4px;text-transform:uppercase;background:var(--ink);color:#fff;border-radius:6px;padding:2px 8px;}
+.tl-est{font-size:11.5px;font-weight:800;}
+.tl-est.pendiente{color:#8a6100;} .tl-est.recibida{color:#11683b;} .tl-est.cerrada,.tl-est.cancelada{color:var(--muted);}
+.tl-txt{font-size:13px;line-height:1.4;}
+.tl-meta{font-size:11.5px;color:var(--muted);margin-top:3px;}
+.tl-ph{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px;}
+.tl-ph a{display:block;aspect-ratio:1;border-radius:8px;overflow:hidden;border:1px solid var(--line);background:#e9ebef;}
+.tl-ph img{width:100%;height:100%;object-fit:cover;display:block;}
+.tl-btns{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap;}
+.tl-btns button,.tl-btns a{flex:1;min-width:120px;text-align:center;border-radius:10px;padding:10px 8px;font-weight:800;font-size:13px;text-decoration:none;}
+.tl-ok{background:#1f9d57;color:#fff;}
+.tl-otra{background:#fff;border:1px solid var(--line);color:var(--ink);}
+.tl-cancel{background:#fff;border:1px solid var(--line);color:var(--muted);flex:0 0 auto !important;min-width:0 !important;padding:10px 12px !important;}
+.tl-pedir{width:100%;border-radius:11px;padding:13px;font-weight:900;font-size:14px;background:var(--red);color:#fff;margin-top:2px;}
+.tl-cerr{font-size:12px;color:var(--muted);margin-top:10px;}
+.tl-cerr summary{cursor:pointer;font-weight:700;}
+.tl-cerr .tl-sol{opacity:.8;margin-top:8px;}
+.btn-wa{display:flex;align-items:center;justify-content:center;gap:8px;background:#1fa855;color:#fff !important;text-decoration:none;border-radius:12px;padding:14px;font-weight:900;font-size:15px;}
+/* --- diálogo "Pedir fotos" --- */
+.pf-h{font-size:17px;font-weight:900;letter-spacing:-.2px;}
+.pf-sub{font-size:12.5px;color:var(--muted);margin:2px 0 12px;}
+.pf-lbl{font-size:11.5px;font-weight:800;color:#54585f;text-transform:uppercase;letter-spacing:.5px;margin:12px 0 6px;}
+.pf-secs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.pf-secs button{border:1.5px solid var(--line);border-radius:10px;padding:10px 4px;font-size:12.5px;font-weight:800;color:#4a4d55;background:#fff;line-height:1.2;}
+.pf-secs button.on{border-color:var(--ink);background:var(--ink);color:#fff;}
+.pf-sel,.pf-nota{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px;background:#fff;}
+.pf-nota{min-height:84px;resize:vertical;}
+.pf-row{display:flex;gap:8px;margin-top:14px;}
+.pf-row button{flex:1;border-radius:11px;padding:13px;font-weight:900;font-size:14px;}
+.pf-ok{font-size:15px;font-weight:800;margin:6px 0 4px;}
+/* --- vista "Fotos del taller" (oficina) --- */
+.ft-g{font-size:12px;font-weight:900;letter-spacing:.6px;text-transform:uppercase;color:#54585f;margin:16px 0 8px;}
+.ft-card{display:flex;gap:10px;align-items:center;background:var(--card);border-radius:12px;box-shadow:var(--shadow);padding:11px 12px;margin-bottom:8px;cursor:pointer;}
+.ft-card .pl{font-weight:900;font-size:15px;letter-spacing:.5px;}
+.ft-card .m{font-size:12.5px;color:var(--muted);}
+.ft-card .r{margin-left:auto;text-align:right;font-size:11.5px;color:var(--muted);white-space:nowrap;}
+.ft-card .r b{display:block;font-size:12px;color:var(--ink);}
+.ft-card.recibida{border-left:5px solid #1f9d57;}
+.ft-card.pendiente{border-left:5px solid #e0a100;}
+
+/* ================= APP DEL TÉCNICO ================= */
+#tecApp{display:none;}
+body.modo-tec #tecApp{display:block;}
+body.modo-tec .appbar, body.modo-tec .wrap, body.modo-tec #pruebaBar{display:none !important;}
+body.locked #tecApp{display:none !important;}
+.tk-bar{position:sticky;top:0;z-index:30;background:var(--black);color:#fff;display:flex;align-items:center;gap:10px;padding:10px 12px;}
+.tk-bar img{height:28px;}
+.tk-ttl{font-size:13px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;line-height:1.15;flex:1;min-width:0;}
+.tk-ttl small{display:block;color:var(--salmon);font-size:10px;letter-spacing:1px;font-weight:700;text-transform:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tk-bar button{color:#fff;font-size:13px;font-weight:800;border:1px solid #3a3c42;border-radius:9px;padding:7px 10px;}
+.tk-prueba{background:#fff3c4;color:#6b5000;font-size:12px;font-weight:800;padding:7px 12px;text-align:center;}
+.tk-cola{background:#1e4fa3;color:#fff;font-size:12.5px;font-weight:800;padding:8px 12px;text-align:center;}
+.tk-wrap{max-width:560px;margin:0 auto;padding:12px 14px 90px;}
+.tk-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#e4e6ea;border-radius:12px;padding:4px;margin-bottom:12px;}
+.tk-tabs button{border-radius:9px;padding:10px 6px;font-size:13.5px;font-weight:800;color:#4a4d55;}
+.tk-tabs button.on{background:#fff;color:var(--ink);box-shadow:var(--shadow);}
+.tk-tabs b{display:inline-block;min-width:20px;border-radius:10px;background:var(--red);color:#fff;font-size:11.5px;padding:1px 6px;margin-left:4px;}
+.tk-tabs b.cero{background:#9a9da5;}
+.tk-card{background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:13px 14px;margin-bottom:10px;cursor:pointer;border-left:6px solid var(--line);}
+.tk-card.pend{border-left-color:var(--red);}
+.tk-card .pl{font-size:21px;font-weight:900;letter-spacing:1px;}
+.tk-card .veh{font-size:14px;font-weight:700;margin-top:1px;}
+.tk-card .sec{display:inline-block;margin-top:8px;font-size:11.5px;font-weight:900;letter-spacing:.4px;text-transform:uppercase;background:var(--ink);color:#fff;border-radius:6px;padding:3px 8px;}
+.tk-card .nota{font-size:14px;margin-top:7px;line-height:1.4;background:#fffaf0;border:1px solid #f3d79a;border-radius:9px;padding:8px 10px;}
+.tk-card .meta{font-size:12px;color:var(--muted);margin-top:6px;}
+.tk-card .tag{float:right;font-size:11px;font-weight:800;border-radius:6px;padding:2px 7px;background:#f1f2f4;color:#4a4d55;}
+.tk-card .tag.me{background:#fde9ea;color:var(--dred);}
+.tk-empty{text-align:center;padding:40px 16px;color:var(--muted);}
+.tk-empty .big{font-size:42px;}
+.tk-empty b{display:block;color:var(--ink);font-size:16px;margin:6px 0 2px;}
+.tk-search{width:100%;border:1.5px solid var(--line);border-radius:11px;padding:11px 12px;margin-bottom:10px;background:#fff;}
+.tk-back{font-size:14px;font-weight:800;color:var(--ink);padding:6px 0 10px;}
+.tk-veh{background:var(--ink);color:#fff;border-radius:14px;padding:14px;margin-bottom:10px;}
+.tk-veh .pl{font-size:26px;font-weight:900;letter-spacing:1.5px;}
+.tk-veh .v{font-size:15px;font-weight:700;margin-top:2px;}
+.tk-veh .f{font-size:12px;color:#b8bbc2;margin-top:3px;}
+.tk-info{background:var(--card);border-radius:12px;box-shadow:var(--shadow);padding:11px 13px;margin-bottom:10px;}
+.tk-info .l{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.tk-info .t{font-size:14px;margin:2px 0 8px;line-height:1.4;}
+.tk-info .t:last-child{margin-bottom:0;}
+.tk-pide{background:#fffaf0;border:1.5px solid #f3d79a;border-radius:12px;padding:12px 13px;margin-bottom:10px;}
+.tk-pide .l{font-size:11px;font-weight:900;color:#8a6100;text-transform:uppercase;letter-spacing:.5px;}
+.tk-pide .s{font-size:18px;font-weight:900;margin-top:2px;}
+.tk-pide .n{font-size:15px;margin-top:4px;line-height:1.4;}
+.tk-pide .m{font-size:12px;color:var(--muted);margin-top:5px;}
+.tk-opc{display:flex;flex-direction:column;gap:7px;margin-bottom:10px;}
+.tk-opc button{text-align:left;border:1.5px solid var(--line);border-radius:11px;padding:11px 12px;background:#fff;font-size:14px;}
+.tk-opc button.on{border-color:var(--ink);box-shadow:0 0 0 2px var(--ink) inset;}
+.tk-opc button b{display:block;font-size:13px;text-transform:uppercase;letter-spacing:.4px;}
+.tk-opc button span{font-size:13px;color:#54585f;}
+.tk-h{font-size:12px;font-weight:900;letter-spacing:.6px;text-transform:uppercase;color:#54585f;margin:14px 0 7px;}
+.tk-cam{display:grid;grid-template-columns:1.4fr 1fr;gap:8px;}
+.tk-cam label{display:flex;align-items:center;justify-content:center;gap:7px;border-radius:13px;padding:17px 8px;font-weight:900;font-size:15px;cursor:pointer;}
+.tk-cam label.cam{background:var(--red);color:#fff;}
+.tk-cam label.gal{background:#fff;border:1.5px solid var(--line);color:var(--ink);}
+.tk-cam input{display:none;}
+.tk-thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px;}
+.tk-thumbs .th{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;background:#000;}
+.tk-thumbs img{width:100%;height:100%;object-fit:cover;display:block;}
+.tk-thumbs .x{position:absolute;top:4px;right:4px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;font-size:18px;line-height:28px;text-align:center;font-weight:700;}
+.tk-nota{width:100%;border:1.5px solid var(--line);border-radius:11px;padding:10px 12px;min-height:70px;background:#fff;}
+.tk-send{width:100%;border-radius:13px;padding:16px;font-weight:900;font-size:16px;background:#1f9d57;color:#fff;margin-top:12px;}
+.tk-send:disabled{background:#b9bcc3;}
+.tk-prog{text-align:center;font-weight:800;font-size:14px;margin-top:10px;color:#1e4fa3;}
+.tk-done{text-align:center;padding:26px 8px 8px;}
+.tk-done .big{font-size:54px;}
+.tk-done .t{font-size:20px;font-weight:900;margin:6px 0 4px;}
+.tk-done .s{font-size:14px;color:#54585f;margin-bottom:18px;}
+.tk-done .btn-wa{margin-bottom:10px;}
+.tk-done .otro{width:100%;border-radius:12px;padding:14px;font-weight:800;font-size:14px;border:1.5px solid var(--line);background:#fff;}
+.mc-row{display:flex;flex-wrap:wrap;gap:8px 16px;}
+.mc-btn{width:100%;margin-top:10px;border-radius:10px;padding:11px;font-weight:800;font-size:13px;}
+@media (max-width:360px){ .tk-card .pl{font-size:19px;} .pf-secs button{font-size:11.5px;} }
 </style>
 </head>
 <body>
@@ -717,11 +847,12 @@ body.tv .pz-k b{font-size:28px;} body.tv .pz-dias{font-size:15px;}
   <div class="ttl" id="barTitle">Órdenes<small>Recepción de vehículos</small></div>
   <button class="topbtn" id="dashBtn" title="Panel" onclick="goDash()">&#128202;</button>
   <div class="spacer"></div>
+  <button class="topbtn fot hide" id="fotBtn" title="Fotos del taller" onclick="goFotosTaller()">&#128247;<span id="fotN" class="fot-n" style="display:none"></span></button>
   <button class="topbtn" id="refBtn" title="Actualizar datos" onclick="refreshData()">&#8635;</button>
   <button class="gear" id="gearBtn" onclick="openSettings()">&#9881;</button>
 </div>
 
-<div id="pruebaBar" class="hide">🧪 MODO PRUEBA · versión 24 en ensayo. Lo que captures aquí se retira el día del cambio; para trabajar de verdad usa la app de siempre.</div>
+<div id="pruebaBar" class="hide">🧪 MODO PRUEBA · versión en ensayo. Lo que captures aquí se retira el día del cambio; para trabajar de verdad usa la app de siempre.</div>
 
 <!-- ============ HOME ============ -->
 <div id="view-kanban" class="wrap hide">
@@ -923,6 +1054,7 @@ body.tv .pz-k b{font-size:28px;} body.tv .pz-dias{font-size:15px;}
 
 <!-- ============ DETAIL ============ -->
 <div id="view-detail" class="wrap hide"><div id="detailHost"></div></div>
+<div id="view-fotos" class="wrap hide"><div id="fotHost"></div></div>
 
 <!-- ============ SETTINGS ============ -->
 <div id="view-settings" class="wrap hide">
@@ -1395,7 +1527,7 @@ var IDB=(function(){
   };
 })();
 var hasIDB = IDB.avail();
-var APP_VERSION='2026-10-13-v24';
+var APP_VERSION='2026-10-14-v25';
 
 /* ---- Manifiesto de app (se genera al vuelo para no romper el archivo unico) ----
    'maskable' es la clave: sin esto Android encoge el icono y le pone
@@ -1500,7 +1632,7 @@ async function cloudLogout(){
 }
 /* Si el backend contesta que la sesión venció, se vuelve a pedir el acceso */
 function checkAuth(j){
-  if(j && j.ok===false && j.auth){ sesionBorrar(); mostrarLogin('Tu sesión terminó. Vuelve a entrar.'); return true; }
+  if(j && j.ok===false && j.auth){ sesionBorrar(); try{ finSesionV25(); }catch(e){} mostrarLogin('Tu sesión terminó. Vuelve a entrar.'); return true; }
   return false;
 }
 function mostrarLogin(msg){
@@ -1536,15 +1668,15 @@ async function hacerLogin(){
     // Antes se volvía a pedir todo de nuevo con refreshData() justo después —
     // dos vueltas a la nube seguidas al entrar, que era buena parte de la demora
     // al abrir la app. Con una sola carga es suficiente.
-    try{ await goDash(); }catch(e){ try{ await goHome(); }catch(_){} }
-    try{ refrescarComponentesNuevos(); }catch(e){}   // en segundo plano, no bloquea la entrada
+    await arrancarSesion();   // v25: técnico → app del taller; oficina → panel
+    if(!esTec()){ try{ refrescarComponentesNuevos(); }catch(e){} }   // en segundo plano, no bloquea la entrada
   } else {
     $('lg_msg').textContent=(r&&r.error)||'No se pudo entrar';
   }
 }
 async function cerrarSesion(){
   if(!confirm('¿Cerrar sesión en este equipo?')) return;
-  await cloudLogout(); sesionBorrar();
+  await cloudLogout(); sesionBorrar(); finSesionV25();
   IDX=[]; idxLoaded=false; detailOrder=null; workOrder=null;
   mostrarLogin('Sesión cerrada.');
 }
@@ -1598,7 +1730,7 @@ async function flushPending(){
   var muertos=getDeletedIds();
   p=p.filter(function(id){return muertos.indexOf(id)<0;});   // nunca revive algo que se eliminó aquí
   var still=[];
-  for(var i=0;i<p.length;i++){var o=await gOrder(p[i]);if(o){o.media={reception:true,diagnostico:true,finalizado:true};var ok=await cloudSave(o);if(!ok){var er=window._lastCloudErr;if(!(er&&er.locked))still.push(p[i]);}}}
+  for(var i=0;i<p.length;i++){var o=await gOrder(p[i]);if(o){o.media={reception:true,diagnostico:true,finalizado:true};var ok=await cloudSave(o);if(ok){var rr=window._lastCloudRes;if(rr&&rr.rev!=null)o._rev=rr.rev;delete o.media;try{await sOrder(o);}catch(e){}}else{var er=window._lastCloudErr;if(er&&er.conflicto){await resolverConflicto(o,er);}else if(!(er&&(er.locked||er.faltanFotos)))still.push(p[i]);}}}
   setPending(still);
 }
 
@@ -1637,10 +1769,11 @@ function fmtDate(iso){if(!iso)return '';var p=iso.split('-');return p.length===3
 function show(v){
   // Sin sesión no se muestra ninguna pantalla, sólo el acceso (o la configuración inicial)
   if(!accesoOk() && v!=='settings'){ mostrarLogin(''); return; }
+  if(esTec()){ entrarTaller(); return; }   // v25: usuario de taller → sólo su app de fotos
   window._view=v;
   if(!window._srvInit){window._srvInit=1;srvInit();}
   if(v!=='piso')document.body.classList.remove('tv');
-  ['home','form','detail','settings','cotizacion','finalizar','encuesta','factura','dashboard','kanban','multipuntos','entregacheck','piso','placa'].forEach(function(x){$('view-'+x).classList.toggle('hide',x!==v);});
+  ['home','form','detail','settings','cotizacion','finalizar','encuesta','factura','dashboard','kanban','multipuntos','entregacheck','piso','placa','fotos'].forEach(function(x){$('view-'+x).classList.toggle('hide',x!==v);});
   $('backBtn').classList.toggle('hide',v==='home'||v==='dashboard'||v==='kanban'||v==='piso'||v==='placa');
   $('gearBtn').classList.toggle('hide',v!=='home'&&v!=='dashboard'&&v!=='kanban'&&v!=='piso'&&v!=='placa');
   window.scrollTo(0,0);
@@ -1656,6 +1789,8 @@ async function slimLocal(o){
   var r=window._lastCloudRes;
   if(!(r&&r.ok)) return false;
   if(r.drive) o.driveUrl=r.drive;   // solo se anota la carpeta; las fotos no se tocan
+  if(r.v25!=null) o._v25=!!r.v25;
+  if(r.rev!=null) o._rev=r.rev;
   if(r.folio && r.folio!==o.folio){  // otro equipo ya usaba ese folio
     o.folio=r.folio;
     try{ var ix=await gIndex(); var k=ix.findIndex(function(x){return x.id===o.id;});
@@ -2421,6 +2556,7 @@ async function ecRequeridoEntregar(o){
 /* ---- Pantalla del checklist de entrega ---- */
 var _ecSigsReady=false;
 async function openEntregaCheck(){
+  await esperarFresca();   // v25
   var o=detailOrder; if(!o){ toast('Abre una orden primero'); return; }
   // Llenar o completar el checklist antes de entregar no requiere clave: es
   // avanzar el flujo. Reabrirlo DESPUÉS de que la orden ya quedó entregada
@@ -2642,7 +2778,9 @@ async function refreshData(){
   else if(v==='kanban') renderKanban();
   else if(v==='piso') renderPiso();
   else if(v==='placa') buscarPlaca();
+  else if(v==='fotos') await pintarFotBadge();
   else if(v==='detail' && detailOrder){          // ↻ en una orden = traer sus fotos reales
+    try{ await refrescarTallerOrden(detailOrder,true,true); }catch(e){}
     await hydrateMedia(detailOrder);
     $('detailHost').innerHTML=renderDetail(detailOrder);
   }
@@ -3302,7 +3440,7 @@ function renderList(){
   var h='<div class="list">';
   rows.forEach(function(o){
     var veh=[o.marca,o.modelo,o.anio].filter(Boolean).join(' ');
-    var chip=stageChip(o.estatus||'recepcion')+chipCobro(o)+gsBadge(o);
+    var chip=stageChip(o.estatus||'recepcion')+chipCobro(o)+gsBadge(o)+tallerBadge(o);
     h+='<div class="ocard" onclick="openDetail(\''+o.id+'\')">'
       +'<div class="top"><span class="folio">'+esc(o.folio||'')+'</span>'+chip+'</div>'
       +'<div class="cli">'+esc(o.cliente||'(Sin nombre)')+'</div>'
@@ -3449,14 +3587,14 @@ function readForm(){
   // Conserva el trabajo ya hecho (diagnóstico, cotización, entrega, encuesta, fiscal)
   // para que editar la recepción nunca lo borre.
   var b=_editBase||{};
-  ['diagnostico','cotizacion','aprobacion','finalizado','encuesta','fiscal','driveUrl'].forEach(function(k){
+  ['diagnostico','cotizacion','aprobacion','finalizado','encuesta','fiscal','driveUrl','_tecFotos','solicitudesFotos','_tf','_v25','_rev','machote'].forEach(function(k){
     if(b[k]!=null && o[k]==null) o[k]=b[k];
   });
   return o;
 }
 async function saveOrder(){
   if(_busy) return;   // ya se está guardando: ignora el segundo toque
-  var o=readForm();
+  var o=readForm(); var _nuevo=!curEdit; if(_nuevo) o._v25=true;
   if(!o.cliente.nombre && !o.vehiculo.placas && !o.vehiculo.marca){
     toast('Captura al menos cliente o vehículo'); return;
   }
@@ -3481,6 +3619,7 @@ async function saveOrder(){
     o.media={reception:true};
     var cok=await cloudSave(o);
     if(cok){ await slimLocal(o); toast(curEdit?'Orden actualizada y sincronizada':'Orden guardada y sincronizada'); }
+    else if(window._lastCloudErr&&window._lastCloudErr.conflicto){ await resolverConflicto(o,window._lastCloudErr); }
     else { addPending(o.id);
       if(!ok) toast('⚠️ No se guardó: sin nube y sin espacio en el navegador');
       else toast('Guardada en este equipo · se sincronizará al reconectar'); }
@@ -3490,6 +3629,7 @@ async function saveOrder(){
   curEdit=null;
   idxLoaded=true;
   await goHome();
+  if(_nuevo && sinFotosRec(o)) setTimeout(function(){ ofrecerPedirFotos(o); },400);   // v25
   } finally { _busy=false; hideBusy(); }
 }
 
@@ -3620,6 +3760,7 @@ async function openDetail(id){
   $('barTitle').innerHTML=esc(o.folio||'Orden')+'<small>'+esc(o.sucursal||'')+'</small>';
   $('detailHost').innerHTML=renderDetail(o);
   show('detail');
+  try{ window._frescaP = refrescarTallerOrden(o,false); }catch(e){}   // v25: trae la versión más reciente y las fotos del taller
 }
 /* ============ LÍNEA DE TIEMPO DEL FLUJO ============
    Reúne fecha+hora de cada etapa en un solo bloque para comparar tiempos. */
@@ -3723,6 +3864,7 @@ function renderDetail(o){
     +di('Folio',o.folio)+di('Sucursal',o.sucursal)+di('No. evento / OS',o.evento)+di('Fecha y hora',fmtDate(o.fecha)+' '+(o.hora||''))+'</div>'
     +(v.placas?'<button class="btn-light" style="margin-top:10px;width:100%" onclick="goPlaca(\''+esc(normPl(v.placas))+'\')">🚗 Historial de la placa '+esc(v.placas)+'</button>':'')+'</div></div>';
   h+=gsPanel(o);
+  h+=panelTaller(o);   // v25
   if(st==='cita'){
     h+='<div class="miniinfo" style="background:#eef4ff;border-color:#c9dcff;color:#26436b"><b>Cita / pendiente de recepción.</b> El folio definitivo se asigna al recibir el vehículo.</div>';
     h+='<button class="btn-primary" onclick="convertirARecepcion(\''+o.id+'\')">Convertir a recepción (asignar folio)</button>';
@@ -3799,6 +3941,7 @@ function renderDetail(o){
   h+=mpBotonDetalle(o);
   h+=renderDiagnosticoCard(o);
   h+=renderCotizacionCard(o);
+  h+=machoteCard(o);   // v25
   h+=renderAprobacionCard(o);
   h+='<div class="actions">';
   if(st==='recepcion'||st==='cotizado'){ h+='<button class="btn-primary" onclick="openCotizacion()">'+(st==='cotizado'?'Editar diagnóstico y cotización':'Crear diagnóstico y cotización')+'</button>'; }
@@ -3866,6 +4009,7 @@ async function pedirClave(accion){
   return false;
 }
 async function editCurrent(){
+  await esperarFresca();   // v25
   if(!(await pedirClave('para editar'))) return;
   if(detailOrder && needsHydrate(detailOrder)) await hydrateMedia(detailOrder);
   curEdit=detailOrder.id; openForm(detailOrder);
@@ -3890,6 +4034,7 @@ async function delCurrent(){
   toast(esCita?'Cita eliminada':'Orden eliminada'); await goHome();
 }
 async function markSalida(){
+  await esperarFresca();   // v25
   var o=detailOrder;
   var f=prompt('Fecha de salida (AAAA-MM-DD):', (o.salida&&o.salida.fecha)||todayISO()); if(f===null)return;
   var hm=prompt('Hora de salida (HH:MM):', (o.salida&&o.salida.hora)||nowHM()); if(hm===null)return;
@@ -4077,6 +4222,8 @@ function orderMini(o){ var v=o.vehiculo||{}; return '<b>'+esc(o.folio||'')+'</b>
 
 /* ---- Diagnóstico + Cotización ---- */
 async function openCotizacion(){
+  await esperarFresca();   // v25
+  if(!(await puedeAvanzar(detailOrder))) return;   // v25
   if(!(await mpRequerida(detailOrder))) return;
   if(!(await gateEdit(detailOrder))) return;
   if(detailOrder && needsHydrate(detailOrder)) await hydrateMedia(detailOrder);
@@ -4203,6 +4350,7 @@ function renderDiagThumbs(){ var h=''; curDiagPhotos.forEach(function(p,i){h+='<
 function rmDiag(i){ curDiagPhotos.splice(i,1); diagDirty=true; renderDiagThumbs(); }
 async function saveCotizacion(){
   var o=workOrder; var t=quoteTotals();
+  if(!(await puedeAvanzar(o))) return;   // v25
   if(!validarItems()){
     renderItems();
     var czHost=document.getElementById('czItems'); if(czHost&&czHost.scrollIntoView) czHost.scrollIntoView({behavior:'smooth',block:'start'});
@@ -4216,18 +4364,15 @@ async function saveCotizacion(){
   o.cotizacion={items:items,iva:$('cz_iva').checked,subtotal:t.sub,ivaMonto:t.iva,total:t.total,notas:$('cz_notas').value.trim()};
   if(o.estatus==='recepcion'||o.estatus==='cotizado') o.estatus='cotizado';
   await persistWorkflow(o,{diagnostico:diagDirty},'Diagnóstico y cotización guardados');
-  if(cloudOn()){
-    toast('Generando Excel de cotización…');
-    var mr=await cloudMachote(o.id);
-    if(mr&&mr.ok) toast('Excel y PDF generados en la carpeta de la orden');
-    else if(mr&&mr.error&&/TEMPLATE_ID/.test(mr.error)) toast('Configura el machote en el script (TEMPLATE_ID)');
-    else toast('Cotización guardada (Excel pendiente de configurar)');
+  if(cloudOn() && window._lastCloudRes && window._lastCloudRes.ok){   // v25: sólo si la cotización sí quedó guardada
+    await generarExcelDe(o);
   }
   openDetail(o.id);
 }
 
 /* ---- Aprobar ---- */
 async function approveCurrent(){
+  await esperarFresca();   // v25
   var o=detailOrder;
   if(!confirm('¿Marcar la cotización como APROBADA por el cliente?'))return;
   o.aprobacion={fecha:todayISO(),hora:nowHM()}; o.estatus='aprobado';
@@ -4237,6 +4382,7 @@ async function approveCurrent(){
 
 /* ---- Finalizar ---- */
 async function openFinalizar(){
+  await esperarFresca();   // v25
   var _yaCerrada = detailOrder && (detailOrder.estatus==='finalizado'||detailOrder.estatus==='entregado');
   if(!_yaCerrada && !(await ecRequeridoTerminar(detailOrder))) return;
   // Re-editar costo/evidencia de un trabajo YA cerrado sí requiere clave.
@@ -4308,6 +4454,7 @@ async function saveFinalizar(){
 
 /* ---- Entrega + encuesta ---- */
 async function openEntrega(){
+  await esperarFresca();   // v25
   if(detailOrder.estatus!=='entregado' && !(await ecRequeridoEntregar(detailOrder))) return;
   var o=workOrder=detailOrder;
   $('barTitle').innerHTML='Entrega + encuesta<small>'+esc(o.folio||'')+'</small>';
@@ -4489,6 +4636,8 @@ async function persistWorkflow(o,media,msg){
     if(ok){ await slimLocal(o); toast(msg+' · sincronizado'); }
     else { var er=window._lastCloudErr;
       if(er&&er.locked){ toast('⛔ No se guardó en la nube: orden cerrada sin autorización'); }
+      else if(er&&er.faltanFotos){ toast('⛔ '+er.error); }
+      else if(er&&er.conflicto){ await resolverConflicto(o,er); }
       else { addPending(o.id); if(!locOk) toast('⚠️ Sin espacio en este equipo y sin nube: libera espacio'); else toast(msg+' · se sincronizará'); } } }
   else { if(!locOk) toast('⚠️ No se pudo guardar: memoria del navegador llena'); else toast(msg); }
   delete o.media;
@@ -4816,6 +4965,8 @@ async function subirUno(v){
 // Copia de la orden lista para mandar: fotos de las etapas marcadas → enlaces; las demás no viajan
 async function prepararEnvio(o){
   var m = o.media || {}, c = JSON.parse(JSON.stringify(o));
+  c._cli = 'v25';   // v25: órdenes nuevas requieren fotos de recepción para avanzar
+  c._base = Number(o._rev)||0; c._dev = deviceId();   // v25: el servidor no deja que una copia vieja pise cambios de otra computadora
   var marca = function(v){ return (typeof v === 'string' && v.indexOf('data:') === 0) ? 'local' : v; };
   var lista = async function(a, sube){ if (!Array.isArray(a)) return a; var out = []; for (var i=0; i<a.length; i++) out.push(sube ? await subirUno(a[i]) : marca(a[i])); return out; };
   c.fotos = await lista(c.fotos, m.reception);
@@ -5028,7 +5179,7 @@ function pisoCard(o){
     '<div class="pz-meta">' + esc(o.folio || '') + (quien ? ' · 🧑‍🔧 ' + esc(quien) : '') + (i.tot != null && i.tot !== i.de ? ' · ' + diasTxt(i.tot) + ' en taller' : '') + '</div>' +
     (o.motivo ? '<div class="pz-mot">' + esc(o.motivo) + '</div>' : '') +
     (i.late ? '<div class="pz-why">⚠ ' + diasTxt(i.de) + ' ' + i.lim.txt + ' (máx. ' + i.lim.d + ')</div>' : '') +
-    gsBadge(o) + '</div>';
+    tallerBadge(o) + gsBadge(o) + '</div>';
 }
 function renderPiso(){
   if (!Array.isArray(IDX)) IDX = [];
@@ -5140,6 +5291,663 @@ async function plExpand(id){
 }
 
 
+
+/* =====================================================================
+   v25 · FOTOS DEL TALLER
+   Administración (oficinas) pide fotos de una orden → el técnico (taller)
+   recibe el aviso, toma las fotos y las sube → administración las revisa.
+   El técnico entra con su propio usuario (rol "tecnico") y sólo ve la app
+   del taller: placa, vehículo, motivo de ingreso, daños y lo que se pide.
+   Nunca ve cliente, diagnóstico, cotización ni pagos (el servidor tampoco
+   se los manda).
+   ===================================================================== */
+var SECS_T = {recepcion:'Recepción', diagnostico:'Diagnóstico', evidencias:'Evidencias del trabajo'};
+var SECS_DESC = {recepcion:'Cómo llegó: los 4 lados, tablero, kilometraje y daños.',
+                 diagnostico:'Lo que se encontró: piezas dañadas, fugas, desgaste.',
+                 evidencias:'El trabajo hecho: piezas cambiadas y reparación terminada.'};
+var ROLES_TEC = ['tecnico','técnico','tecnicos','técnicos','mecanico','mecánico','taller'];
+var TK_ET = {recepcion:'En recepción', cotizado:'En diagnóstico', aprobado:'En reparación', finalizado:'Terminado'};
+function esTec(){ return !!(SES && ROLES_TEC.indexOf(String(SES.rol||'').trim().toLowerCase())>=0); }
+
+/* ---------- utilidades ---------- */
+async function apiGet(params, ms){
+  var qs='clave='+encodeURIComponent(getCfg().clave||'')+'&sesion='+encodeURIComponent(SESION());
+  for(var k in params) qs+='&'+k+'='+encodeURIComponent(params[k]);
+  var r=await fetchT(API_URL+'?'+qs,{},ms||20000);
+  var j=await r.json(); if(j&&j.auth) authCaida(); return j;
+}
+async function apiPost(b, ms){
+  b.clave=getCfg().clave||''; b.sesion=SESION();
+  var r=await fetchT(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(b)},ms||30000);
+  var j=await r.json(); if(j&&j.auth) authCaida(); return j;
+}
+function finSesionV25(){
+  document.body.classList.remove('modo-tec');
+  if(_fotTimer){ clearInterval(_fotTimer); _fotTimer=null; }
+  _solVistos=null; SOLS=[]; TECNICOS=null;
+  var b=$('fotBtn'); if(b) b.classList.add('hide');
+  TK.cur=null; TK.data=null; TK.fotos=[];
+}
+function authCaida(){ sesionBorrar(); finSesionV25(); mostrarLogin('Tu sesión terminó. Vuelve a entrar.'); }
+function haceTxt(ts){
+  if(!ts) return '';
+  var m=Math.round((Date.now()-ts)/60000);
+  if(m<1) return 'hace un momento'; if(m<60) return 'hace '+m+' min';
+  var h=Math.round(m/60); if(h<24) return 'hace '+h+' h';
+  var d=Math.round(h/24); return 'hace '+d+(d===1?' día':' días');
+}
+function linkOrden(id, sol){ return location.origin+location.pathname+'?f='+encodeURIComponent(id)+(sol?'&s='+encodeURIComponent(sol):''); }
+function waUrl(t){ return 'https://wa.me/?text='+encodeURIComponent(t); }
+function absU(u){ u=String(u||''); return u.indexOf('/api/')===0 ? location.origin+u : u; }
+function vehTxt(x){ return [x.marca,x.modelo,x.anio].filter(Boolean).join(' '); }
+
+/* ---------- regla: sin fotos de recepción no se avanza (órdenes nuevas de v25) ---------- */
+function fotosRecDe(o){
+  var a=o&&o.fotos;
+  if(Array.isArray(a)) return a.filter(Boolean).length;
+  if(typeof a==='number') return a;
+  return ((o&&o.fotosUrls)||[]).length;
+}
+function sinFotosRec(o){ return fotosRecDe(o)===0; }
+function bloqueadaSinFotos(o){ return !!(o && o._v25 && (o.estatus||'recepcion')==='recepcion' && sinFotosRec(o)); }
+async function puedeAvanzar(o){
+  if(!bloqueadaSinFotos(o)) return true;
+  if(confirm('Faltan las fotos de recepción.\n\nEsta orden no puede pasar a diagnóstico y cotización hasta que el taller suba las fotos de cómo llegó el vehículo.\n\n¿Pedírselas al taller ahora?'))
+    abrirPedirFotos(o,'recepcion');
+  return false;
+}
+async function ofrecerPedirFotos(o){
+  if(!cloudOn() || !o) return;
+  if(!confirm('La orden '+(o.folio||'')+' quedó sin fotos de recepción.\n\n¿Pedirle al taller que las tome ahora?')) return;
+  await openDetail(o.id);
+  if(detailOrder && detailOrder.id===o.id) abrirPedirFotos(detailOrder,'recepcion');
+}
+/* Etiqueta en la lista y en el tablero del taller */
+function tallerBadge(o){
+  var h='';
+  if(o.v25 && o.fotosRec!=null && Number(o.fotosRec)===0 && (o.estatus||'recepcion')==='recepcion') h+='<span class="tlb falta">📷 Faltan fotos</span>';
+  var s=o.sol||[], rec=0, pen=0;
+  s.forEach(function(x){ if(x.estado==='recibida') rec++; else if(x.estado==='pendiente') pen++; });
+  if(rec) h+='<span class="tlb rev">📷 '+rec+' por revisar</span>';
+  else if(pen && !h) h+='<span class="tlb esp">📷 Esperando al taller</span>';
+  return h;
+}
+
+/* ---------- trae de la nube lo del taller y lo mezcla en la copia del teléfono ---------- */
+function arrLocal(o, sec){
+  if(sec==='recepcion'){ if(!Array.isArray(o.fotos)) o.fotos=Array.isArray(o.fotosUrls)?o.fotosUrls.slice():[]; return o.fotos; }
+  var k=sec==='diagnostico'?'diagnostico':'finalizado';
+  if(!o[k]) o[k]={};
+  if(!Array.isArray(o[k].fotos)) o[k].fotos=Array.isArray(o[k].fotosUrls)?o[k].fotosUrls.slice():[];
+  return o[k].fotos;
+}
+function mezclarTallerLocal(o, c){
+  var fotos=false;
+  var ctf=c._tecFotos||{}, ltf=o._tecFotos||{};
+  Object.keys(SECS_T).forEach(function(sec){
+    var nuevas=(ctf[sec]||[]).filter(function(u){ return (ltf[sec]||[]).indexOf(u)<0; });
+    if(!nuevas.length) return;
+    var arr=arrLocal(o,sec);
+    nuevas.forEach(function(u){ if(arr.indexOf(u)<0){ arr.push(u); fotos=true; } });
+  });
+  o._tecFotos=ctf; o._tf=c._tf||0; o._v25=!!c._v25;
+  var antes=JSON.stringify(o.solicitudesFotos||[]);
+  o.solicitudesFotos=c.solicitudesFotos||[];
+  return {fotos:fotos, sol: antes!==JSON.stringify(o.solicitudesFotos)};
+}
+/* v25 · Al abrir una orden se trae la versión de la nube. Si otra computadora la cambió
+   (revisión más nueva), la copia de este equipo se reemplaza por la buena; si no, sólo se
+   integran las fotos del taller. Si este equipo tiene cambios sin subir, no se toca nada:
+   se resuelven al sincronizar (el servidor nunca deja que una copia vieja pise a la nueva). */
+function revDe(o){ return Number(o && o._rev) || 0; }
+async function refrescarTallerOrden(o, force, silencioso){
+  if(!o || !cloudOn() || !accesoOk() || esTec()) return false;
+  if(getPending().indexOf(o.id)>=0) return false;
+  var c=null; try{ c=await cloudGet(o.id); }catch(e){}
+  if(!c) return false;
+  var masNueva = revDe(c)>revDe(o) || (!revDe(c) && (Number(c._u)||0)>(Number(o._u)||0));
+  if(masNueva){
+    normalizeRemote(c);
+    try{ await sOrder(c); }catch(e){}
+    var i=(IDX||[]).findIndex(function(x){ return x.id===c.id; });
+    if(i>=0){ IDX[i]=Object.assign({},IDX[i],{estatus:c.estatus, total:(c.cotizacion&&c.cotizacion.total)||0, rev:revDe(c)}); }
+    if(detailOrder && detailOrder.id===c.id){
+      detailOrder=c;
+      if(!silencioso && window._view==='detail'){
+        repintarDetalle(c);
+        if(c._revDev && c._revDev!==deviceId()) toast('🔄 Se cargaron los cambios de '+String(c._revPor||'otra computadora').replace(/\s*\(.*\)$/,''));
+      }
+    }
+    return true;
+  }
+  var r=mezclarTallerLocal(o,c);
+  if(c.machote && JSON.stringify(c.machote)!==JSON.stringify(o.machote||null)){ o.machote=c.machote; r.sol=true; }
+  if(r.fotos||r.sol){ try{ await sOrder(o); }catch(e){} }
+  if(silencioso) return r.fotos||r.sol;
+  if(r.fotos){ repintarDetalle(o); if(!force) toast('📷 Llegaron fotos del taller'); }
+  else if(r.sol) repintarDetalle(o);
+  return r.fotos||r.sol;
+}
+/* Antes de editar/aprobar/finalizar, espera a que termine la revisión de la nube (máx. 6 s) */
+async function esperarFresca(){
+  var p=window._frescaP; if(!p) return;
+  try{ await Promise.race([p, new Promise(function(r){ setTimeout(r,6000); })]); }catch(e){}
+}
+function deviceId(){
+  try{ var d=localStorage.getItem('am_dev'); if(!d){ d='d'+Date.now().toString(36)+Math.random().toString(36).slice(2,8); localStorage.setItem('am_dev',d); } return d; }
+  catch(e){ return 'sin-almacen'; }
+}
+/* El servidor rechazó un guardado hecho sobre una copia vieja: se carga la versión buena y se avisa */
+async function resolverConflicto(o, er){
+  removePending(o.id);
+  var c=null; try{ c=await cloudGet(o.id); }catch(e){}
+  if(c){
+    normalizeRemote(c);
+    try{ await sOrder(c); }catch(e){}
+    if(detailOrder && detailOrder.id===c.id) detailOrder=c;
+    if(workOrder && workOrder.id===c.id) workOrder=c;
+  }
+  idxLoaded=false;
+  alert('⚠️ '+((er&&er.error)||'Otra computadora cambió esta orden mientras la tenías abierta.')
+    +'\n\nYa se cargó la versión más reciente'+(er&&er.etapa?' (etapa: '+estLabel(er.etapa)+')':'')+'. Revísala y, si hace falta, vuelve a hacer tu cambio.'
+    +'\n\nLo que intentaste guardar quedó respaldado y anotado en la bitácora.');
+}
+/* ---------- Excel de la cotización (machote GS) ---------- */
+function machoteCard(o){
+  var m=o.machote, co=o.cotizacion||{};
+  if(!(co.items&&co.items.length) && !(m&&m.excel)) return '';
+  var h='<div class="dsec"><div class="h">Excel de la cotización</div><div class="b">';
+  if(m && m.excel){
+    h+='<div class="mc-row"><a class="cloudlink" href="'+esc(m.excel)+'" target="_blank" rel="noopener">📊 Abrir Excel</a>'
+      +(m.pdf?'<a class="cloudlink" href="'+esc(m.pdf)+'" target="_blank" rel="noopener">📄 PDF</a>':'')
+      +(m.folder?'<a class="cloudlink" href="'+esc(m.folder)+'" target="_blank" rel="noopener">📁 Carpeta</a>':'')+'</div>'
+      +'<div class="fmini" style="margin-top:6px">Generado '+(m.ts?new Date(m.ts).toLocaleString('es-MX',{dateStyle:'short',timeStyle:'short'}):'')+'</div>';
+  } else h+='<div class="fmini">Todavía no hay Excel generado para esta cotización.</div>';
+  h+='<button type="button" class="btn-light mc-btn" onclick="regenerarExcel()">↻ '+(m&&m.excel?'Generar el Excel otra vez':'Generar Excel')+'</button>';
+  return h+'</div></div>';
+}
+async function generarExcelDe(o){
+  toast('Generando Excel de cotización…');
+  var mr=null; try{ mr=await cloudMachote(o.id); }catch(e){ mr={ok:false,error:String(e)}; }
+  if(mr && mr.ok){
+    o.machote={excel:mr.excel||'', pdf:mr.pdf||'', folder:mr.folder||'', ts:Date.now()};
+    if(mr.folder) o.driveUrl=mr.folder;
+    try{ await sOrder(o); }catch(e){}
+    toast('📊 Excel y PDF generados en la carpeta de la orden');
+    return true;
+  }
+  var err=(mr&&mr.error)||'Google no respondió a tiempo';
+  if(/TEMPLATE_ID/.test(err)) err='Falta configurar TEMPLATE_ID en el script de Google';
+  alert('⚠️ La cotización SÍ se guardó, pero el Excel no se generó.\n\nMotivo: '+err+'\n\nPuedes intentarlo otra vez desde la orden: “↻ Generar Excel”.');
+  return false;
+}
+async function regenerarExcel(){
+  var o=detailOrder; if(!o) return;
+  showBusy('Generando Excel…');
+  try{ await generarExcelDe(o); }finally{ hideBusy(); }
+  repintarDetalle(o);
+}
+function repintarDetalle(o){
+  if(!(detailOrder && detailOrder.id===o.id && window._view==='detail')) return;
+  var tb=document.querySelector('.dtab-btn.active'), tab=tb?tb.getAttribute('data-tab-btn'):'resumen', y=window.scrollY;
+  $('detailHost').innerHTML=renderDetail(o);
+  try{ if(tab && tab!=='resumen') switchDetailTab(tab); }catch(e){}
+  window.scrollTo(0,y);
+}
+function repintarPanel(o){
+  if(!(detailOrder && detailOrder.id===o.id && window._view==='detail')) return;
+  var el=$('tlPanel'), html=panelTaller(o);
+  if(!el){ repintarDetalle(o); return; }
+  if(!html){ el.remove(); return; }
+  var t=document.createElement('div'); t.innerHTML=html; el.replaceWith(t.firstChild);
+}
+
+/* ---------- panel "Fotos del taller" dentro de la orden ---------- */
+function panelTaller(o){
+  if(!o || (o.estatus||'recepcion')==='cita') return '';
+  var sols=o.solicitudesFotos||[];
+  var abiertas=sols.filter(function(s){ return s.estado==='pendiente'||s.estado==='recibida'; })
+    .sort(function(a,b){ return (a.estado==='recibida'?0:1)-(b.estado==='recibida'?0:1) || (b.tsSubida||b.ts)-(a.tsSubida||a.ts); });
+  var cerradas=sols.filter(function(s){ return s.estado==='cerrada'||s.estado==='cancelada'; }).reverse();
+  var bloq=bloqueadaSinFotos(o), entregada=o.estatus==='entregado';
+  if(entregada && !abiertas.length && !cerradas.length) return '';
+  var h='<div class="dsec" id="tlPanel"><div class="h">📷 Fotos del taller</div><div class="b">';
+  if(bloq) h+='<div class="tl-alert">Faltan las fotos de recepción. Esta orden no puede pasar a diagnóstico y cotización hasta que el taller las suba.</div>';
+  abiertas.forEach(function(s){ h+=tlSol(o,s,true); });
+  if(!entregada) h+='<button class="tl-pedir" onclick="abrirPedirFotos(detailOrder)">📷 Pedir fotos al taller</button>';
+  if(cerradas.length) h+='<details class="tl-cerr"><summary>'+cerradas.length+(cerradas.length===1?' solicitud anterior':' solicitudes anteriores')+'</summary>'+cerradas.map(function(s){ return tlSol(o,s,false); }).join('')+'</details>';
+  return h+'</div></div>';
+}
+function estSolTxt(s){
+  if(s.estado==='pendiente') return '⏳ Esperando al taller';
+  if(s.estado==='recibida') return '✅ '+(s.fotos||[]).length+' foto'+((s.fotos||[]).length===1?'':'s')+' · '+haceTxt(s.tsSubida);
+  if(s.estado==='cerrada') return 'Revisada'+(s.cerro?' por '+esc(s.cerro):'');
+  return 'Cancelada';
+}
+function tlSol(o, s, acciones){
+  var h='<div class="tl-sol '+s.estado+'"><div class="tl-top"><span class="tl-sec">'+esc(SECS_T[s.sec]||s.sec)+'</span><span class="tl-est '+s.estado+'">'+estSolTxt(s)+'</span></div>';
+  if(s.origen==='tecnico') h+='<div class="tl-txt"><b>'+esc(s.subioNombre||'El taller')+'</b> subió fotos por su cuenta.</div>';
+  else h+='<div class="tl-txt">'+(s.nota?esc(s.nota):'<span style="color:var(--muted)">Sin indicaciones</span>')+'</div>'
+        +'<div class="tl-meta">Pidió '+esc(s.pidioNombre||'')+' · para '+esc(s.paraNombre||'cualquier técnico')+' · '+haceTxt(s.ts)+(s.rondas>1?' · '+s.rondas+'ª vez':'')+'</div>';
+  if(s.notaTec) h+='<div class="tl-txt" style="margin-top:6px">💬 <b>'+esc(s.subioNombre||'Taller')+':</b> '+esc(s.notaTec)+'</div>';
+  if((s.fotos||[]).length && s.estado!=='pendiente')
+    h+='<div class="tl-ph">'+s.fotos.map(function(u){ u=absU(u); return '<a href="'+esc(u)+'" target="_blank" rel="noopener"><img loading="lazy" src="'+esc(u)+'"></a>'; }).join('')+'</div>';
+  if(acciones){
+    if(s.estado==='recibida') h+='<div class="tl-btns"><button class="tl-ok" onclick="solAccion(\''+s.id+'\',\'cerrar\')">✓ Están bien</button><button class="tl-otra" onclick="solAccion(\''+s.id+'\',\'repetir\')">↻ Pedir otra vez</button></div>';
+    else h+='<div class="tl-btns"><a class="btn-wa" style="padding:10px;font-size:13px" target="_blank" rel="noopener" href="'+esc(waUrl(waPedido(o,s)))+'">📲 Avisar por WhatsApp</a><button class="tl-cancel" onclick="solAccion(\''+s.id+'\',\'cancelar\')">Cancelar</button></div>';
+  }
+  return h+'</div>';
+}
+async function solAccion(id, acc){
+  var o=detailOrder; if(!o) return;
+  var b={action:'solicitud', id:o.id, sol:id, accion:acc};
+  if(acc==='repetir'){ var n=prompt('¿Qué falta o qué hay que repetir?',''); if(n===null) return; b.nota=n; }
+  if(acc==='cancelar' && !confirm('¿Cancelar esta solicitud de fotos?')) return;
+  showBusy('Guardando…');
+  var j=null;
+  try{ j=await apiPost(b); }catch(e){ hideBusy(); toast('⚠️ Sin conexión, intenta de nuevo'); return; }
+  if(!(j&&j.ok)){ hideBusy(); toast('⚠️ '+((j&&j.error)||'No se pudo')); return; }
+  try{ await refrescarTallerOrden(o,true,true); }catch(e){}
+  hideBusy();
+  o=detailOrder||o;
+  repintarDetalle(o);
+  toast(acc==='cerrar'?'Fotos revisadas ✓':(acc==='repetir'?'Se le pidió otra vez al taller':'Solicitud cancelada'));
+  if(acc==='repetir'){ var s=(o.solicitudesFotos||[]).filter(function(x){ return x.id===id; })[0]; if(s){ _pf={o:o}; pintarPFListo(o,s); } }
+  pintarFotBadge();
+}
+
+/* ---------- diálogo "Pedir fotos al taller" ---------- */
+var _pf=null, TECNICOS=null;
+function waPedido(o, s){
+  var v=o.vehiculo||{}, nom='Arsan Motors';
+  try{ nom=marcaDe(o).nombre||nom; }catch(e){}
+  return '📷 *Fotos para '+nom+'*\n'+(s.paraNombre?s.paraNombre+', te piden':'Se piden')+' fotos de:\n\n'
+    +'🚗 *'+(v.placas||'Sin placa')+'* · '+[v.marca,v.modelo,v.color].filter(Boolean).join(' ')+'\n'
+    +'📋 Folio '+(o.folio||'')+'\n📂 '+(SECS_T[s.sec]||s.sec)+(s.nota?'\n📝 '+s.nota:'')
+    +'\n\nAbre la app aquí 👉 '+linkOrden(o.id,s.id);
+}
+async function abrirPedirFotos(o, sec){
+  if(!o) return;
+  var porDefecto=sinFotosRec(o)?'recepcion':(['aprobado','finalizado'].indexOf(o.estatus)>=0?'evidencias':'diagnostico');
+  _pf={o:o, sec:sec||porDefecto, para:'', nota:''};
+  pintarPF();
+  if(!TECNICOS){ try{ var j=await apiGet({action:'tecnicos'}); if(j&&j.ok){ TECNICOS=j.tecnicos||[]; if(_pf && $('pf_go')) pintarPF(); } }catch(e){} }
+}
+function pfHost(){
+  var el=$('pfOverlay');
+  if(!el){ el=document.createElement('div'); el.id='pfOverlay'; el.className='ov';
+    el.onclick=function(e){ if(e.target===el) cerrarPF(); }; document.body.appendChild(el); }
+  el.classList.remove('hide'); return el;
+}
+function cerrarPF(){ var el=$('pfOverlay'); if(el) el.classList.add('hide'); _pf=null; }
+function pintarPF(){
+  var o=_pf.o, v=o.vehiculo||{};
+  var h='<div class="ov-card"><div class="pf-h">📷 Pedir fotos al taller</div>'
+    +'<div class="pf-sub">'+esc(o.folio||'')+' · '+esc(v.placas||'Sin placa')+' · '+esc([v.marca,v.modelo,v.color].filter(Boolean).join(' '))+'</div>'
+    +'<div class="pf-lbl">¿En qué parte de la orden van?</div><div class="pf-secs">'
+    +Object.keys(SECS_T).map(function(k){ return '<button type="button" class="'+(_pf.sec===k?'on':'')+'" onclick="_pf.sec=\''+k+'\';pintarPF()">'+SECS_T[k]+'</button>'; }).join('')
+    +'</div><div class="fmini" style="margin-top:6px">'+SECS_DESC[_pf.sec]+'</div>'
+    +'<div class="pf-lbl">¿Quién las toma?</div><select class="pf-sel" onchange="_pf.para=this.value"><option value="">Cualquier técnico</option>'
+    +(TECNICOS||[]).map(function(t){ return '<option value="'+esc(t.usuario)+'"'+(_pf.para===t.usuario?' selected':'')+'>'+esc(t.nombre)+'</option>'; }).join('')+'</select>'
+    +(TECNICOS && !TECNICOS.length ? '<div class="fmini" style="margin-top:5px;color:var(--dred)">Todavía no hay técnicos dados de alta (pestaña Usuarios, rol “tecnico”).</div>' : '')
+    +'<div class="pf-lbl">¿Qué fotos necesitas?</div><textarea class="pf-nota" id="pf_nota" placeholder="Ej. los 4 lados, tablero encendido con kilometraje, golpe en la puerta trasera" oninput="_pf.nota=this.value">'+esc(_pf.nota)+'</textarea>'
+    +'<div class="pf-row"><button type="button" class="btn-light" onclick="cerrarPF()">Cancelar</button><button type="button" class="btn-dark" id="pf_go" onclick="enviarPF()">Pedir fotos</button></div></div>';
+  pfHost().innerHTML=h;
+}
+async function enviarPF(){
+  var b=$('pf_go'); if(b){ b.disabled=true; b.textContent='Enviando…'; }
+  var t=(TECNICOS||[]).filter(function(x){ return x.usuario===_pf.para; })[0];
+  var j=null;
+  try{ j=await apiPost({action:'pedirFotos', id:_pf.o.id, sec:_pf.sec, para:_pf.para, paraNombre:t?t.nombre:'', nota:_pf.nota}); }
+  catch(e){ toast('⚠️ Sin conexión: no se pudo pedir'); if(b){ b.disabled=false; b.textContent='Pedir fotos'; } return; }
+  if(!(j&&j.ok)){ toast('⚠️ '+((j&&j.error)||'No se pudo')); if(b){ b.disabled=false; b.textContent='Pedir fotos'; } return; }
+  var o=_pf.o;
+  o.solicitudesFotos=(o.solicitudesFotos||[]).concat([j.solicitud]);
+  try{ await sOrder(o); }catch(e){}
+  pintarPFListo(o, j.solicitud);
+  repintarPanel(o);
+  pintarFotBadge();
+}
+function pintarPFListo(o, s){
+  pfHost().innerHTML='<div class="ov-card"><div class="pf-h">✅ Solicitud enviada</div>'
+    +'<div class="pf-ok">'+(s.paraNombre?esc(s.paraNombre)+' la ve':'Los técnicos la ven')+' en su app, en “Pendientes”.</div>'
+    +'<div class="pf-sub" style="margin-bottom:14px">Para que se entere ya, mándale el aviso por WhatsApp:</div>'
+    +'<a class="btn-wa" target="_blank" rel="noopener" href="'+esc(waUrl(waPedido(o,s)))+'" onclick="setTimeout(cerrarPF,600)">📲 Avisar por WhatsApp</a>'
+    +'<button type="button" class="btn-light" style="width:100%;margin-top:9px;border-radius:11px;padding:13px;font-weight:800" onclick="cerrarPF()">Listo</button></div>';
+}
+
+/* ---------- contador en la barra + vista "Fotos del taller" (oficina) ---------- */
+var _fotTimer=null, SOLS=[], _solVistos=null;
+function iniciarFotos(){
+  if(esTec()) return;
+  var b=$('fotBtn'); if(b) b.classList.remove('hide');
+  pintarFotBadge();
+  if(!_fotTimer) _fotTimer=setInterval(pintarFotBadge,60000);
+}
+async function pintarFotBadge(){
+  if(!accesoOk() || esTec()) return;
+  var j=null;
+  try{ j=await apiGet({action:'solicitudes'},15000); }catch(e){ return; }
+  if(!(j&&j.ok)) return;
+  SOLS=j.solicitudes||[];
+  var rec=SOLS.filter(function(s){ return s.estado==='recibida'; }), pen=SOLS.filter(function(s){ return s.estado==='pendiente'; });
+  var n=$('fotN');
+  if(n){ n.textContent=rec.length?rec.length:(pen.length||''); n.className='fot-n'+(rec.length?'':' gris'); n.style.display=(rec.length||pen.length)?'':'none'; }
+  var ids=rec.map(function(s){ return s.id+':'+s.tsSubida; });
+  if(_solVistos){
+    var nuevas=rec.filter(function(s){ return _solVistos.indexOf(s.id+':'+s.tsSubida)<0; });
+    if(nuevas.length){
+      toast('📷 '+(nuevas[0].subioNombre||'El taller')+' subió fotos de '+(nuevas[0].placas||nuevas[0].folio||'una orden'));
+      try{ if(navigator.vibrate) navigator.vibrate(150); }catch(e){}
+      if(detailOrder && window._view==='detail' && nuevas.some(function(s){ return s.orden===detailOrder.id; })) refrescarTallerOrden(detailOrder,true);
+    }
+  }
+  _solVistos=ids;
+  if(window._view==='fotos') pintarVistaFotos();
+}
+async function goFotosTaller(){
+  $('barTitle').innerHTML='Fotos del taller<small>Solicitudes y fotos recibidas</small>';
+  show('fotos');
+  pintarVistaFotos();
+  await pintarFotBadge();
+}
+function pintarVistaFotos(){
+  var host=$('fotHost'); if(!host) return;
+  var rec=SOLS.filter(function(s){ return s.estado==='recibida'; }), pen=SOLS.filter(function(s){ return s.estado==='pendiente'; });
+  var card=function(s){
+    return '<div class="ft-card '+s.estado+'" onclick="openDetail(\''+s.orden+'\')"><div style="min-width:0">'
+      +'<div class="pl">'+esc(s.placas||'Sin placa')+'</div><div class="m">'+esc([s.marca,s.modelo].filter(Boolean).join(' '))+' · '+esc(s.folio||'')+'</div>'
+      +'<div class="m"><b style="color:var(--ink)">'+esc(SECS_T[s.sec]||s.sec)+'</b>'+(s.origen==='tecnico'?' · por su cuenta':(s.nota?' · '+esc(s.nota):''))+'</div></div>'
+      +'<div class="r">'+(s.estado==='recibida'?'<b>'+s.n+' foto'+(s.n===1?'':'s')+'</b>'+esc(s.subioNombre||'')+'<br>'+haceTxt(s.tsSubida)
+                                         :'<b>'+esc(s.paraNombre||'Cualquiera')+'</b>'+haceTxt(s.ts))+'</div></div>';
+  };
+  host.innerHTML='<div class="ft-g">Por revisar ('+rec.length+')</div>'+(rec.length?rec.map(card).join(''):'<div class="empty-sm">Nada por revisar ✓</div>')
+    +'<div class="ft-g">Esperando al taller ('+pen.length+')</div>'+(pen.length?pen.map(card).join(''):'<div class="empty-sm">No hay solicitudes pendientes</div>')
+    +'<div class="fmini" style="margin-top:14px">Para pedir fotos, abre la orden y toca “📷 Pedir fotos al taller”. Se actualiza solo cada minuto.</div>';
+}
+
+/* ---------- arranque de sesión y enlaces directos (?f=orden&s=solicitud) ---------- */
+var DEEP=(function(){
+  try{ var p=new URLSearchParams(location.search), f=p.get('f'); if(!f) return null;
+    var d={f:f, s:p.get('s')||''}; try{ history.replaceState(null,'',location.pathname); }catch(e){} return d; }catch(e){ return null; }
+})();
+async function usarDeep(){
+  var d=DEEP; DEEP=null; if(!d) return false;
+  if(esTec()) await tkAbrir(d.f, d.s); else await openDetail(d.f);
+  return true;
+}
+async function arrancarSesion(){
+  document.body.classList.toggle('modo-tec', esTec());
+  if(esTec()){ await entrarTaller(); return; }
+  try{ await goDash(); }catch(e){ try{ await goHome(); }catch(_){} }
+  iniciarFotos();
+  await usarDeep();
+}
+
+/* =====================================================================
+   APP DEL TÉCNICO
+   ===================================================================== */
+var TK={tab:'pend', data:null, cur:null, fotos:[], sel:'', sec:'', nota:'', enviando:false, busca:''};
+var _tkTimer=null;
+function tkRoot(){
+  var el=$('tecApp');
+  if(!el){ el=document.createElement('div'); el.id='tecApp'; document.body.appendChild(el); }
+  if(!el.getAttribute('data-ok')){
+    el.innerHTML='<div class="tk-bar"><img id="tkLogo" alt=""><div class="tk-ttl">Fotos del taller<small id="tkHola"></small></div>'
+      +'<button type="button" onclick="tkRefrescar(true)" title="Actualizar">↻</button><button type="button" onclick="salirTaller()">Salir</button></div>'
+      +'<div id="tkPrueba" class="tk-prueba hide">🧪 MODO PRUEBA · lo que subas aquí es de ensayo</div>'
+      +'<div id="tkCola" class="tk-cola hide"></div><div class="tk-wrap" id="tkHost"></div>';
+    el.setAttribute('data-ok','1');
+  }
+  return el;
+}
+async function entrarTaller(){
+  document.body.classList.add('modo-tec');
+  desbloquearApp(); ocultarLogin();
+  tkRoot();
+  try{ var lg=$('tkLogo'); if(lg && !lg.getAttribute('src') && brandLogo()) lg.src=brandLogo(); }catch(e){}
+  $('tkHola').textContent='Hola, '+(usuarioNombre()||'');
+  TK.cur=null; TK.tab='pend'; TK.fotos=[];
+  tkPintar();
+  try{ var r=await fetchT(API_URL+'?action=ping&clave='+encodeURIComponent(getCfg().clave||'arsan'),{},15000); SRV=await r.json(); }catch(e){}
+  var pb=$('tkPrueba'); if(pb) pb.classList.toggle('hide', !(SRV && SRV.modo==='prueba'));
+  await tkRefrescar(false);
+  if(DEEP) await usarDeep();
+  if(!_tkTimer) _tkTimer=setInterval(function(){ if(!esTec()) return; if(!TK.cur) tkRefrescar(false); tkCola(); },60000);
+  tkCola();
+}
+async function salirTaller(){
+  var cola=await tkColaLeer();
+  var msg=cola.length?'Hay fotos esperando señal en este teléfono. Se enviarán cuando vuelvas a entrar.\n\n¿Cerrar sesión de todos modos?':'¿Cerrar sesión en este teléfono?';
+  if(!confirm(msg)) return;
+  await cloudLogout(); sesionBorrar(); finSesionV25();
+  mostrarLogin('Sesión cerrada.');
+}
+async function tkRefrescar(manual){
+  var j=null;
+  try{ j=await apiGet({action:'tec'},20000); }catch(e){ if(manual) toast('⚠️ Sin conexión'); if(!TK.data && !TK.cur){ TK.err='Sin conexión'; tkPintar(); } return; }
+  if(!(j&&j.ok)){ if(manual && j && j.error) toast('⚠️ '+j.error); return; }
+  TK.err='';
+  var antes=TK.data?TK.data.pendientes.map(function(p){ return p.sol; }):null;
+  TK.data=j;
+  if(antes){
+    var nuevas=j.pendientes.filter(function(p){ return antes.indexOf(p.sol)<0; });
+    if(nuevas.length){ toast('📷 Nueva solicitud: '+(nuevas[0].placas||'')); try{ if(navigator.vibrate) navigator.vibrate([150,80,150]); }catch(e){} }
+  }
+  document.title=(j.pendientes.length?'('+j.pendientes.length+') ':'')+'Fotos del taller';
+  if(!TK.cur) tkPintar();
+  if(manual) toast('Actualizado');
+}
+function tkPintar(){
+  var host=$('tkHost'); if(!host) return;
+  if(TK.cur){ host.innerHTML=tkHtmlCaptura(); return; }
+  var d=TK.data, np=d?d.pendientes.length:0;
+  var h='<div class="tk-tabs"><button type="button" class="'+(TK.tab==='pend'?'on':'')+'" onclick="TK.tab=\'pend\';tkPintar()">Pendientes <b class="'+(np?'':'cero')+'">'+np+'</b></button>'
+    +'<button type="button" class="'+(TK.tab==='uni'?'on':'')+'" onclick="TK.tab=\'uni\';tkPintar()">Unidades en taller</button></div>';
+  if(!d){
+    h+=TK.err?'<div class="tk-empty"><div class="big">📶</div><b>Sin conexión</b>Revisa la señal y toca ↻.</div>':'<div class="tk-empty"><div class="big">⏳</div><b>Cargando…</b></div>';
+    host.innerHTML=h; return;
+  }
+  if(TK.tab==='pend'){
+    if(!np) h+='<div class="tk-empty"><div class="big">👍</div><b>No tienes fotos pendientes</b>Cuando administración te pida fotos, aparecen aquí.<br>Si encuentras algo que hay que fotografiar, búscalo en “Unidades en taller”.</div>';
+    d.pendientes.forEach(function(p){
+      h+='<div class="tk-card pend" onclick="tkAbrir(\''+esc(p.id)+'\',\''+esc(p.sol)+'\')"><span class="tag'+(p.paraMi?' me':'')+'">'+(p.paraMi?'Para ti':'Cualquiera')+'</span>'
+        +'<div class="pl">'+esc(p.placas||'SIN PLACA')+'</div><div class="veh">'+esc(vehTxt(p))+(p.color?' · '+esc(p.color):'')+'</div>'
+        +'<span class="sec">'+esc(p.secNombre)+'</span>'+(p.nota?'<div class="nota">'+esc(p.nota)+'</div>':'')
+        +'<div class="meta">Folio '+esc(p.folio||'')+' · '+haceTxt(p.ts)+'</div></div>';
+    });
+    host.innerHTML=h;
+  } else {
+    h+='<input class="tk-search" id="tkBusca" placeholder="Buscar placa o modelo" value="'+esc(TK.busca)+'" oninput="TK.busca=this.value;tkPintarUnidades()" autocapitalize="characters"><div id="tkUni"></div>';
+    host.innerHTML=h;
+    tkPintarUnidades();
+  }
+}
+function tkPintarUnidades(){
+  var el=$('tkUni'); if(!el || !TK.data) return;
+  var q=String(TK.busca||'').toLowerCase().replace(/[\s-]/g,'');
+  var pend={}; TK.data.pendientes.forEach(function(p){ pend[p.id]=(pend[p.id]||0)+1; });
+  var us=TK.data.unidades.filter(function(u){ return !q || (String(u.placas)+vehTxt(u)+u.folio).toLowerCase().replace(/[\s-]/g,'').indexOf(q)>=0; });
+  if(!us.length){ el.innerHTML='<div class="tk-empty"><div class="big">🚗</div><b>'+(q?'Sin resultados':'No hay unidades en el taller')+'</b></div>'; return; }
+  el.innerHTML=us.map(function(u){
+    return '<div class="tk-card'+(pend[u.id]?' pend':'')+'" onclick="tkAbrir(\''+esc(u.id)+'\',\'\')"><span class="tag'+(pend[u.id]?' me':'')+'">'+(pend[u.id]?'📷 Te piden fotos':esc(TK_ET[u.estatus]||''))+'</span>'
+      +'<div class="pl">'+esc(u.placas||'SIN PLACA')+'</div><div class="veh">'+esc(vehTxt(u))+(u.color?' · '+esc(u.color):'')+'</div>'
+      +'<div class="meta">Folio '+esc(u.folio||'')+'</div></div>';
+  }).join('');
+}
+async function tkAbrir(id, solId){
+  TK.cur={id:id, cargando:true}; TK.fotos=[]; TK.nota=''; TK.sel=solId||''; TK.sec='';
+  tkPintar(); window.scrollTo(0,0);
+  var j=null;
+  try{ j=await apiGet({action:'tecOrden', id:id},20000); }catch(e){ j=null; }
+  if(j && j.ok){ TK.cur=j.orden; }
+  else if(j && j.error){ toast('⚠️ '+j.error); TK.cur=null; tkPintar(); tkRefrescar(false); return; }
+  else {
+    // sin señal: se arma la ficha con lo que ya está en el teléfono para poder tomar las fotos
+    var d=TK.data||{pendientes:[],unidades:[]};
+    var u=d.unidades.filter(function(x){ return x.id===id; })[0] || d.pendientes.filter(function(x){ return x.id===id; })[0];
+    if(!u){ toast('⚠️ Sin conexión'); TK.cur=null; tkPintar(); return; }
+    TK.cur={id:id, folio:u.folio, placas:u.placas, marca:u.marca, modelo:u.modelo, anio:u.anio, color:u.color, estatus:u.estatus, sinRed:true,
+      solicitudes:d.pendientes.filter(function(p){ return p.id===id; }).map(function(p){ return {id:p.sol, sec:p.sec, secNombre:p.secNombre, nota:p.nota, ts:p.ts}; })};
+  }
+  var sols=TK.cur.solicitudes||[];
+  if(solId && !sols.some(function(s){ return s.id===solId; })){ toast('Esa solicitud ya fue atendida o cancelada'); TK.sel=''; }
+  if(!TK.sel && sols.length) TK.sel=sols[0].id;
+  tkPintar();
+}
+function tkVolver(){
+  if(TK.fotos.length && !confirm('Tienes '+TK.fotos.length+' foto(s) sin enviar. ¿Salir y descartarlas?')) return;
+  TK.cur=null; TK.fotos=[]; TK.nota='';
+  tkPintar(); window.scrollTo(0,0);
+  tkRefrescar(false);
+}
+function tkHtmlCaptura(){
+  var o=TK.cur, h='<button type="button" class="tk-back" onclick="tkVolver()">‹ Volver</button>';
+  if(o.listo) return h+o.listo;
+  if(o.cargando) return h+'<div class="tk-empty"><div class="big">⏳</div><b>Abriendo…</b></div>';
+  h+='<div class="tk-veh"><div class="pl">'+esc(o.placas||'SIN PLACA')+'</div><div class="v">'+esc(vehTxt(o))+'</div>'
+    +'<div class="f">'+(o.color?'Color '+esc(o.color)+' · ':'')+'Folio '+esc(o.folio||'')+(TK_ET[o.estatus]?' · '+TK_ET[o.estatus]:'')+'</div></div>';
+  if(o.sinRed) h+='<div class="tk-pide" style="background:#eef4ff;border-color:#c9dcff"><div class="l" style="color:#1e4fa3">Sin señal</div><div class="n" style="font-size:13.5px">Puedes tomar las fotos; se guardan en el teléfono y se envían solas cuando vuelva la conexión.</div></div>';
+  if(o.motivo || o.danos) h+='<div class="tk-info">'+(o.motivo?'<div class="l">Motivo de ingreso</div><div class="t">'+esc(o.motivo)+'</div>':'')+(o.danos?'<div class="l">Daños al ingreso</div><div class="t">'+esc(o.danos)+'</div>':'')+'</div>';
+  var sols=o.solicitudes||[];
+  h+='<div class="tk-h">¿Qué vas a fotografiar?</div><div class="tk-opc">';
+  sols.forEach(function(s){
+    h+='<button type="button" class="'+(TK.sel===s.id?'on':'')+'" onclick="TK.sel=\''+esc(s.id)+'\';tkPintar()"><b>📂 '+esc(s.secNombre)+'</b>'
+      +'<span>'+(s.nota?esc(s.nota):'Sin indicaciones')+(s.pidio?' · pidió '+esc(s.pidio):'')+(s.ts?' · '+haceTxt(s.ts):'')+'</span></button>';
+  });
+  h+='<button type="button" class="'+(TK.sel===''?'on':'')+'" onclick="TK.sel=\'\';tkPintar()"><b>✋ Por mi cuenta</b><span>Algo que encontraste y hay que documentar</span></button></div>';
+  if(TK.sel===''){
+    h+='<div class="tk-h">¿En qué parte de la orden van?</div><div class="tk-opc">';
+    Object.keys(SECS_T).forEach(function(k){ h+='<button type="button" class="'+(TK.sec===k?'on':'')+'" onclick="TK.sec=\''+k+'\';tkPintar()"><b>'+SECS_T[k]+'</b><span>'+SECS_DESC[k]+'</span></button>'; });
+    h+='</div>';
+  }
+  var n=TK.fotos.length;
+  h+='<div class="tk-h">Fotos ('+n+')</div><div class="tk-cam">'
+    +'<label class="cam">📷 Tomar foto<input type="file" accept="image/*" capture="environment" onchange="tkAgregar(this)"></label>'
+    +'<label class="gal">🖼 Galería<input type="file" accept="image/*" multiple onchange="tkAgregar(this)"></label></div>';
+  if(n) h+='<div class="tk-thumbs">'+TK.fotos.map(function(f,i){ return '<div class="th"><img src="'+f+'"><div class="x" onclick="TK.fotos.splice('+i+',1);tkPintar()">×</div></div>'; }).join('')+'</div>';
+  h+='<div class="tk-h">Comentario (opcional)</div><textarea class="tk-nota" placeholder="Ej. la fuga viene del retén trasero" oninput="TK.nota=this.value">'+esc(TK.nota)+'</textarea>';
+  var falta=!n?'Toma al menos una foto':(TK.sel===''&&!TK.sec?'Elige en qué parte de la orden van':'');
+  h+='<button type="button" class="tk-send" id="tkSend" onclick="tkEnviar()"'+(falta?' disabled':'')+'>'+(falta||('Enviar '+n+' foto'+(n>1?'s':'')))+'</button><div class="tk-prog" id="tkProg"></div>';
+  return h;
+}
+function tkComprimir(file){
+  return new Promise(function(res){
+    var fr=new FileReader();
+    fr.onload=function(e){ var img=new Image();
+      img.onload=function(){
+        var max=1280, w=img.width, h=img.height;
+        if(w>h&&w>max){ h=Math.round(h*max/w); w=max; } else if(h>=w&&h>max){ w=Math.round(w*max/h); h=max; }
+        var cv=document.createElement('canvas'); cv.width=w; cv.height=h; cv.getContext('2d').drawImage(img,0,0,w,h);
+        res(cv.toDataURL('image/jpeg',0.6));
+      };
+      img.onerror=function(){ res(''); }; img.src=e.target.result; };
+    fr.onerror=function(){ res(''); }; fr.readAsDataURL(file);
+  });
+}
+async function tkAgregar(inp){
+  var files=Array.prototype.slice.call(inp.files||[]); inp.value='';
+  if(!files.length) return;
+  var cupo=24-TK.fotos.length;
+  if(files.length>cupo){ toast('Máximo 24 fotos por envío'); files=files.slice(0,Math.max(0,cupo)); }
+  var p=$('tkProg'); if(p) p.textContent='Preparando fotos…';
+  for(var i=0;i<files.length;i++){ var d=await tkComprimir(files[i]); if(d) TK.fotos.push(d); }   // una por una: no se acaba la memoria del teléfono
+  tkPintar();
+}
+async function tkSubirFoto(d){
+  var k=await huella(d), m=upCache();
+  if(m[k]) return {url:m[k]};
+  var r, j;
+  try{ r=await fetchT(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'subir',clave:getCfg().clave||'',sesion:SESION(),data:d})},60000); j=await r.json(); }
+  catch(e){ return {red:true}; }
+  if(j && j.auth) return {auth:true};
+  if(j && j.ok && j.url){ m[k]=j.url; upCacheSave(); return {url:j.url}; }
+  return {error:(j&&j.error)||'No se pudo subir una foto'};
+}
+async function tkMandar(paq, prog){
+  var urls=[];
+  for(var i=0;i<paq.fotos.length;i++){
+    if(prog) prog(i+1, paq.fotos.length);
+    var u=await tkSubirFoto(paq.fotos[i]);
+    if(!u.url) return {ok:false, red:!!u.red, auth:!!u.auth, error:u.error||''};
+    urls.push(u.url);
+  }
+  if(prog) prog(0,0);
+  var j=null;
+  try{
+    var r=await fetchT(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({action:'tecAgregar',clave:getCfg().clave||'',sesion:SESION(),id:paq.id,sol:paq.sol,sec:paq.sec,notaTec:paq.notaTec,lote:paq.lote,fotos:urls})},30000);
+    j=await r.json();
+  }catch(e){ return {ok:false, red:true}; }
+  if(j && j.auth) return {ok:false, auth:true};
+  if(j && j.ok) return j;
+  return {ok:false, error:(j&&j.error)||'No se pudo enviar'};
+}
+async function tkEnviar(){
+  if(TK.enviando) return;
+  var o=TK.cur; if(!o || !TK.fotos.length) return;
+  var sol=(o.solicitudes||[]).filter(function(s){ return s.id===TK.sel; })[0];
+  var sec=sol?sol.sec:TK.sec;
+  if(!sec){ toast('Elige en qué parte de la orden van'); return; }
+  var paq={lote:'L'+Date.now().toString(36)+Math.random().toString(36).slice(2,6), id:o.id, sol:sol?sol.id:'', sec:sec,
+    secNombre:sol?sol.secNombre:SECS_T[sec], notaTec:TK.nota||'', fotos:TK.fotos.slice(), placas:o.placas||'', folio:o.folio||'', veh:vehTxt(o), ts:Date.now()};
+  TK.enviando=true;
+  var btn=$('tkSend'); if(btn){ btn.disabled=true; btn.textContent='Enviando…'; }
+  var r=await tkMandar(paq, function(i,n){ var p=$('tkProg'); if(p) p.textContent=n?('Subiendo foto '+i+' de '+n+'…'):'Guardando en la orden…'; });
+  TK.enviando=false;
+  if(r.ok){ TK.fotos=[]; TK.nota=''; tkListo(paq,true); tkRefrescar(false); return; }
+  if(r.red){ await tkColaAgregar(paq); TK.fotos=[]; TK.nota=''; tkListo(paq,false); return; }
+  if(r.auth){ await tkColaAgregar(paq); TK.fotos=[]; authCaida(); return; }
+  toast('⚠️ '+r.error);
+  if(btn){ btn.disabled=false; btn.textContent='Reintentar'; }
+  var p=$('tkProg'); if(p) p.textContent='';
+}
+function waListo(paq){
+  var n=paq.fotos.length;
+  return '✅ *Fotos listas*\n🚗 *'+(paq.placas||'Sin placa')+'* · '+(paq.veh||'')+'\n📋 Folio '+(paq.folio||'')
+    +'\n📂 '+paq.secNombre+': '+n+' foto'+(n===1?'':'s')+(paq.notaTec?'\n💬 '+paq.notaTec:'')+'\n\nVer orden 👉 '+linkOrden(paq.id);
+}
+function tkListo(paq, enviado){
+  var n=paq.fotos.length;
+  TK.cur={listo:'<div class="tk-done"><div class="big">'+(enviado?'✅':'📦')+'</div>'
+    +'<div class="t">'+(enviado?(n+' foto'+(n>1?'s':'')+' enviada'+(n>1?'s':'')):'Guardadas en el teléfono')+'</div>'
+    +'<div class="s">'+(enviado?esc(paq.secNombre)+' · '+esc(paq.placas)+' · Folio '+esc(paq.folio)
+                            :'No hay señal. Se envían solas cuando vuelva la conexión. No cierres sesión.')+'</div>'
+    +(enviado?'<a class="btn-wa" target="_blank" rel="noopener" href="'+esc(waUrl(waListo(paq)))+'">📲 Avisar a administración</a>':'')
+    +'<button type="button" class="otro" onclick="TK.cur=null;tkPintar();tkRefrescar(false)">Volver a pendientes</button></div>'};
+  tkPintar(); window.scrollTo(0,0);
+}
+/* --- cola sin señal (las fotos se guardan en el teléfono y se mandan solas) --- */
+var _tkMem=[], _tkColaOcupada=false;
+async function tkColaLeer(){ if(hasIDB){ try{ var v=await IDB.get('tecq'); if(Array.isArray(v)) return v; if(v===null) return _tkMem.slice(); }catch(e){} } return _tkMem.slice(); }
+async function tkColaGuardar(a){ _tkMem=a.slice(); if(hasIDB){ try{ await IDB.set('tecq',a); }catch(e){} } }
+async function tkColaAgregar(p){ var a=await tkColaLeer(); if(!a.some(function(x){ return x.lote===p.lote; })) a.push(p); await tkColaGuardar(a); tkColaBarra(a); }
+function tkColaBarra(a){
+  var el=$('tkCola'); if(!el) return;
+  var n=(a||[]).reduce(function(s,p){ return s+p.fotos.length; },0);
+  el.classList.toggle('hide',!n);
+  el.textContent='⏳ '+n+' foto'+(n===1?'':'s')+' esperando señal · se envían solas';
+}
+async function tkCola(){
+  if(_tkColaOcupada || !accesoOk() || !esTec()) return;
+  _tkColaOcupada=true;
+  try{
+    var a=await tkColaLeer();
+    if(!a.length){ tkColaBarra(a); return; }
+    var quedan=[], enviados=0;
+    for(var i=0;i<a.length;i++){
+      var r=await tkMandar(a[i]);
+      if(r.ok) enviados++;
+      else if(r.red || r.auth) quedan.push(a[i]);
+      else toast('⚠️ No se pudieron enviar las fotos de '+(a[i].placas||'')+': '+r.error);
+    }
+    await tkColaGuardar(quedan); tkColaBarra(quedan);
+    if(enviados){ toast('✅ Se enviaron las fotos que esperaban señal'); tkRefrescar(false); }
+  } finally { _tkColaOcupada=false; }
+}
+window.addEventListener('online', function(){ if(esTec()) tkCola(); });
+
+
 /* ============ INIT ============ */
 window.addEventListener('error',function(){var lh=$('listHost');if(lh&&/Cargando/.test(lh.innerHTML)){lh.innerHTML='<div class="empty"><div style="font-weight:700">Ya puedes empezar</div><div style="font-size:13px;margin-top:4px">Toca “Nueva orden”.</div></div>';}});
 try{ setupSegs(); }catch(e){}
@@ -5150,7 +5958,7 @@ try{ setupSegs(); }catch(e){}
     sesionCargar();
     if(accesoOk()){
       desbloquearApp();
-      try{ goDash(); }catch(e){ try{ goHome(); }catch(_){} }
+      arrancarSesion();   // v25
     } else {
       mostrarLogin(cloudOn()?'':'Primero configura la conexión de este equipo.');
     }
