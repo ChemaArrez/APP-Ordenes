@@ -7,3 +7,9 @@
   from = "/Orden_Recepcion_Arsan_Motors_App.html"
   to = "/"
   status = 301
+
+# v26: liga del cliente → /o/<llave> abre su página (la llave la lee la página)
+[[redirects]]
+  from = "/o/*"
+  to = "/cliente.html"
+  status = 200

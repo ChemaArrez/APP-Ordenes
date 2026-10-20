@@ -1,6 +1,6 @@
 {
   "name": "arsan-ordenes",
-  "version": "25.0.0",
+  "version": "26.0.0",
   "private": true,
   "type": "module",
   "description": "Órdenes de servicio · Arsan Motors (Netlify Functions + Netlify Blobs)",

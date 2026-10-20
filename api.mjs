@@ -1,5 +1,6 @@
 /****************************************************************
- *  ARSAN MOTORS · Órdenes de servicio — Backend v24 (Netlify)
+ *  ARSAN MOTORS · Órdenes de servicio — Backend v26 (Netlify)
+ *  v26: liga del cliente (/o/<llave>) con autorización en línea. Ver "v26 · LIGA DEL CLIENTE".
  *
  *  Reemplaza al Apps Script como backend de la app. Habla EXACTAMENTE
  *  el mismo idioma que el Apps Script de v23 (mismas acciones, mismas
@@ -21,11 +22,13 @@
  *    PIN_EDICION     clave para modificar órdenes cerradas y borrar (obligatoria)
  *    PUENTE_SECRETO  la misma frase que va en el Apps Script (obligatoria)
  *    PUENTE_URL      URL /exec del Apps Script (para el machote)
+ *    WA_TALLER       (v26, opcional) WhatsApp del taller, 10 dígitos: el cliente le contesta ahí
+ *    WA_ARREZ        (v26, opcional) WhatsApp de Servicio Arrez (si no, usa WA_TALLER)
  *    CLAVE           clave de la app (por omisión "arsan")
  ****************************************************************/
 import { getStore } from "@netlify/blobs";
 
-const BACKEND_VERSION = "2026-10-14-v25";
+const BACKEND_VERSION = "2026-10-19-v26.4";
 const ETAPAS_ORDEN = ["cita", "recepcion", "cotizado", "aprobado", "finalizado", "entregado"];
 const CANDADO_DESDE = "aprobado";
 const HORAS_SESION = 12;
@@ -197,7 +200,7 @@ function snapProtegido(o, prevEstatus) {
     "folio / evento / fecha": [o.folio || "", o.evento || "", o.fecha || ""].join("|"),
     "diagnóstico": String(di.texto || ""),
     "partidas de la cotización": items,
-    "total de la cotización": String(co.total != null ? co.total : ""),
+    "total de la cotización": String(co.total != null && co.total !== "" ? v26r2(co.total) : ""), // v26.3: al centavo (las órdenes viejas traen fracciones)
     "evidencia de recepción": String(cnt(o.fotos)),
     "evidencia de diagnóstico": String(cnt(di.fotos)),
   };
@@ -284,6 +287,8 @@ function resumen(o) {
     etapaDesde: o._etapaDesde || etapaDesdeDerivada(o), _u: o._u || 0, prueba: !!o._prueba,
     // v25: fotos del taller
     rev: o._rev || 0, color: v.color || "", fotosRec: fotosDeSeccion(o, "recepcion").length || nz(o.fotos), v25: !!o._v25, tf: o._tf || 0,
+    // v26: liga del cliente
+    ac: resumenAut(o), cl: !!(o.cli && o.cli.tok), cv: nz((o.cli || {}).visto),
     sol: (o.solicitudesFotos || []).filter((s) => s.estado === "pendiente" || s.estado === "recibida")
       .map((s) => ({ id: s.id, sec: s.sec, para: s.para || "", paraNombre: s.paraNombre || "", estado: s.estado, nota: String(s.nota || "").slice(0, 160),
         ts: s.ts || 0, tsSubida: s.tsSubida || 0, subioNombre: s.subioNombre || "", n: (s.fotos || []).length, origen: s.origen || "admin" })),
@@ -415,7 +420,9 @@ async function listaSolicitudes() {
   const out = [];
   for (const r of Object.values(idx.o)) for (const s of r.sol || [])
     out.push({ ...s, orden: r.id, folio: r.folio, placas: r.placas, marca: r.marca, modelo: r.modelo, estatus: r.estatus, sucursal: r.sucursal });
-  return { ok: true, solicitudes: out.sort((a, b) => (b.tsSubida || b.ts) - (a.tsSubida || a.ts)) };
+  const aut = Object.values(idx.o).filter((r) => r.ac).map((r) => ({ ...r.ac, orden: r.id, folio: r.folio, placas: r.placas, marca: r.marca, modelo: r.modelo, cliente: r.cliente }))
+    .sort((a, b) => b.ts - a.ts);
+  return { ok: true, solicitudes: out.sort((a, b) => (b.tsSubida || b.ts) - (a.tsSubida || a.ts)), autorizaciones: aut };
 }
 async function listaTecnicos() {
   const u = await getJSON(S(), "usuarios");
@@ -425,7 +432,7 @@ async function listaTecnicos() {
 
 /* ---- Técnico: sólo ve lo mínimo ---- */
 const unidadTec = (r) => ({ id: r.id, folio: r.folio, placas: r.placas, marca: r.marca, modelo: r.modelo, anio: r.anio, color: r.color || "",
-  estatus: r.estatus, sucursal: r.sucursal });
+  estatus: r.estatus, sucursal: r.sucursal, cliente: r.cliente || "", flotilla: r.flotilla || "", eco: r.eco || "" });
 async function vistaTecnico(ses) {
   const idx = (await getJSON(S(), "idx")) || idxInit();
   const pendientes = [], unidades = [];
@@ -440,17 +447,105 @@ async function vistaTecnico(ses) {
   unidades.sort((a, b) => String(a.placas).localeCompare(String(b.placas)));
   return { ok: true, pendientes, unidades };
 }
+/* v25.1 · Lo que ve el técnico: cliente (sólo nombre y flotilla), vehículo completo, servicio,
+   daños, observaciones, inventario, diagnóstico, trabajos a realizar SIN precios, multipuntos,
+   checklist de entrega y fotos. NUNCA: teléfono/correo/fiscales, precios, totales, costos,
+   pagos, cobranza ni encuesta. Se arma con lista blanca: lo que no está aquí, no viaja. */
+const ITEM_TEC = ["concepto", "componente", "cantidad", "marca", "tipoTrabajo", "urgencia", "tipoServicio"];
+function proyeccionTecnico(o, ses) {
+  const v = o.vehiculo || {}, s = o.servicio || {}, fl = o.flotilla || {}, di = o.diagnostico || {}, fi = o.finalizado || {};
+  const ec = o.entregaCheck || null, mp = o.multipuntos || null;
+  const pick = (x, ks) => { const r = {}; for (const k of ks) if (x && x[k] != null && x[k] !== "") r[k] = x[k]; return r; };
+  return {
+    id: o.id, folio: o.folio || "", sucursal: o.sucursal || "", estatus: o.estatus || "recepcion", fecha: o.fecha || "", hora: o.hora || "",
+    evento: o.evento || "", _rev: nz(o._rev),
+    // planos (app del técnico)
+    placas: v.placas || "", marca: v.marca || "", modelo: v.modelo || "", anio: v.anio || "", color: v.color || "",
+    motivo: s.motivo || "", danos: o.estado || "",
+    // anidados (para reutilizar las pantallas de multipuntos y checklist)
+    cliente: { nombre: (o.cliente || {}).nombre || "" },
+    flotilla: pick(fl, ["nombre", "eco"]),
+    vehiculo: pick(v, ["marca", "modelo", "anio", "color", "placas", "vin", "km", "fuel", "fuelLabel", "tarjeta"]),
+    servicio: pick(s, ["motivo", "asesor"]),
+    estado: o.estado || "", observaciones: o.observaciones || "",
+    inventario: o.inventario || null, inventarioStr: o.inventarioStr || "",
+    fotosUrls: fotosDeSeccion(o, "recepcion"),
+    diagnostico: di.texto || (di.fotosUrls || []).length ? { texto: di.texto || "", fecha: di.fecha || "", porTecnico: di.porTecnico || "", fotosUrls: di.fotosUrls || [] } : null,
+    trabajos: ((o.cotizacion || {}).items || []).map((it) => pick(it, ITEM_TEC)),
+    cotizacion: { items: ((o.cotizacion || {}).items || []).map((it) => pick(it, ["concepto", "componente", "cantidad"])) }, // enPendientes() la usa
+    aprobada: !!((o.aprobacion || {}).fecha),
+    finalizado: (fi.fotosUrls || []).length || fi.notas ? { notas: fi.notas || "", fotosUrls: fi.fotosUrls || [] } : null,
+    multipuntos: mp,
+    entregaCheck: ec ? { items: ec.items || {}, total: ec.total, responsable: ec.responsable || "", km: ec.km || "", fuel: ec.fuel,
+      fotos: ec.fotosUrls || {}, firmaTecnico: ec.firmaTecnicoUrl || "", firmaCliente: ec.firmaClienteUrl || "",
+      pendientes: ec.pendientes || [], fecha: ec.fecha || "", hora: ec.hora || "" } : null,
+    solicitudes: (o.solicitudesFotos || []).filter((x) => x.estado === "pendiente" && (!x.para || x.para === ses.usuario))
+      .map((x) => ({ id: x.id, sec: x.sec, secNombre: SECCIONES[x.sec] || x.sec, nota: x.nota, ts: x.ts, pidio: x.pidioNombre || "" })),
+  };
+}
 async function ordenTecnico(id, ses) {
   const o = await getJSON(S(), "o/" + id);
   if (!o || ETAPAS_TALLER.indexOf(o.estatus || "recepcion") < 0) return { ok: false, error: "Esta unidad ya no está en el taller" };
-  const v = o.vehiculo || {}, s = o.servicio || {};
-  return { ok: true, orden: {
-    id: o.id, folio: o.folio || "", sucursal: o.sucursal || "", estatus: o.estatus || "recepcion",
-    placas: v.placas || "", marca: v.marca || "", modelo: v.modelo || "", anio: v.anio || "", color: v.color || "",
-    motivo: s.motivo || "", danos: o.estado || "",
-    solicitudes: (o.solicitudesFotos || []).filter((x) => x.estado === "pendiente" && (!x.para || x.para === ses.usuario))
-      .map((x) => ({ id: x.id, sec: x.sec, secNombre: SECCIONES[x.sec] || x.sec, nota: x.nota, ts: x.ts, pidio: x.pidioNombre || "" })),
-  } };
+  return { ok: true, orden: proyeccionTecnico(o, ses) };
+}
+/* v25.1 · El técnico guarda SÓLO multipuntos y checklist de entrega (lista blanca).
+   Cualquier otro campo que mande su teléfono se ignora. */
+async function tecGuardar(o0, ses) {
+  if (!o0 || !o0.id) return { ok: false, error: "Orden sin id" };
+  const o = normIn(o0), m = o.media || {};
+  const hechos = [];
+  const r = await mutarOrden(o.id, async (cur) => {
+    hechos.length = 0;
+    if (ETAPAS_TALLER.indexOf(cur.estatus || "recepcion") < 0) return { ok: false, error: "Esta unidad ya no está en el taller" };
+    if (o.multipuntos && Array.isArray(o.multipuntos.puntos) && JSON.stringify(o.multipuntos.puntos) !== JSON.stringify((cur.multipuntos || {}).puntos || [])) {
+      if (estaBloqueada(cur.estatus)) return { ok: false, error: "La orden ya está aprobada: la inspección sólo la puede cambiar oficina." };
+      const ev = evaluarMultipuntos(o.multipuntos.puntos);
+      cur.multipuntos = { puntos: ev.puntos, conteo: ev.conteo, vigencia: ev.vigencia, tecnico: String(o.multipuntos.tecnico || ses.nombre).slice(0, 80),
+        fecha: String(o.multipuntos.fecha || fechaHora().fecha) };
+      hechos.push(["INSPECCIÓN MULTIPUNTOS", `Verdes: ${ev.conteo.verde} · Amarillos: ${ev.conteo.amarillo} · Rojos: ${ev.conteo.rojo}`]);
+    }
+    if ((m.entrega || m.finalizado) && o.entregaCheck && o.entregaCheck.items) {
+      const ec = o.entregaCheck, p = extractUrls(cur);
+      const salida = {};
+      const f = typeof ec.fotos === "object" && ec.fotos ? ec.fotos : {};
+      for (const k in f) { const u = await firma(f[k], p.salida[k]); if (u) salida[k] = u; }
+      const urls = { salida, firmaT: await firma(ec.firmaTecnico, p.firmaT), firmaE: await firma(ec.firmaCliente, p.firmaE) };
+      const x = stripMedia({ entregaCheck: {
+        items: ec.items, total: ec.total, responsable: String(ec.responsable || "").slice(0, 80), km: ec.km, fuel: ec.fuel,
+        fotos: ec.fotos, firmaTecnico: ec.firmaTecnico, firmaCliente: ec.firmaCliente, pendientes: Array.isArray(ec.pendientes) ? ec.pendientes : [],
+        fecha: ec.fecha || fechaHora().fecha, hora: ec.hora || fechaHora().hora } }, urls);
+      if (JSON.stringify(x.entregaCheck) !== JSON.stringify(cur.entregaCheck || null)) {
+        cur.entregaCheck = x.entregaCheck;
+        const c = evaluarEntrega(x.entregaCheck);
+        hechos.push(["CHECKLIST DE ENTREGA", `OK: ${c.ok} · Atención: ${c.atencion} · Sin marcar: ${c.sin}`]);
+      }
+    }
+    if (!hechos.length) return { ok: true };
+    cur._rev = nz(cur._rev) + 1; cur._revPor = usuarioTxt(ses); cur._revDev = String(o._dev || ""); cur._revTs = now(); cur._u = now();
+    return { ok: true };
+  });
+  if (!r.ok) return r;
+  for (const [que, despues] of hechos)
+    await logBitacora({ ...ctxOrden(r.orden), etapa: r.orden.estatus || "", que, antes: "Capturó en taller: " + usuarioTxt(ses), despues });
+  return { ok: true, folio: r.orden.folio || "", drive: r.orden.driveUrl || "", rev: nz(r.orden._rev), urls: {}, v25: !!r.orden._v25 };
+}
+/* v25.1 · El técnico escribe el diagnóstico (sólo el texto; oficina arma la cotización con montos) */
+async function tecDiagnostico(b, ses) {
+  const texto = String(b.texto || "").trim().slice(0, 4000);
+  let antes = "";
+  const r = await mutarOrden(b.id, (cur) => {
+    if (["recepcion", "cotizado"].indexOf(cur.estatus || "recepcion") < 0) return { ok: false, error: "La orden ya fue aprobada: el diagnóstico sólo lo puede cambiar oficina." };
+    const di = cur.diagnostico || {};
+    antes = di.texto || "";
+    if (antes === texto) return { ok: true };
+    const fh = fechaHora();
+    cur.diagnostico = { ...di, texto, fecha: di.fecha || fh.fecha, hora: di.hora || fh.hora.slice(0, 5), porTecnico: ses.nombre };
+    cur._rev = nz(cur._rev) + 1; cur._revPor = usuarioTxt(ses); cur._revDev = String(b._dev || ""); cur._revTs = now(); cur._u = now();
+    return { ok: true };
+  });
+  if (!r.ok) return r;
+  if (antes !== texto) await logBitacora({ ...ctxOrden(r.orden), etapa: r.orden.estatus || "", que: "DIAGNÓSTICO DEL TÉCNICO", antes: antes ? "Antes: " + antes : "Capturó: " + usuarioTxt(ses), despues: texto });
+  return { ok: true, rev: nz(r.orden._rev) };
 }
 async function tecAgregar(b, ses, origin) {
   const fotos = (Array.isArray(b.fotos) ? b.fotos : []).map((u) => { const m = ABS.exec(String(u)); return m ? m[1] : String(u); })
@@ -573,9 +668,18 @@ async function rechazarChoque(o, actual, ses) {
     error: "Otra computadora (" + (actual._revPor || "otro usuario") + ") cambió esta orden mientras la tenías abierta. Tu cambio no se guardó para no borrar el suyo." };
 }
 
+/* v26: cuando oficina pasa a "aprobado" una orden que el cliente autorizó en línea, queda confirmada */
+function v26confirmar(x, prev, ses) {
+  const a = x.autCli;
+  if (!a || a.confirmada || ["aprobado", "finalizado", "entregado"].indexOf(x.estatus) < 0) return;
+  if (prev && ["aprobado", "finalizado", "entregado"].indexOf(prev.estatus) >= 0) return;
+  x.autCli = { ...a, confirmada: { ts: now(), por: usuarioTxt(ses), conLiga: !!(x.aprobacion && x.aprobacion.porCliente) } };
+}
 /* ------------------------- GUARDAR ------------------------- */
 async function guardar(o, token, ses) {
   if (!o || !o.id) return { ok: false, error: "Orden sin id" };
+  // v26.3: subtotal, IVA y total se recalculan de las partidas, al centavo (aunque venga de la app v25)
+  if (o.cotizacion && Array.isArray(o.cotizacion.items) && o.cotizacion.items.length) { const cc = v26cuentasCot(o.cotizacion); o.cotizacion.subtotal = cc.sub; o.cotizacion.ivaMonto = cc.iva; o.cotizacion.total = cc.total; }
   o = normIn(o);
   const st = S();
   const prevR = await st.getWithMetadata("o/" + o.id, { type: "json" }).catch(() => null);
@@ -646,6 +750,8 @@ async function guardar(o, token, ses) {
   delete x._cli; delete x._base; delete x._dev;
   x._rev = nz(prev && prev._rev) + 1; x._revPor = usuarioTxt(ses); x._revDev = String(o._dev || ""); x._revTs = now();
   x.machote = (prev && prev.machote) || null; // lo escribe el Apps Script (ackMachote)
+  x.cli = (prev && prev.cli) || null; x.autCli = (prev && prev.autCli) || null; // v26: los escribe el servidor (liga del cliente)
+  v26confirmar(x, prev, ses);
   x.solicitudesFotos = (prev && prev.solicitudesFotos) || [];
   x._tf = (prev && prev._tf) || 0;
   x._v25 = prev ? !!prev._v25 : o._cli === "v25";
@@ -702,6 +808,7 @@ async function guardar(o, token, ses) {
     }
     x._tecFotos = c._tecFotos || {}; x.solicitudesFotos = c.solicitudesFotos || []; x._tf = c._tf || 0;
     x.driveUrl = c.driveUrl || x.driveUrl; x.machote = c.machote || x.machote;
+    x.cli = c.cli || x.cli; x.autCli = c.autCli || x.autCli; v26confirmar(x, prev, ses); // v26
     await actualizarIdx(x);
   }
 
@@ -978,6 +1085,203 @@ async function puente(b, origin) {
   return { ok: false, error: "Acción del puente desconocida" };
 }
 
+/* =====================================================================
+   v26 · LIGA DEL CLIENTE
+   Cada orden puede tener una liga privada para el cliente (/o/<llave>), con el
+   formato nuevo: orden de recepción con fotos, cotización por trabajos con fotos y
+   precio, autorización desde el celular y "listo para entregar" con evidencias.
+   · La llave es aleatoria (imposible de adivinar). Oficina la crea al mandar el
+     primer aviso; "liga nueva" invalida la anterior.
+   · El cliente ve SÓLO lo que ya ve en sus documentos impresos: vehículo, fotos,
+     diagnóstico, trabajos con precio de venta y total. NUNCA: costos internos,
+     proveedor, utilidad, pagos, cobranza, teléfonos, datos fiscales ni bitácora.
+   · Su autorización se guarda en la orden (o.autCli) y se avisa a oficina, que la
+     confirma (la orden pasa a "aprobado" cuando oficina la confirma, no antes).
+   · v26.4: la autorización es general (toda la cotización) y una sola vez; si la
+     cotización cambia, el cliente vuelve a autorizar la versión nueva.
+   · o.cli y o.autCli los decide siempre el servidor: un guardado de oficina nunca
+     los borra ni los cambia.
+   ===================================================================== */
+/* ---- v26 · común (servidor, app de oficina y página del cliente usan EXACTAMENTE esto) ----
+   Las partidas de la cotización se agrupan en "trabajos" para el cliente: partidas seguidas
+   con el mismo componente (p. ej. la refacción + su mano de obra) son un solo trabajo, con un
+   solo precio, como en la orden del Trax que les gustó a los clientes. */
+function v26norm(x){ return String(x==null?'':x).trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+function v26esMO(it){ return /^mano de obra/i.test(String((it&&it.tipoTrabajo)||'').trim()) || /^mano de obra/i.test(String((it&&it.concepto)||'').trim()); }
+function v26huella(co){
+  co=co||{};
+  var s=JSON.stringify([(co.items||[]).map(function(it){ return [String(it.concepto||''), Number(it.cantidad)||0, Number(it.precio)||0]; }), !!co.iva]);
+  var h=5381; for(var i=0;i<s.length;i++){ h=((h<<5)+h+s.charCodeAt(i))|0; }
+  return (h>>>0).toString(36);
+}
+/* Centavos (v26.3): toda cifra de dinero se redondea a 2 decimales con la MISMA regla en la app,
+   el servidor, la liga del cliente y el PDF. IVA = subtotal × 16 % redondeado a centavos (como el CFDI),
+   y total = subtotal + IVA, exacto. */
+function v26r2(n){ n=Number(n)||0; var s=n<0?-1:1; return s*Math.round((Math.abs(n)+Number.EPSILON)*100)/100; }
+function v26importe(it){ return v26r2((Number(it&&it.cantidad)||0)*(Number(it&&it.precio)||0)); }
+function v26cuentas(sub, conIva){ sub=v26r2(sub); var iva=conIva?v26r2(sub*0.16):0; return {sub:sub, iva:iva, total:v26r2(sub+iva)}; }
+function v26cuentasCot(co){ var s=0; ((co&&co.items)||[]).forEach(function(it){ s+=v26importe(it); }); return v26cuentas(s, !!(co&&co.iva)); }
+function v26trabajos(co, diagFotos){
+  var items=(co&&co.items)||[], out=[], cur=null, fotos=Array.isArray(diagFotos)?diagFotos:[];
+  for(var i=0;i<items.length;i++){
+    var it=items[i]||{}, comp=v26norm(it.componente);
+    if(!cur || !comp || comp!==cur._c){
+      cur={k:'t'+i, _c:comp, idx:[], titulo:'', explicacion:'', fotos:[], subtotal:0, incluye:[], componente:String(it.componente||'').trim()};
+      out.push(cur);
+    }
+    cur.idx.push(i);
+    cur.subtotal+=v26importe(it);
+    var c=String(it.concepto||'').trim(), q=Number(it.cantidad)||0;
+    if(!cur.titulo && c && !v26esMO(it)) cur.titulo=c;
+    else if(c && !v26esMO(it)) cur.incluye.push(c+(q && q!==1 ? ' ×'+q : ''));   // lo que incluye: otras refacciones/servicios (nunca la mano de obra)
+    if(!cur.explicacion && String(it.explicacion||'').trim()) cur.explicacion=String(it.explicacion).trim();
+    var fi=Array.isArray(it.fotosIdx)?it.fotosIdx:[];
+    for(var j=0;j<fi.length;j++){ var u=fotos[Number(fi[j])]; if(u && cur.fotos.indexOf(u)<0) cur.fotos.push(u); }
+  }
+  for(var n=0;n<out.length;n++){
+    var t=out[n];
+    if(!t.titulo) t.titulo=String(items[t.idx[0]].concepto||'Mano de obra')+(t.componente?' · '+t.componente:'');
+    t.subtotal=v26r2(t.subtotal);
+    delete t._c;
+  }
+  return out;
+}
+/* Explicación para el cliente: los renglones que empiezan con "-", "•" o "*" se vuelven lista.
+   Si no hay explicación, se lista lo que incluye (otras partidas del trabajo, nunca la mano de obra). */
+function v26explicHtml(txt, incluye, esc){
+  var lineas=String(txt||'').split(/\r?\n/), par=[], li=[], h='';
+  lineas.forEach(function(l){ var t=l.trim(); if(!t) return; var m=/^[-•*·]\s*(.+)$/.exec(t); if(m) li.push(m[1]); else par.push(t); });
+  if(!li.length && !par.length && incluye && incluye.length) li=incluye.slice();   // sin explicación: lista de lo que incluye
+  if(par.length) h+='<p>'+par.map(esc).join(' ')+'</p>';
+  if(li.length) h+='<ul>'+li.map(function(x){ return '<li>'+esc(x)+'</li>'; }).join('')+'</ul>';
+  return h;
+}
+
+const v26WA = (suc) => String(env(suc === "Servicio Arrez" ? "WA_ARREZ" : "WA_TALLER", "") || env("WA_TALLER", "")).replace(/\D/g, "");
+const v26tok = () => { const a = new Uint8Array(16); crypto.getRandomValues(a); return btoa(String.fromCharCode(...a)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); };
+const TOK_RE = /^[A-Za-z0-9_-]{16,64}$/;
+
+function autVigente(o) {
+  const a = o && o.autCli;
+  return !!(a && (a.confirmada || a.huella === v26huella(o.cotizacion)));
+}
+function resumenAut(o) {
+  const a = o.autCli;
+  if (!a || a.confirmada || (o.estatus || "") !== "cotizado" || a.huella !== v26huella(o.cotizacion)) return null;
+  return { ts: a.ts, nombre: a.nombre || "", total: nz(a.total), n: (a.trabajos || []).length, de: (a.trabajos || []).length + (a.noAut || []).length };
+}
+
+function proyeccionCliente(o) {
+  const v = o.vehiculo || {}, s = o.servicio || {}, c = o.cliente || {}, fl = o.flotilla || {}, co = o.cotizacion || {};
+  const di = o.diagnostico || {}, fi = o.finalizado || {}, ap = o.aprobacion || {}, sal = o.salida || {};
+  const pick = (x, ks) => { const r = {}; for (const k of ks) if (x && x[k] != null && x[k] !== "") r[k] = x[k]; return r; };
+  const estatus = o.estatus || "recepcion";
+  const diagF = fotosDeSeccion(o, "diagnostico");
+  const hayCot = (co.items || []).length > 0 && ["cotizado", "aprobado", "finalizado", "entregado"].indexOf(estatus) >= 0;
+  const trab = hayCot ? v26trabajos(co, diagF) : [];
+  const usadas = new Set(); trab.forEach((t) => t.fotos.forEach((u) => usadas.add(u)));
+  const a = o.autCli || null;
+  const fin = ["finalizado", "entregado"].indexOf(estatus) >= 0;
+  return {
+    folio: o.folio || "", sucursal: o.sucursal || "Arsan Motors", estatus, fecha: o.fecha || "", hora: o.hora || "",
+    cliente: c.nombre || "", flotilla: fl.nombre || "", eco: fl.eco || "",
+    vehiculo: pick(v, ["marca", "modelo", "anio", "color", "placas", "vin", "km", "fuel", "fuelLabel"]),
+    motivo: s.motivo || "", asesor: s.asesor || "", danos: o.estado || "", observaciones: o.observaciones || "",
+    fotosRecepcion: fotosDeSeccion(o, "recepcion"),
+    diagnostico: hayCot || ["cotizado"].indexOf(estatus) >= 0 ? String(di.texto || "") : "",
+    trabajos: trab.map((t) => ({ k: t.k, titulo: t.titulo, explicacion: t.explicacion, incluye: t.incluye, fotos: t.fotos, subtotal: t.subtotal })),
+    fotosDiagnostico: hayCot ? diagF.filter((u) => !usadas.has(u)) : [],
+    iva: !!co.iva, notas: hayCot ? String(co.notas || "") : "",
+    huella: hayCot ? v26huella(co) : "",
+    autorizacion: a ? { ts: a.ts, fecha: a.fecha, hora: a.hora, nombre: a.nombre, comentario: a.comentario || "",
+      trabajos: (a.trabajos || []).map((t) => t.k), titulos: (a.trabajos || []).map((t) => t.titulo), total: nz(a.total),
+      vigente: autVigente(o), confirmada: !!a.confirmada } : null,
+    aprobada: ap.fecha ? { fecha: ap.fecha, hora: ap.hora || "", porCliente: !!ap.porCliente } : null,
+    finalizado: fin ? { fecha: fi.fecha || "", notas: String(fi.notas || ""), fotos: fotosDeSeccion(o, "evidencias") } : null,
+    entregado: estatus === "entregado" ? { fecha: sal.fecha || "", hora: sal.hora || "" } : null,
+    wa: v26WA(o.sucursal),
+  };
+}
+
+/* ---- Oficina: crea (o renueva) la liga y anota cada aviso que se manda ---- */
+async function ligaCliente(b, ses, origin) {
+  if (!b.id) return { ok: false, error: "Orden sin id" };
+  const st = S();
+  const cur = await getJSON(st, "o/" + b.id);
+  if (!cur) return { ok: false, error: "Orden no encontrada. Guárdala primero." };
+  if ((cur.estatus || "") === "cita") return { ok: false, error: "Primero convierte la cita en recepción." };
+  const tieneTok = cur.cli && TOK_RE.test(cur.cli.tok || "");
+  const tipo = String(b.tipo || "").slice(0, 20);
+  if (tieneTok && !b.nueva && !tipo) return { ok: true, tok: cur.cli.tok, url: origin + "/o/" + cur.cli.tok, cli: cur.cli };
+  const nuevo = !tieneTok || !!b.nueva, tok = nuevo ? v26tok() : cur.cli.tok, viejo = tieneTok && nuevo ? cur.cli.tok : "";
+  if (nuevo) await st.setJSON("cl/" + tok, { id: b.id, ts: now() });
+  const r = await mutarOrden(b.id, (o) => {
+    o.cli = o.cli || {};
+    if (nuevo) { o.cli.tok = tok; o.cli.creado = now(); o.cli.por = ses.nombre; o.cli.visto = 0; o.cli.vistas = 0; }
+    if (tipo) o.cli.envios = (o.cli.envios || []).concat([{ tipo, ts: now(), por: ses.nombre }]).slice(-30);
+    return { ok: true };
+  });
+  if (!r.ok) { if (nuevo) await st.delete("cl/" + tok).catch(() => {}); return r; }
+  if (viejo) await st.delete("cl/" + viejo).catch(() => {});
+  if (nuevo || tipo)
+    await logBitacora({ ...ctxOrden(r.orden), etapa: r.orden.estatus || "", que: tipo ? "AVISO AL CLIENTE POR WHATSAPP" : "LIGA DEL CLIENTE",
+      antes: (tipo ? tipo + " · " : "") + "por: " + usuarioTxt(ses), despues: nuevo ? (viejo ? "Liga nueva (la anterior dejó de servir)" : "Liga creada") : "" });
+  return { ok: true, tok, url: origin + "/o/" + tok, cli: r.orden.cli };
+}
+
+/* ---- Cliente (público, sólo con la llave) ---- */
+async function ordenDeLlave(tok) {
+  if (!TOK_RE.test(String(tok || ""))) return null;
+  const ref = await getJSON(S(), "cl/" + tok);
+  if (!ref || !ref.id) return null;
+  const o = await getJSON(S(), "o/" + ref.id);
+  if (!o || !o.cli || o.cli.tok !== tok || (o.estatus || "") === "cita") return null;
+  return o;
+}
+async function vistaCliente(tok, origin) {
+  const o = await ordenDeLlave(tok);
+  if (!o) return { ok: false, noValida: true, error: "Esta liga ya no es válida. Pida una nueva al taller." };
+  if (now() - nz(o.cli.visto) > 5 * 60e3) {
+    try { await mutarOrden(o.id, (x) => { x.cli = x.cli || {}; x.cli.visto = now(); x.cli.vistas = nz(x.cli.vistas) + 1; return { ok: true }; }); } catch {}
+  }
+  return { ok: true, orden: absOut(proyeccionCliente(o), origin) };
+}
+async function autorizarCliente(tok, b, req) {
+  const o0 = await ordenDeLlave(tok);
+  if (!o0) return { ok: false, noValida: true, error: "Esta liga ya no es válida. Pida una nueva al taller." };
+  const nombre = String(b.nombre || "").replace(/\s+/g, " ").trim().slice(0, 120);
+  if (nombre.length < 3) return { ok: false, error: "Escriba su nombre completo." };
+  let rec = null, de = 0;
+  const r = await mutarOrden(o0.id, (o) => {
+    if (!o.cli || o.cli.tok !== tok) return { ok: false, noValida: true, error: "Esta liga ya no es válida. Pida una nueva al taller." };
+    if ((o.estatus || "") !== "cotizado")
+      return { ok: false, recargar: true, error: ["aprobado", "finalizado", "entregado"].indexOf(o.estatus) >= 0 ? "Esta cotización ya quedó aprobada." : "La cotización todavía no está lista." };
+    const co = o.cotizacion || {}, hu = v26huella(co);
+    if (String(b.huella || "") !== hu) return { ok: false, recargar: true, error: "El taller actualizó la cotización. Recargue la página para ver la versión nueva." };
+    // v26.4: una sola autorización por cotización. Para cambiarla, el cliente escribe por WhatsApp y oficina ajusta y reenvía.
+    if (autVigente(o)) return { ok: false, yaAutorizo: true, error: "Esta cotización ya está autorizada. Si necesita un cambio, escríbanos por WhatsApp." };
+    const trab = v26trabajos(co, fotosDeSeccion(o, "diagnostico"));
+    const si = trab, no = []; // v26.4: autorización general (todos los trabajos de la cotización)
+    if (!si.length) return { ok: false, error: "La cotización no tiene trabajos." };
+    de = trab.length;
+    const cc = v26cuentas(si.reduce((s, t) => s + t.subtotal, 0), !!co.iva), sub = cc.sub;
+    const fh = fechaHora(), prev = o.autCli;
+    const corto = (t) => ({ k: t.k, titulo: t.titulo, subtotal: t.subtotal, idx: t.idx });
+    rec = { ts: now(), fecha: fh.fecha, hora: fh.hora.slice(0, 5), nombre, comentario: String(b.comentario || "").trim().slice(0, 1000),
+      trabajos: si.map(corto), noAut: no.map(corto), subtotal: sub, iva: !!co.iva, ivaMonto: cc.iva, total: cc.total, huella: hu,
+      ua: String(req.headers.get("user-agent") || "").slice(0, 160),
+      historial: prev ? (prev.historial || []).concat([{ ts: prev.ts, nombre: prev.nombre, total: prev.total, n: (prev.trabajos || []).length }]).slice(-10) : [] };
+    o.autCli = rec;
+    o._u = now();
+    return { ok: true };
+  });
+  if (!r.ok) return r;
+  await logBitacora({ ...ctxOrden(r.orden), etapa: r.orden.estatus || "", que: "AUTORIZACIÓN DEL CLIENTE (LIGA)",
+    antes: `${nombre} · ${rec.trabajos.length} de ${de} trabajos · $${rec.total}`,
+    despues: rec.trabajos.map((t) => t.titulo).join(", ") + (rec.noAut.length ? " · NO autorizó: " + rec.noAut.map((t) => t.titulo).join(", ") : "") + (rec.comentario ? " · Comentario: " + rec.comentario : "") });
+  return { ok: true, autorizacion: { ts: rec.ts, nombre: rec.nombre, total: rec.total, n: rec.trabajos.length } };
+}
+
 /* ------------------------- ENTRADA ------------------------- */
 export default async (req) => {
   const url = new URL(req.url);
@@ -991,6 +1295,17 @@ export default async (req) => {
     if (!r) return new Response("No encontrada", { status: 404 });
     return new Response(r.data, { headers: { "content-type": (r.metadata && r.metadata.type) || "image/jpeg",
       "cache-control": "public, max-age=31536000, immutable", "access-control-allow-origin": "*" } });
+  }
+  // v26: liga del cliente (sin clave ni sesión; la llave es aleatoria y se puede renovar)
+  const mc = /^\/api\/c\/([A-Za-z0-9_-]+)$/.exec(path);
+  if (mc) {
+    try {
+      if (req.method === "GET") return json(await vistaCliente(mc[1], origin));
+      if (req.method !== "POST") return json({ ok: false, error: "Método no permitido" }, 405);
+      let bc; try { bc = JSON.parse(await req.text()); } catch { return json({ ok: false, error: "Petición inválida" }); }
+      if (bc && bc.action === "autorizar") return json(await autorizarCliente(mc[1], bc, req));
+      return json({ ok: false, error: "Acción desconocida" });
+    } catch (e) { return json({ ok: false, error: String((e && e.message) || e) }); }
   }
   if (path !== "/api") return json({ ok: false, error: "Ruta no encontrada" }, 404);
 
@@ -1009,8 +1324,8 @@ export default async (req) => {
       if (!s.ok) return json({ ok: false, auth: true, error: "Sesión no válida. Inicia sesión de nuevo." });
       // v25: el técnico sólo ve lo mínimo para tomar fotos
       if (a === "tec") return json(await vistaTecnico(s));
-      if (a === "tecOrden") return json(await ordenTecnico(p.id, s));
-      if (esTecnico(s.rol)) return json({ ok: false, soloTaller: true, error: "Tu usuario es de taller: sólo puedes subir fotos." });
+      if (a === "tecOrden") return json(absOut(await ordenTecnico(p.id, s), origin));
+      if (esTecnico(s.rol)) return json({ ok: false, soloTaller: true, error: "Tu usuario es de taller: esa información la ve oficina." });
       if (a === "solicitudes") return json(await listaSolicitudes());
       if (a === "tecnicos") return json(await listaTecnicos());
       if (a === "list") return json({ ok: true, ordenes: await listar() });
@@ -1037,12 +1352,18 @@ export default async (req) => {
     const ses = await sesionValida(b.sesion);
     if (!ses.ok) return json({ ok: false, auth: true, error: "Sesión no válida. Inicia sesión de nuevo." });
     // v25: acciones del taller
-    if (b.action === "subir" || b.action === "tecAgregar") {
+    if (b.action === "subir" || b.action === "tecAgregar" || b.action === "tecDiagnostico") {
       if (b.action === "tecAgregar") return json(await tecAgregar(b, ses, origin));
-    } else if (esTecnico(ses.rol)) return json({ ok: false, soloTaller: true, error: "Tu usuario es de taller: sólo puedes subir fotos." });
+      if (b.action === "tecDiagnostico") return json(await tecDiagnostico(b, ses));
+    } else if (esTecnico(ses.rol)) {
+      // v25.1: el técnico guarda multipuntos y checklist con la pantalla de siempre; el servidor sólo toma esos dos campos
+      if (b.action === "save") return json(await tecGuardar(b.orden, ses));
+      return json({ ok: false, soloTaller: true, error: "Tu usuario es de taller: esa acción la hace oficina." });
+    }
     switch (b.action) {
       case "pedirFotos": return json(await pedirFotos(b, ses));
       case "solicitud": return json(await cambiarSolicitud(b, ses));
+      case "ligaCliente": return json(await ligaCliente(b, ses, origin)); // v26
       case "save": return json(await guardar(b.orden, b.token, ses));
       case "subir": { const u = await guardarMedio(b.data); return json(u ? { ok: true, url: origin + u } : { ok: false, error: "No se pudo guardar la foto" }); }
       case "clientes": return json(await listClientes());

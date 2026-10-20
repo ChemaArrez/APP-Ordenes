@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Su orden de servicio · Arsan Motors</title>
+<meta name="description" content="Vea su orden, las fotos de su vehículo y autorice los trabajos desde su celular.">
+<meta property="og:title" content="Su orden de servicio · Arsan Motors">
+<meta property="og:description" content="Vea las fotos de su vehículo, lo que encontramos y autorice desde su celular.">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Arsan Motors · página del cliente (v26). Mismo formato que la orden del Trax (oct-2026). */
+:root{--red:#E63339;--brand:#E63339;--gold:#FCC008;--fg:#1d1f22;--muted:#626870;--line:#e3e1dc;--bg:#f6f5f2;--card:#ffffff;--soft:#efeeea;--ok:#2f7d4f;--gold-ink:#8a6400;--top:#111214;--top-fg:#fff;
+--display:"Barlow Condensed","Arial Narrow",sans-serif;--body:"IBM Plex Sans",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--fg:#ecebe7;--muted:#a3a7ad;--line:#33363b;--bg:#121315;--card:#1b1d20;--soft:#24272b;--red:#ff5459;--ok:#5cc187;--gold-ink:#FCC008;color-scheme:dark}}
+:root[data-theme="dark"]{--fg:#ecebe7;--muted:#a3a7ad;--line:#33363b;--bg:#121315;--card:#1b1d20;--soft:#24272b;--red:#ff5459;--ok:#5cc187;--gold-ink:#FCC008;color-scheme:dark}
+body.arrez{--brand:#1D3B76;--top:#ffffff;--top-fg:#1D3B76}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5;-webkit-text-size-adjust:100%}
+.wrap{max-width:960px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main.wrap{padding-bottom:120px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.1}
+.num{font-variant-numeric:tabular-nums}
+[hidden]{display:none!important}
+img{max-width:100%}
+.top{background:var(--top);color:var(--top-fg);border-bottom:4px solid var(--brand);padding-top:env(safe-area-inset-top,0px)}
+.top .wrap{padding-block:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.top img{height:40px;width:auto;display:block}
+.brandname{font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:.06em;color:var(--brand)}
+.logo{display:flex;align-items:center;gap:10px}
+.top small{font-family:var(--mono);color:#FCC008;font-size:12px}
+body.arrez .top small{color:var(--brand)}
+.hero{padding-block:26px 6px}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.hero h1{font-size:clamp(34px,7vw,52px);font-weight:700;margin-top:4px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13px}
+.chip b{font-weight:600}
+.status{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-weight:600;color:var(--gold-ink)}
+.status i{width:10px;height:10px;border-radius:50%;background:#FCC008;flex:none}
+.status.ok{color:var(--ok)}.status.ok i{background:var(--ok)}
+.total{margin-top:20px;background:#111214;color:#fff;border-radius:14px;padding:20px 22px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:10px}
+.total span{font-size:14px;color:#c9cbd0}
+.total b{font-family:var(--display);font-size:46px;line-height:1;color:#FCC008}
+.total small{display:block;font-size:12px;color:#c9cbd0;margin-top:2px}
+h2.s{font-size:28px;margin:34px 0 4px}
+p.lead{color:var(--muted);margin:0 0 16px}
+.note{background:var(--card);border:1px solid var(--line);border-left:4px solid #FCC008;border-radius:10px;padding:12px 14px;margin-top:16px;max-width:70ch}
+.note.ok{border-left-color:var(--ok)}
+.note b{display:block}
+.item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px;transition:opacity .2s}
+.item.off{opacity:.55}
+.item .row{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.item h3{font-size:24px}
+.item .p{font-family:var(--display);font-size:24px;font-weight:600;white-space:nowrap}
+.item.off .p{text-decoration:line-through}
+.item p{margin:8px 0 0;max-width:62ch}
+.item ul,.expl ul{margin:8px 0 0;padding-left:22px;display:grid;gap:3px}
+.item .p small{display:block;text-align:right;font-family:var(--body);font-size:11px;font-weight:400;color:var(--muted);letter-spacing:.02em}
+.fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.fgrid .ph img{aspect-ratio:1/1}
+.expl p{margin:4px 0 0}
+.sum .sep{border-top:1px solid var(--line);padding-top:8px;margin-top:6px}
+.duda{background:var(--soft);border-radius:12px;padding:14px;display:grid;gap:10px;font-size:14.5px}
+.duda b{display:block;font-size:15px}
+.duda .btn{font-size:18px;padding:11px 14px}
+.item .inc{font-size:13px;color:var(--muted);margin-top:6px}
+.tag{display:inline-block;font-size:12px;font-weight:600;border-radius:999px;padding:2px 10px;margin-top:10px}
+.tag.si{background:#e4f3ea;color:#1f6b40}.tag.no{background:var(--soft);color:var(--muted)}
+.strip{display:flex;gap:8px;overflow-x:auto;margin-top:14px;padding-bottom:4px;scroll-snap-type:x mandatory}
+.strip .ph{flex:0 0 132px;scroll-snap-align:start}
+.strip .ph img{aspect-ratio:1/1}
+.more,.nofoto{font-size:12px;color:var(--muted);margin-top:6px}
+.nofoto{font-size:13px;margin-top:12px}
+button.ph{all:unset;cursor:zoom-in;display:block;border-radius:8px;overflow:hidden;position:relative;background:var(--soft)}
+button.ph:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+button.ph img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
+.pick{display:flex;align-items:center;gap:10px;margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--soft);font-weight:600;cursor:pointer}
+.pick input,.terms input{width:22px;height:22px;accent-color:var(--brand);flex:none}
+.recep{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media (max-width:520px){.recep{grid-template-columns:repeat(2,1fr)}}
+.recep figure{margin:0}.recep figcaption{font-size:12px;color:var(--muted);margin-top:4px}
+.data{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:0}
+.data div{background:var(--card);padding:10px 12px;min-width:0}
+.data dt{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.data dd{margin:2px 0 0;font-weight:600;overflow-wrap:anywhere}
+.data .mono{font-family:var(--mono);font-weight:500}
+.data div:last-child:nth-child(odd){grid-column:1/-1}
+.txt{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;max-width:70ch;white-space:pre-line}
+.auth{margin-top:36px;background:var(--card);border:2px solid var(--fg);border-radius:16px;padding:20px;display:grid;gap:16px;scroll-margin-top:16px}
+.auth h2{font-size:30px}
+.sum{display:grid;gap:4px;font-size:15px}
+.sum div{display:flex;justify-content:space-between;gap:10px}
+.sum .tot{border-top:1px solid var(--line);padding-top:8px;margin-top:4px;font-family:var(--display);font-size:26px;font-weight:700;line-height:1.2;align-items:baseline}
+.sum .tot span:last-child{color:var(--red)}
+.field{display:grid;gap:6px}
+.field span{font-size:13px;font-weight:600}
+.field input,.field textarea{font:inherit;padding:12px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--fg);width:100%}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--brand)}
+.terms{display:flex;gap:10px;align-items:flex-start;font-size:14px;cursor:pointer}
+.btn{font:inherit;font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:.03em;border:0;border-radius:12px;padding:14px 18px;background:var(--brand);color:#fff;cursor:pointer;width:100%;text-align:center;text-decoration:none;display:block}
+.btn:disabled{background:var(--line);color:var(--muted);cursor:not-allowed}
+.btn.wa{background:#1f9d55}
+.btn.light{background:var(--soft);color:var(--fg);font-size:18px}
+.btn:focus-visible{outline:3px solid #FCC008;outline-offset:2px}
+.err{color:var(--red);font-size:14px;font-weight:600;margin:0}
+.done{text-align:center;display:grid;gap:12px;justify-items:center}
+.done .check{width:64px;height:64px;border-radius:50%;background:var(--ok);color:#fff;display:grid;place-items:center;font-size:36px}
+.done p{margin:0;max-width:46ch}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:#111214;color:#fff;padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.bar .in{max-width:960px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.bar small{display:block;color:#c9cbd0;font-size:12px}
+.bar b{font-family:var(--display);font-size:26px;color:#FCC008}
+.bar a{background:var(--red);color:#fff;text-decoration:none;font-weight:700;padding:10px 16px;border-radius:10px;white-space:nowrap}
+.faq{margin-top:34px;border-top:1px solid var(--line);padding-top:18px;display:grid;gap:14px}
+.faq p{margin:0;max-width:62ch}.faq b{display:block}
+.warr{font-size:13px;color:var(--muted);margin-top:22px}
+.acts{display:grid;gap:10px;margin-top:22px;max-width:520px}
+.lb{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:50;display:grid;place-items:center;padding:24px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px))}
+.lb figure{margin:0;max-width:min(1000px,100%);text-align:center}
+.lb img{max-height:80vh;width:auto;border-radius:6px}
+.lb figcaption{color:#fff;margin-top:10px;font-size:14px}
+.lb-x{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:calc(16px + env(safe-area-inset-right,0px));background:none;border:0;color:#fff;font-size:36px;cursor:pointer}
+.sk{height:18px;border-radius:6px;background:var(--soft);margin:14px 0;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.5}}
+.pasos{list-style:none;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:18px 0 0;padding:0;max-width:520px}
+.pasos li{display:grid;justify-items:center;gap:4px;text-align:center;font-size:12px;color:var(--muted);position:relative}
+.pasos li::before{content:"";position:absolute;top:13px;left:-50%;width:100%;height:2px;background:var(--line);z-index:0}
+.pasos li:first-child::before{display:none}
+.pasos li.hecho::before,.pasos li.aqui::before{background:var(--ok)}
+.pasos i{font-style:normal;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px;background:var(--card);border:2px solid var(--line);color:var(--muted);position:relative;z-index:1}
+.pasos li.hecho i{background:var(--ok);border-color:var(--ok);color:#fff}
+.pasos li.aqui i{border-color:var(--fg);color:var(--fg)}
+.pasos li.aqui span{color:var(--fg);font-weight:600}
+.sigue{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:22px;max-width:70ch}
+.sigue b{display:block}
+.lista{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;max-width:620px}
+.lista .fila{display:flex;justify-content:space-between;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.lista .fila:last-child{border-bottom:0}
+.lista .fila span:first-child{font-weight:600;min-width:0}
+.lista .fila.no{color:var(--muted)}.lista .fila.no span:first-child{font-weight:400}
+.lista .fila.sub{color:var(--muted);font-size:14px}
+.lista small{font-weight:400}
+details.mas{margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:12px}
+details.mas summary{cursor:pointer;padding:14px 16px;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:10px}
+details.mas summary::-webkit-details-marker{display:none}
+details.mas summary::after{content:"Ver";color:var(--brand);font-weight:600;font-size:14px}
+details.mas[open] summary::after{content:"Ocultar"}
+details.mas summary:focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:12px}
+.mas-b{padding:0 16px 16px}
+.mas-b .txt{border:0;padding:0;background:none}
+h3.sub{font-size:19px;margin:16px 0 0}
+details.mas + details.mas{margin-top:10px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{
+  details.mas{border:0}details.mas .mas-b{display:block}
+  .bar,.lb,.acts,.auth form,.no-print,.pick{display:none!important}
+  body{background:#fff;color:#000;font-size:12px}
+  main.wrap{padding-bottom:0}
+  .top{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .total{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .item,.auth,.recep figure{break-inside:avoid}
+  .strip{flex-wrap:wrap;overflow:visible}
+  h2.s{margin-top:20px}
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><div class="logo" id="logo"><img src="/logo_arsan.png" alt="Arsan Motors"></div><small id="folioTop"></small></div></header>
+<main class="wrap" id="app" aria-live="polite"><div class="hero"><div class="sk" style="width:30%"></div><div class="sk" style="height:42px;width:70%"></div><div class="sk" style="width:55%"></div></div></main>
+<div class="bar" id="bar" hidden><div class="in"><div><small>Total de la cotización</small><b class="num" id="barTot">$0</b></div><a href="#autorizar">Revisar y autorizar</a></div></div>
+<div class="lb" id="lb" hidden><button class="lb-x" id="lbx" aria-label="Cerrar">×</button><figure><img id="lbimg" alt=""><figcaption id="lbcap"></figcaption></figure></div>
+<script>
+(function(){
+"use strict";
+var FUEL=['Vacío','1/8 de tanque','1/4 de tanque','3/8 de tanque','1/2 tanque','5/8 de tanque','3/4 de tanque','7/8 de tanque','Lleno'];
+var MESES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+var GARANTIA='La mano de obra tiene garantía de 90 días o 5,000 km; las piezas tienen la garantía del fabricante.';
+var app=document.getElementById('app'), bar=document.getElementById('bar'), barTot=document.getElementById('barTot');
+var TOK=(function(){ var m=/\/o\/([A-Za-z0-9_-]+)/.exec(location.pathname); if(m) return m[1]; try{ return new URLSearchParams(location.search).get('t')||''; }catch(e){ return ''; } })();
+var O=null, editando=false;
+
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function fmt(n){ n=Math.round((Number(n)||0)*100)/100; return '$'+n.toLocaleString('es-MX',{minimumFractionDigits:n%1?2:0,maximumFractionDigits:2}); }
+function fecha(iso,hora){ if(!iso) return ''; var p=String(iso).split('-'); if(p.length!==3) return iso; return Number(p[2])+' '+MESES[Number(p[1])-1]+(hora?', '+String(hora).slice(0,5):''); }
+function fechaLarga(iso){ if(!iso) return ''; var p=String(iso).split('-'); return p.length===3? Number(p[2])+' de '+['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][Number(p[1])-1]+' de '+p[0] : iso; }
+function veh(o){ var v=o.vehiculo||{}; return [v.marca,v.modelo,v.anio].filter(Boolean).join(' ')||'Su vehículo'; }
+function kmTxt(v){ var n=Number(String(v||'').replace(/[^\d.]/g,'')); return n? n.toLocaleString('es-MX') : esc(v||''); }
+function waLink(txt){ return 'https://wa.me/'+(O&&O.wa?(O.wa.length===10?'52'+O.wa:O.wa):'')+'?text='+encodeURIComponent(txt); }
+function ph(u,cap){ return '<button class="ph" type="button" data-zoom="'+esc(cap||'')+'"><img src="'+esc(u)+'" alt="'+esc(cap||'Foto')+'" loading="lazy" referrerpolicy="no-referrer"></button>'; }
+function strip(fotos,cap){ if(!fotos||!fotos.length) return ''; return '<div class="strip">'+fotos.map(function(u,i){ return ph(u,(cap||'Foto')+' '+(i+1)); }).join('')+'</div>'+(fotos.length>1?'<div class="more">'+fotos.length+' fotos · toque para ver en grande</div>':'<div class="more">Toque para ver en grande</div>'); }
+function marca(o){
+  var arrez=o.sucursal==='Servicio Arrez';
+  document.body.classList.toggle('arrez',arrez);
+  document.getElementById('logo').innerHTML=arrez?'<img src="/logo_arrez.jpg" alt="Servicio Arrez"><span class="brandname">SERVICIO ARREZ</span>':'<img src="/logo_arsan.png" alt="Arsan Motors">';
+  document.title=(o.estatus==='recepcion'?'Orden de recepción':'Su '+(o.vehiculo&&o.vehiculo.modelo||'vehículo'))+' · '+(arrez?'Servicio Arrez':'Arsan Motors');
+}
+function nombreTaller(){ return O&&O.sucursal==='Servicio Arrez'?'Servicio Arrez':'Arsan Motors'; }
+
+/* ------------------------ estado de la orden ------------------------ */
+function fase(o){
+  if(o.estatus==='entregado') return 'entregado';
+  if(o.estatus==='finalizado') return 'listo';
+  if(o.estatus==='aprobado') return 'aprobado';
+  if(o.estatus==='cotizado' && o.trabajos.length){
+    if(o.autorizacion && o.autorizacion.vigente && !editando) return 'enviada';
+    return 'autorizar';
+  }
+  return 'recepcion';
+}
+function selDe(o){
+  // trabajos a mostrar como autorizados (después de autorizar o de que oficina aprobó)
+  var a=o.autorizacion;
+  if(o.estatus==='cotizado' && a && a.vigente) return a.trabajos;
+  return o.trabajos.map(function(t){ return t.k; });
+}
+function totales(o, keys){
+  var sub=0; o.trabajos.forEach(function(t){ if(keys.indexOf(t.k)>=0) sub+=t.subtotal; });
+  var c=v26cuentas(sub,o.iva);   // igual que el servidor y la app (centavos exactos)
+  return {sub:c.sub, iva:c.iva, total:c.total};
+}
+
+/* ------------------------ bloques ------------------------
+   Regla de esta página (v26.1): cada paso muestra SOLO lo de ese momento. Lo de
+   pasos anteriores queda en "Ver …" cerrado. Una foto nunca aparece dos veces abierta. */
+var PASOS=['Recibido','Cotización','En taller','Listo'];
+function pasoDe(f){ return {recepcion:0,autorizar:1,enviada:1,aprobado:2,listo:3,entregado:3}[f]; }
+function pasos(f){
+  var n=pasoDe(f);
+  return '<ol class="pasos" aria-label="Avance de su servicio">'+PASOS.map(function(p,i){
+    var c=i<n?'hecho':(i===n?'aqui':'');
+    return '<li class="'+c+'"'+(i===n?' aria-current="step"':'')+'><i>'+(i<n?'✓':(i+1))+'</i><span>'+(i===3&&f==='entregado'?'Entregado':p)+'</span></li>';
+  }).join('')+'</ol>';
+}
+function hero(o,f){
+  var v=o.vehiculo||{};
+  var st={recepcion:['','Recibimos su vehículo. Lo estamos revisando.'],autorizar:['','Pendiente de su autorización'],enviada:['ok','Recibimos su autorización'],
+          aprobado:['ok','Estamos trabajando en su vehículo'],listo:['ok','¡Su vehículo está listo!'],entregado:['ok','Entregado el '+fecha((o.entregado||{}).fecha,(o.entregado||{}).hora)]}[f];
+  var h='<div class="hero"><h1>'+esc(veh(o))+'</h1><div class="chips">'
+    +(o.cliente?'<span class="chip">Cliente <b>'+esc(o.cliente)+'</b></span>':'')
+    +(v.placas?'<span class="chip">Placas <b>'+esc(v.placas)+'</b></span>':'')
+    +(o.fecha?'<span class="chip">Ingresó <b>'+esc(fecha(o.fecha,o.hora))+'</b></span>':'')+'</div>'
+    +pasos(f)
+    +'<div class="status '+st[0]+'" id="status"><i></i><span>'+esc(st[1])+'</span></div>';
+  if(f!=='recepcion' && f!=='autorizar'){
+    var keys=selDe(o), t=totales(o,keys), n=keys.length;
+    h+='<div class="total"><span>'+(f==='enviada'?'Total autorizado':'Total')+' · '+n+(n===1?' trabajo':' trabajos')+(o.iva?' <small>IVA incluido</small>':'')+'</span><b class="num">'+fmt(t.total)+'</b></div>';
+  }
+  return h+'</div>';
+}
+function datosVehiculo(o){
+  var v=o.vehiculo||{}, fuel=v.fuel!=null&&v.fuel!==''?FUEL[Number(v.fuel)]:(v.fuelLabel||'');
+  var c=[['Placas',v.placas],['Color',v.color],['Kilometraje',v.km?kmTxt(v.km)+' km':''],['Gasolina',fuel],
+    ['Cliente',o.cliente+(o.flotilla?' · '+o.flotilla+(o.eco?' ('+o.eco+')':''):'')],['Folio',o.folio,'mono'],['Número de serie',v.vin,'mono']];
+  return '<dl class="data">'+c.filter(function(x){ return x[1]; }).map(function(x){ return '<div><dt>'+x[0]+'</dt><dd'+(x[2]?' class="'+x[2]+'"':'')+'>'+esc(x[1])+'</dd></div>'; }).join('')+'</dl>';
+}
+function fotosRecep(o){
+  var f=o.fotosRecepcion||[];
+  return f.length? '<div class="recep">'+f.map(function(u,i){ return '<figure>'+ph(u,'Cómo llegó · foto '+(i+1))+'</figure>'; }).join('')+'</div>'
+                 : '<div class="nofoto">Las fotos de cómo llegó se agregan en cuanto el taller las tome.</div>';
+}
+function plegable(titulo,cont){ return cont? '<details class="mas"><summary>'+titulo+'</summary><div class="mas-b">'+cont+'</div></details>' : ''; }
+function verLlegada(o){
+  var n=(o.fotosRecepcion||[]).length;
+  return plegable('Cómo llegó su vehículo'+(n?' · '+n+' fotos':''), fotosRecep(o)+(o.danos?'<div class="note"><b>Detalles al recibirlo</b>'+esc(o.danos)+'</div>':''));
+}
+function verRevision(o){
+  var c=(o.diagnostico&&!hayExplic(o))?'<div class="txt">'+esc(o.diagnostico)+'</div>':'', n=0;
+  o.trabajos.forEach(function(t){ var e=v26explicHtml(t.explicacion,t.incluye,esc); if(e||(t.fotos&&t.fotos.length)){ n+=(t.fotos||[]).length; c+='<h3 class="sub">'+esc(t.titulo)+'</h3><div class="expl">'+e+'</div>'+rejilla(t.fotos,t.titulo); } });
+  if(o.fotosDiagnostico&&o.fotosDiagnostico.length){ n+=o.fotosDiagnostico.length; c+='<h3 class="sub">Otras fotos</h3>'+strip(o.fotosDiagnostico,'Revisión'); }
+  return c? plegable('Lo que encontramos'+(n?' · '+n+' fotos':''), c) : '';
+}
+function verDatos(o){ return plegable('Datos de su vehículo', datosVehiculo(o)); }
+/* Explicación para el cliente: los renglones que empiezan con "-", "•" o "*" se vuelven lista.
+   Si no hay explicación, se lista lo que incluye (otras partidas del trabajo, nunca la mano de obra). */
+function v26explicHtml(txt, incluye, esc){
+  var lineas=String(txt||'').split(/\r?\n/), par=[], li=[], h='';
+  lineas.forEach(function(l){ var t=l.trim(); if(!t) return; var m=/^[-•*·]\s*(.+)$/.exec(t); if(m) li.push(m[1]); else par.push(t); });
+  if(!li.length && !par.length && incluye && incluye.length) li=incluye.slice();   // sin explicación: lista de lo que incluye
+  if(par.length) h+='<p>'+par.map(esc).join(' ')+'</p>';
+  if(li.length) h+='<ul>'+li.map(function(x){ return '<li>'+esc(x)+'</li>'; }).join('')+'</ul>';
+  return h;
+}
+/* Centavos (v26.3): toda cifra de dinero se redondea a 2 decimales con la MISMA regla en la app,
+   el servidor, la liga del cliente y el PDF. IVA = subtotal × 16 % redondeado a centavos (como el CFDI),
+   y total = subtotal + IVA, exacto. */
+function v26r2(n){ n=Number(n)||0; var s=n<0?-1:1; return s*Math.round((Math.abs(n)+Number.EPSILON)*100)/100; }
+function v26importe(it){ return v26r2((Number(it&&it.cantidad)||0)*(Number(it&&it.precio)||0)); }
+function v26cuentas(sub, conIva){ sub=v26r2(sub); var iva=conIva?v26r2(sub*0.16):0; return {sub:sub, iva:iva, total:v26r2(sub+iva)}; }
+function v26cuentasCot(co){ var s=0; ((co&&co.items)||[]).forEach(function(it){ s+=v26importe(it); }); return v26cuentas(s, !!(co&&co.iva)); }
+function hayExplic(o){ return o.trabajos.some(function(t){ return String(t.explicacion||'').trim(); }); }
+function precio(o,n){ return '<span class="p num">'+fmt(n)+(o.iva?'<small>+ IVA</small>':'')+'</span>'; }
+function rejilla(fotos,cap){ return fotos&&fotos.length? '<div class="fgrid">'+fotos.map(function(u,i){ return ph(u,cap+' · foto '+(i+1)); }).join('')+'</div>' : ''; }
+function item(o,t,sel){
+  var on=sel.indexOf(t.k)>=0;
+  var h='<article class="item" data-k="'+esc(t.k)+'"><div class="row"><h3>'+esc(t.titulo)+'</h3>'+precio(o,t.subtotal)+'</div>';
+  h+=v26explicHtml(t.explicacion,t.incluye,esc);
+  h+=rejilla(t.fotos,t.titulo);   // v26.4: se autoriza la cotización completa, no trabajo por trabajo
+  return h+'</article>';
+}
+/* Lista corta (sin fotos): lo autorizado / lo que se hizo */
+function lista(o,keys,conNo){
+  var h='<div class="lista">';
+  o.trabajos.forEach(function(t){
+    var on=keys.indexOf(t.k)>=0; if(!on && !conNo) return;
+    h+='<div class="fila'+(on?'':' no')+'"><span>'+(on?'✓ ':'')+esc(t.titulo)+(on?'':' <small>· no autorizado</small>')+'</span><span class="num">'+(on?fmt(t.subtotal):'')+'</span></div>';
+  });
+  if(o.iva){ var tt=totales(o,keys); h+='<div class="fila sub"><span>Subtotal</span><span class="num">'+fmt(tt.sub)+'</span></div><div class="fila sub"><span>IVA (16%)</span><span class="num">'+fmt(tt.iva)+'</span></div>'; }
+  return h+'</div>';
+}
+function sumHtml(o,keys){
+  var t=totales(o,keys), rows='';
+  o.trabajos.forEach(function(x){ if(keys.indexOf(x.k)>=0) rows+='<div><span>'+esc(x.titulo)+'</span><span class="num">'+fmt(x.subtotal)+'</span></div>'; });
+  if(!rows) rows='<div><span>Ningún trabajo seleccionado</span></div>';
+  if(o.iva) rows+='<div class="sep"><span><b>Subtotal</b></span><span class="num"><b>'+fmt(t.sub)+'</b></span></div><div><span>IVA (16%)</span><span class="num">'+fmt(t.iva)+'</span></div>';
+  return rows+'<div class="tot"><span>Total</span><span class="num">'+fmt(t.total)+'</span></div>';
+}
+function siguePaso(f){
+  return {recepcion:'Le mandamos por WhatsApp lo que encontremos, con fotos y el precio de cada trabajo. Usted decide qué autorizar.',
+    enviada:'El taller confirma su autorización y empezamos. Le avisamos por WhatsApp cuando esté listo.',
+    aprobado:'Le avisamos por WhatsApp en cuanto su vehículo esté listo, con fotos del trabajo terminado.'}[f]||'';
+}
+function pie(o,f){
+  var h=f==='autorizar'?'':'<div class="acts no-print">'
+    +'<a class="btn wa" target="_blank" rel="noopener" href="'+esc(waLink('Hola, tengo una pregunta sobre la orden '+o.folio+' ('+veh(o)+(o.vehiculo&&o.vehiculo.placas?', placas '+o.vehiculo.placas:'')+').'))+'">¿Dudas? Escríbanos por WhatsApp</a></div>';
+  h+='<p class="warr">'+esc(GARANTIA)+'<br>'+esc(nombreTaller())+' · Folio '+esc(o.folio)+'</p>';
+  return h;
+}
+
+/* ------------------------ pantallas ------------------------ */
+function pintar(){
+  var o=O, f=fase(o), h=hero(o,f);
+  marca(o);
+  document.getElementById('folioTop').textContent='Folio '+o.folio;
+  bar.hidden=true;
+  if(f==='recepcion'){
+    h+='<h2 class="s">Así llegó</h2><p class="lead">Fotos tomadas al recibirlo, para su tranquilidad.</p>'+fotosRecep(o);
+    if(o.danos) h+='<div class="note"><b>Detalles al recibirlo</b>'+esc(o.danos)+'</div>';
+    if(o.motivo) h+='<div class="note ok"><b>Lo que nos pidió revisar</b>'+esc(o.motivo)+'</div>';
+    h+='<div class="sigue"><b>¿Qué sigue?</b>'+siguePaso(f)+'</div>';
+    h+=verDatos(o);
+  }
+  else if(f==='autorizar'){
+    var a=o.autorizacion;
+    if(a && !a.vigente) h+='<div class="note"><b>Actualizamos su cotización</b>Revísela y vuelva a autorizar, por favor.</div>';
+    if(o.diagnostico && !hayExplic(o)) h+='<h2 class="s">Lo que encontramos</h2><div class="txt">'+esc(o.diagnostico)+'</div>';
+    var sel=o.trabajos.map(function(t){ return t.k; });
+    h+='<h2 class="s">Qué le vamos a hacer</h2><p class="lead">Revise cada trabajo y sus fotos.'+(o.iva?' Precios sin IVA; el IVA se suma al final.':'')+'</p>';
+    h+=o.trabajos.map(function(t){ return item(o,t,sel); }).join('');
+    if(o.fotosDiagnostico&&o.fotosDiagnostico.length) h+=plegable('Más fotos de la revisión · '+o.fotosDiagnostico.length, strip(o.fotosDiagnostico,'Revisión'));
+    if(o.notas) h+='<div class="note">'+esc(o.notas)+'</div>';
+    var dudaWa=waLink('Hola, tengo una duda sobre la cotización '+o.folio+' ('+veh(o)+(o.vehiculo&&o.vehiculo.placas?', placas '+o.vehiculo.placas:'')+').');
+    h+='<section class="auth" id="autorizar"><h2>Autorización</h2><div class="sum" id="sum"></div>'
+      +'<div class="duda"><b>¿Tiene alguna duda o no quiere algún trabajo?</b>Escríbanos por WhatsApp antes de autorizar y con gusto ajustamos su cotización.'
+      +'<a class="btn wa" target="_blank" rel="noopener" href="'+esc(dudaWa)+'">Escribir por WhatsApp</a></div>'
+      +'<form id="authForm" style="display:grid;gap:16px" novalidate>'
+      +'<label class="field" for="nombre"><span>Su nombre</span><input id="nombre" autocomplete="name" placeholder="Nombre y apellido"></label>'
+      +'<label class="field" for="coment"><span>Comentarios (opcional)</span><textarea id="coment" rows="2" placeholder="¿Algo que debamos saber?"></textarea></label>'
+      +'<label class="terms" for="terms"><input type="checkbox" id="terms"><span>Autorizo todos los trabajos y precios de esta cotización.</span></label>'
+      +'<button class="btn" id="send" type="submit" disabled>Autorizar cotización</button>'
+      +'<p class="err" id="why" style="color:var(--muted);font-weight:400;font-size:13px"></p></form></section>';
+    h+=verLlegada(o)+verDatos(o);
+    bar.hidden=false;
+  }
+  else {
+    var keys=selDe(o);
+    if(f==='enviada'){
+      var au=o.autorizacion;
+      h+='<div class="note ok"><b>Gracias, '+esc(String(au.nombre||'').split(' ')[0])+'.</b>Autorizó la cotización el '+esc(fecha(au.fecha,au.hora))+'.'
+        +(au.comentario?'<br><span style="color:var(--muted)">Su comentario: “'+esc(au.comentario)+'”</span>':'')+'</div>';
+      h+='<h2 class="s">Lo que autorizó</h2>'+lista(o,keys,false);
+      h+='<div class="sigue"><b>¿Qué sigue?</b>'+siguePaso(f)+'</div>';
+      h+='<div class="acts no-print"><a class="btn wa" target="_blank" rel="noopener" href="'+esc(waLink(msgAut(o,au.trabajos,au.nombre,au.comentario)))+'">Avisar al taller por WhatsApp</a>'
+        +'</div><p class="lead" style="margin-top:10px">¿Necesita algún cambio? Escríbanos por WhatsApp.</p>';
+      h+=verRevision(o)+verLlegada(o);
+    }
+    else if(f==='aprobado'){
+      h+='<h2 class="s">Lo que le estamos haciendo</h2>'+lista(o,keys,false);
+      h+='<div class="sigue"><b>¿Qué sigue?</b>'+siguePaso(f)+'</div>';
+      h+=verRevision(o)+verLlegada(o);
+    }
+    else {
+      var fi=o.finalizado||{};
+      h+='<h2 class="s">'+(f==='listo'?'Así quedó':'El trabajo que hicimos')+'</h2>';
+      if(fi.notas) h+='<div class="txt">'+esc(fi.notas)+'</div>';
+      h+=fi.fotos&&fi.fotos.length? strip(fi.fotos,'Trabajo terminado') : '<div class="nofoto">Las fotos del trabajo terminado se agregan en un momento.</div>';
+      if(f==='listo') h+='<div class="acts no-print"><a class="btn wa" target="_blank" rel="noopener" href="'+esc(waLink('Hola, ¿a qué hora puedo pasar por mi '+veh(o)+(o.vehiculo&&o.vehiculo.placas?' ('+o.vehiculo.placas+')':'')+'? Folio '+o.folio+'.'))+'">Coordinar la entrega por WhatsApp</a></div>';
+      h+='<h2 class="s">Lo que le hicimos</h2>'+lista(o,keys,false);
+      h+=verRevision(o)+verLlegada(o);
+    }
+  }
+  h+=pie(o,f);
+  app.innerHTML=h;
+  if(f==='autorizar') engancharForm();
+  zoom();
+}
+function msgAut(o,keys,nombre,coment){
+  var t=totales(o,keys), si=o.trabajos.filter(function(x){ return keys.indexOf(x.k)>=0; }), no=o.trabajos.filter(function(x){ return keys.indexOf(x.k)<0; });
+  var txt='✅ AUTORIZO la orden '+o.folio+'\n'+veh(o)+(o.vehiculo&&o.vehiculo.placas?' · '+o.vehiculo.placas:'')+'\n\n'
+    +si.map(function(x){ return '• '+x.titulo+' — '+fmt(x.subtotal); }).join('\n')+'\n\nTotal: '+fmt(t.total)+(o.iva?' (IVA incluido)':'');
+  if(no.length) txt+='\n\nNo autorizo:\n'+no.map(function(x){ return '• '+x.titulo; }).join('\n');
+  if(coment) txt+='\n\nComentarios: '+coment;
+  return txt+'\n\n'+(nombre||'');
+}
+function engancharForm(){
+  var nombre=document.getElementById('nombre'), terms=document.getElementById('terms'), coment=document.getElementById('coment');
+  var btn=document.getElementById('send'), why=document.getElementById('why'), form=document.getElementById('authForm');
+  var todos=O.trabajos.map(function(t){ return t.k; });   // v26.4: autorización general de la cotización
+  document.getElementById('sum').innerHTML=sumHtml(O,todos);
+  barTot.textContent=fmt(totales(O,todos).total);
+  function update(){
+    var miss=[];
+    if(nombre.value.trim().length<3) miss.push('escriba su nombre');
+    if(!terms.checked) miss.push('marque la casilla de autorización');
+    why.textContent=miss.length?'Para continuar: '+miss.join(' y ')+'.':'';
+    why.style.color='var(--muted)'; why.style.fontWeight='400';
+    btn.disabled=!!miss.length;
+  }
+  [nombre,terms,coment].forEach(function(el){ el.addEventListener('input',update); el.addEventListener('change',update); });
+  form.addEventListener('submit',function(e){
+    e.preventDefault(); if(btn.disabled) return;
+    btn.disabled=true; btn.textContent='Enviando…';
+    fetch('/api/c/'+encodeURIComponent(TOK),{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({action:'autorizar',nombre:nombre.value.trim(),comentario:coment.value.trim(),trabajos:todos,huella:O.huella})})
+    .then(function(r){ return r.json(); }).then(function(j){
+      if(j&&j.ok) return cargar(true);
+      btn.textContent='Autorizar cotización'; btn.disabled=false;
+      why.textContent=(j&&j.error)||'No se pudo enviar. Intente de nuevo.'; why.style.color='var(--red)'; why.style.fontWeight='600';
+      if(j&&(j.recargar||j.noValida||j.yaAutorizo)) setTimeout(function(){ cargar(false); },2500);
+    }).catch(function(){ btn.textContent='Autorizar cotización'; btn.disabled=false; why.textContent='Sin conexión. Revise su internet e intente de nuevo.'; why.style.color='var(--red)'; });
+  });
+  update();
+}
+function zoom(){
+  var lb=document.getElementById('lb'), li=document.getElementById('lbimg'), lc=document.getElementById('lbcap');
+  [].forEach.call(document.querySelectorAll('[data-zoom]'),function(b){ b.addEventListener('click',function(){ li.src=b.querySelector('img').src; lc.textContent=b.getAttribute('data-zoom'); lb.hidden=false; }); });
+}
+(function(){
+  var lb=document.getElementById('lb'), li=document.getElementById('lbimg');
+  var close=function(){ lb.hidden=true; li.src=''; };
+  document.getElementById('lbx').onclick=close; lb.addEventListener('click',function(e){ if(e.target===lb) close(); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') close(); });
+})();
+function malo(msg,reintentar){
+  bar.hidden=true;
+  app.innerHTML='<div class="hero"><div class="eyebrow">Orden de servicio</div><h1>'+esc(msg)+'</h1>'
+    +'<p class="lead" style="margin-top:12px">'+(reintentar?'Revise su conexión a internet.':'Pídale al taller que le mande la liga otra vez por WhatsApp.')+'</p>'
+    +(reintentar?'<div class="acts"><button class="btn" type="button" onclick="location.reload()">Intentar de nuevo</button></div>':'')+'</div>';
+}
+function cargar(subir){
+  if(!TOK){ malo('Esta liga no está completa'); return Promise.resolve(); }
+  return fetch('/api/c/'+encodeURIComponent(TOK),{cache:'no-store'}).then(function(r){ return r.json(); }).then(function(j){
+    if(!(j&&j.ok)){ malo(j&&j.noValida?'Esta liga ya no es válida':(j&&j.error)||'No se pudo abrir su orden', !(j&&j.noValida)); return; }
+    O=j.orden; pintar(); if(subir) window.scrollTo(0,0);
+  }).catch(function(){ malo('No se pudo abrir su orden',true); });
+}
+cargar(false);
+})();
+</script>
+</body>
+</html>
