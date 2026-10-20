@@ -228,7 +228,7 @@ function totales(o, keys){
    Regla de esta página (v26.1): cada paso muestra SOLO lo de ese momento. Lo de
    pasos anteriores queda en "Ver …" cerrado. Una foto nunca aparece dos veces abierta. */
 var PASOS=['Recibido','Cotización','En taller','Listo'];
-function pasoDe(f){ return {recepcion:0,autorizar:1,enviada:1,aprobado:2,listo:3,entregado:3}[f]; }
+function pasoDe(f){ return {recepcion:0,autorizar:1,enviada:1,aprobado:2,listo:3,entregado:4}[f]; }   // v26.5: entregado = todo completo
 function pasos(f){
   var n=pasoDe(f);
   return '<ol class="pasos" aria-label="Avance de su servicio">'+PASOS.map(function(p,i){
@@ -320,13 +320,13 @@ function sumHtml(o,keys){
   return rows+'<div class="tot"><span>Total</span><span class="num">'+fmt(t.total)+'</span></div>';
 }
 function siguePaso(f){
-  return {recepcion:'Le mandamos por WhatsApp lo que encontremos, con fotos y el precio de cada trabajo. Usted decide qué autorizar.',
+  return {recepcion:'Le mandamos por WhatsApp lo que encontremos, con fotos y el precio de cada trabajo, para que lo revise y lo autorice desde aquí.',
     enviada:'El taller confirma su autorización y empezamos. Le avisamos por WhatsApp cuando esté listo.',
     aprobado:'Le avisamos por WhatsApp en cuanto su vehículo esté listo, con fotos del trabajo terminado.'}[f]||'';
 }
 function pie(o,f){
   var h=f==='autorizar'?'':'<div class="acts no-print">'
-    +'<a class="btn wa" target="_blank" rel="noopener" href="'+esc(waLink('Hola, tengo una pregunta sobre la orden '+o.folio+' ('+veh(o)+(o.vehiculo&&o.vehiculo.placas?', placas '+o.vehiculo.placas:'')+').'))+'">¿Dudas? Escríbanos por WhatsApp</a></div>';
+    +'<a class="btn wa" target="_blank" rel="noopener" href="'+esc(waLink('Hola, tengo una duda o comentario sobre la orden '+o.folio+' ('+veh(o)+(o.vehiculo&&o.vehiculo.placas?', placas '+o.vehiculo.placas:'')+'): '))+'">¿Dudas o comentarios? Escríbanos por WhatsApp</a></div>';
   h+='<p class="warr">'+esc(GARANTIA)+'<br>'+esc(nombreTaller())+' · Folio '+esc(o.folio)+'</p>';
   return h;
 }
@@ -353,10 +353,10 @@ function pintar(){
     h+=o.trabajos.map(function(t){ return item(o,t,sel); }).join('');
     if(o.fotosDiagnostico&&o.fotosDiagnostico.length) h+=plegable('Más fotos de la revisión · '+o.fotosDiagnostico.length, strip(o.fotosDiagnostico,'Revisión'));
     if(o.notas) h+='<div class="note">'+esc(o.notas)+'</div>';
-    var dudaWa=waLink('Hola, tengo una duda sobre la cotización '+o.folio+' ('+veh(o)+(o.vehiculo&&o.vehiculo.placas?', placas '+o.vehiculo.placas:'')+').');
+    var dudaWa=waLink('Hola, tengo una duda o comentario sobre la cotización '+o.folio+' ('+veh(o)+(o.vehiculo&&o.vehiculo.placas?', placas '+o.vehiculo.placas:'')+'): ');
     h+='<section class="auth" id="autorizar"><h2>Autorización</h2><div class="sum" id="sum"></div>'
-      +'<div class="duda"><b>¿Tiene alguna duda o no quiere algún trabajo?</b>Escríbanos por WhatsApp antes de autorizar y con gusto ajustamos su cotización.'
-      +'<a class="btn wa" target="_blank" rel="noopener" href="'+esc(dudaWa)+'">Escribir por WhatsApp</a></div>'
+      +'<div class="duda"><b>¿Tiene alguna duda sobre la cotización o algún comentario?</b>Escríbanos por WhatsApp antes de autorizar y con gusto le atendemos. Si quiere quitar o cambiar algún trabajo, también ajustamos su cotización.'
+      +'<a class="btn wa" target="_blank" rel="noopener" href="'+esc(dudaWa)+'">Enviar duda o comentario por WhatsApp</a></div>'
       +'<form id="authForm" style="display:grid;gap:16px" novalidate>'
       +'<label class="field" for="nombre"><span>Su nombre</span><input id="nombre" autocomplete="name" placeholder="Nombre y apellido"></label>'
       +'<label class="field" for="coment"><span>Comentarios (opcional)</span><textarea id="coment" rows="2" placeholder="¿Algo que debamos saber?"></textarea></label>'
@@ -375,7 +375,7 @@ function pintar(){
       h+='<h2 class="s">Lo que autorizó</h2>'+lista(o,keys,false);
       h+='<div class="sigue"><b>¿Qué sigue?</b>'+siguePaso(f)+'</div>';
       h+='<div class="acts no-print"><a class="btn wa" target="_blank" rel="noopener" href="'+esc(waLink(msgAut(o,au.trabajos,au.nombre,au.comentario)))+'">Avisar al taller por WhatsApp</a>'
-        +'</div><p class="lead" style="margin-top:10px">¿Necesita algún cambio? Escríbanos por WhatsApp.</p>';
+        +'</div><p class="lead" style="margin-top:10px">Si tiene alguna duda sobre la cotización o algún comentario, escríbanos por WhatsApp y con gusto le atendemos.</p>';
       h+=verRevision(o)+verLlegada(o);
     }
     else if(f==='aprobado'){
@@ -455,10 +455,29 @@ function cargar(subir){
   if(!TOK){ malo('Esta liga no está completa'); return Promise.resolve(); }
   return fetch('/api/c/'+encodeURIComponent(TOK),{cache:'no-store'}).then(function(r){ return r.json(); }).then(function(j){
     if(!(j&&j.ok)){ malo(j&&j.noValida?'Esta liga ya no es válida':(j&&j.error)||'No se pudo abrir su orden', !(j&&j.noValida)); return; }
-    O=j.orden; pintar(); if(subir) window.scrollTo(0,0);
+    O=j.orden; _ultFirma=firmaDe(O); pintar(); if(subir) window.scrollTo(0,0);
   }).catch(function(){ malo('No se pudo abrir su orden',true); });
 }
 cargar(false);
+/* v26.5: la liga se actualiza sola (al volver a la pestaña y cada 2 min), sin borrar lo que el cliente está escribiendo */
+var _ultFirma='';
+function firmaDe(o){ return o?JSON.stringify([o.estatus,o.autorizacion,o.entregado,o.finalizado&&o.finalizado.fecha,(o.trabajos||[]).length,o.huella||'']):''; }
+function escribiendo(){
+  var n=document.getElementById('nombre'), c=document.getElementById('coment');
+  var a=document.activeElement; if(a&&(a.tagName==='INPUT'||a.tagName==='TEXTAREA')) return true;
+  return !!((n&&n.value.trim())||(c&&c.value.trim()));
+}
+function refrescar(){
+  if(!TOK||!O||document.hidden||escribiendo()||!document.getElementById('lb').hidden) return;
+  fetch('/api/c/'+encodeURIComponent(TOK),{cache:'no-store'}).then(function(r){ return r.json(); }).then(function(j){
+    if(!(j&&j.ok)) return;
+    if(!_ultFirma) _ultFirma=firmaDe(O);
+    var f=firmaDe(j.orden); if(f===_ultFirma) return;
+    _ultFirma=f; O=j.orden; var y=window.scrollY; pintar(); window.scrollTo(0,Math.min(y,document.body.scrollHeight));
+  }).catch(function(){});
+}
+document.addEventListener('visibilitychange',function(){ if(!document.hidden) refrescar(); });
+setInterval(refrescar,120000);
 })();
 </script>
 </body>

@@ -28,7 +28,7 @@
  ****************************************************************/
 import { getStore } from "@netlify/blobs";
 
-const BACKEND_VERSION = "2026-10-19-v26.4";
+const BACKEND_VERSION = "2026-10-19-v26.5";
 const ETAPAS_ORDEN = ["cita", "recepcion", "cotizado", "aprobado", "finalizado", "entregado"];
 const CANDADO_DESDE = "aprobado";
 const HORAS_SESION = 12;
@@ -1259,7 +1259,7 @@ async function autorizarCliente(tok, b, req) {
     const co = o.cotizacion || {}, hu = v26huella(co);
     if (String(b.huella || "") !== hu) return { ok: false, recargar: true, error: "El taller actualizó la cotización. Recargue la página para ver la versión nueva." };
     // v26.4: una sola autorización por cotización. Para cambiarla, el cliente escribe por WhatsApp y oficina ajusta y reenvía.
-    if (autVigente(o)) return { ok: false, yaAutorizo: true, error: "Esta cotización ya está autorizada. Si necesita un cambio, escríbanos por WhatsApp." };
+    if (autVigente(o)) return { ok: false, yaAutorizo: true, error: "Esta cotización ya está autorizada. Si tiene alguna duda o comentario, escríbanos por WhatsApp." };
     const trab = v26trabajos(co, fotosDeSeccion(o, "diagnostico"));
     const si = trab, no = []; // v26.4: autorización general (todos los trabajos de la cotización)
     if (!si.length) return { ok: false, error: "La cotización no tiene trabajos." };

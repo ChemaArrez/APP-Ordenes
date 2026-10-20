@@ -898,6 +898,32 @@ body.tec-form #dashBtn, body.tec-form #gearBtn, body.tec-form #refBtn, body.tec-
 .fi-p.on{border-color:#1f9d57;}
 .fi-p.on img{opacity:1;}
 .fi-p.on span{background:#1f9d57;}
+/* v26.5 · tiempos y cierre */
+.tstep.wait .dot{background:var(--gold);box-shadow:0 0 0 2px var(--gold);}
+.tstep.wait .lbl{color:#8a6100;}
+.tstep .gap.pg{color:#11683b;background:#e6f6ed;}
+.tline > .th .tot.cerr{background:#1f9d57;}
+.tline > .th .tot.cobr{background:var(--gold);color:#3b2d00;}
+.ci-wrap{display:flex;flex-direction:column;gap:10px;margin-bottom:12px;}
+.ci-paso{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+.ci-ph{display:flex;align-items:center;gap:9px;padding:10px 12px;background:#f7f8fa;border-bottom:1px solid var(--line);}
+.ci-ph b{font-size:14px;flex:1;min-width:0;}
+.ci-n{flex:0 0 26px;height:26px;border-radius:50%;background:#dfe2e8;color:#5b5f68;font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center;}
+.ci-est{font-size:11.5px;font-weight:800;color:var(--muted);text-align:right;}
+.ci-pb{padding:10px 12px;}
+.ci-pb .dsec{box-shadow:none;border:1px solid #eef0f3;margin:8px 0 0;}
+.ci-pb button{width:100%;margin-top:8px;border-radius:11px;padding:12px;font-weight:800;font-size:14px;cursor:pointer;}
+.ci-pb .btn-primary,.ci-pb .btn-dark{border:0;}
+.ci-pb .arow{display:flex;gap:8px;}
+.ci-pb .arow button{flex:1;}
+.ci-paso.hecho .ci-n{background:#1f9d57;color:#fff;}
+.ci-paso.hecho .ci-est{color:#11683b;}
+.ci-paso.aqui{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink);}
+.ci-paso.aqui .ci-n{background:var(--ink);color:#fff;}
+.ci-paso.parcial .ci-n{background:var(--gold);color:#3b2d00;}
+.ci-paso.parcial .ci-est{color:#8a6100;}
+.ci-hint{font-size:12.5px;color:var(--muted);line-height:1.4;margin:2px 0 4px;}
+.ci-sig{width:100%;border:0;border-radius:12px;padding:14px;font-weight:900;font-size:15px;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -1243,7 +1269,7 @@ body.tec-form #dashBtn, body.tec-form #gearBtn, body.tec-form #refBtn, body.tec-
 <!-- ============ FINALIZAR ============ -->
 <div id="view-finalizar" class="wrap hide">
   <div class="miniinfo" id="fnInfo"></div>
-  <div class="section"><div class="head">Trabajo finalizado</div><div class="body">
+  <div class="section"><div class="head">2 · Evidencias del trabajo terminado</div><div class="body">
     <div class="field"><label>Notas de finalización</label><textarea id="fn_notas" style="min-height:70px" placeholder="Trabajos realizados, refacciones instaladas, pruebas…"></textarea></div>
     <div class="photorow">
       <button type="button" class="photobtn" onclick="document.getElementById('fnPhotoCam').click()">&#128247; Tomar foto</button>
@@ -1254,7 +1280,7 @@ body.tec-form #dashBtn, body.tec-form #gearBtn, body.tec-form #refBtn, body.tec-
     <div class="thumbs" id="fnThumbs"></div>
   </div></div>
 
-  <div class="section"><div class="head">Costo real del servicio <span class="opt">— para el análisis de rentabilidad</span></div><div class="body">
+  <div class="section"><div class="head">3 · Costo real del servicio <span class="opt">— para el análisis de rentabilidad</span></div><div class="body">
     <div class="row2">
       <div class="field"><label>Refacciones / insumos ($)</label>
         <input type="number" id="fn_cRef" inputmode="decimal" min="0" step="0.01" placeholder="0.00" oninput="calcUtilidad()"></div>
@@ -1589,7 +1615,7 @@ var IDB=(function(){
   };
 })();
 var hasIDB = IDB.avail();
-var APP_VERSION='2026-10-19-v26.4';
+var APP_VERSION='2026-10-19-v26.5';
 
 /* ---- Manifiesto de app (se genera al vuelo para no romper el archivo unico) ----
    'maskable' es la clave: sin esto Android encoge el icono y le pone
@@ -3823,6 +3849,7 @@ async function openDetail(id){
   $('barTitle').innerHTML=esc(o.folio||'Orden')+'<small>'+esc(o.sucursal||'')+'</small>';
   $('detailHost').innerHTML=renderDetail(o);
   show('detail');
+  setTimeout(v265NavVisible,0);   // v26.5
   try{ window._frescaP = refrescarTallerOrden(o,false); }catch(e){}   // v25: trae la versión más reciente y las fotos del taller
 }
 /* ============ LÍNEA DE TIEMPO DEL FLUJO ============
@@ -3841,7 +3868,7 @@ function fmtDur(ms){
   var d=hr/24;
   return (Math.round(d*10)/10)+(d<2?' día':' días');
 }
-function pasosFlujo(o){
+function pasosFlujoV25(o){
   var co=o.cotizacion||{}, dg=o.diagnostico||{}, ap=o.aprobacion||{}, fi=o.finalizado||{}, sal=o.salida||{};
   return [
     {k:'ingreso', lbl:'Ingreso / Recepción', f:o.fecha,      h:o.hora},
@@ -3851,7 +3878,7 @@ function pasosFlujo(o){
     {k:'entrega', lbl:'Entrega al cliente',       f:sal.fecha,h:sal.hora}
   ];
 }
-function renderTimeline(o){
+function renderTimelineV25(o){
   var pasos=pasosFlujo(o);
   var hechos=pasos.filter(function(p){return !!p.f;});
   var prev=null, filas='', tPrimero=null, tUltimo=null;
@@ -3942,17 +3969,18 @@ function renderDetail(o){
   // ---- Navegación de pestañas ----
   var ecE=ecEstado(o);
   var flagDiag = (st==='recepcion') ? '<span class="flag"></span>' : '';
-  var flagChecklist = (['aprobado','finalizado'].indexOf(st)>=0 && !ecE.iniciado) ? '<span class="flag"></span>' : '';
-  var flagCostos = (['aprobado','finalizado','entregado'].indexOf(st)>=0 && !(o.costos&&costoTotal(o.costos)>0)) ? '<span class="flag"></span>' : '';
+  var t0=(_tabDet&&_tabDet.id===o.id&&['resumen','diag','cierre','entrega'].indexOf(_tabDet.tab)>=0)?_tabDet.tab:'resumen';   // v26.5: al guardar regresa a la misma pestaña
+  var flagCierre = v265FlagCierre(o) ? '<span class="flag"></span>' : '';
+  var flagEntrega = v265FlagEntrega(o) ? '<span class="flag"></span>' : '';
   h+='<div class="dtabs-nav">'
-   +'<button type="button" class="dtab-btn active" data-tab-btn="resumen" onclick="switchDetailTab(\'resumen\')"><span class="ic">&#128203;</span>Resumen</button>'
-   +'<button type="button" class="dtab-btn" data-tab-btn="diag" onclick="switchDetailTab(\'diag\')"><span class="ic">&#128269;</span>Diagnóstico y Cotización'+flagDiag+'</button>'
-   +'<button type="button" class="dtab-btn" data-tab-btn="checklist" onclick="switchDetailTab(\'checklist\')"><span class="ic">&#9989;</span>Checklist y Entrega'+flagChecklist+'</button>'
-   +'<button type="button" class="dtab-btn" data-tab-btn="costos" onclick="switchDetailTab(\'costos\')"><span class="ic">&#128178;</span>Costos y Pago'+flagCostos+'</button>'
+   +'<button type="button" class="dtab-btn'+(t0==='resumen'?' active':'')+'" data-tab-btn="resumen" onclick="switchDetailTab(\'resumen\')"><span class="ic">&#128203;</span>Resumen</button>'
+   +'<button type="button" class="dtab-btn'+(t0==='diag'?' active':'')+'" data-tab-btn="diag" onclick="switchDetailTab(\'diag\')"><span class="ic">&#128269;</span>Diagnóstico y Cotización'+flagDiag+'</button>'
+   +'<button type="button" class="dtab-btn'+(t0==='cierre'?' active':'')+'" data-tab-btn="cierre" onclick="switchDetailTab(\'cierre\')"><span class="ic">&#9989;</span>Checklist, evidencias y costos'+flagCierre+'</button>'
+   +'<button type="button" class="dtab-btn'+(t0==='entrega'?' active':'')+'" data-tab-btn="entrega" onclick="switchDetailTab(\'entrega\')"><span class="ic">&#128663;</span>Entrega, pago y encuesta'+flagEntrega+'</button>'
    +'</div>';
 
   // ================= PESTAÑA: RESUMEN =================
-  h+='<div class="dtab active" data-tab="resumen">';
+  h+='<div class="dtab'+(t0==='resumen'?' active':'')+'" data-tab="resumen">';
   h+='<div class="dsec"><div class="h">Cliente</div><div class="b"><div class="dgrid">'
     +di('Nombre / Razón social',c.nombre)+di('Servicio a domicilio',c.domicilio==='si'?'Sí':(c.domicilio==='no'?'No':''))
     +di('Teléfono',c.tel)+di('Correo',c.correo)+'</div></div></div>';
@@ -4001,7 +4029,7 @@ function renderDetail(o){
   h+='</div>'; // /dtab resumen
 
   // ================= PESTAÑA: DIAGNÓSTICO Y COTIZACIÓN =================
-  h+='<div class="dtab" data-tab="diag">';
+  h+='<div class="dtab'+(t0==='diag'?' active':'')+'" data-tab="diag">';
   h+=mpBotonDetalle(o);
   h+=renderDiagnosticoCard(o);
   h+=renderCotizacionCard(o);
@@ -4014,30 +4042,13 @@ function renderDetail(o){
   h+='</div>';
   h+='</div>'; // /dtab diag
 
-  // ================= PESTAÑA: CHECKLIST Y ENTREGA =================
-  h+='<div class="dtab" data-tab="checklist">';
-  h+=ecBotonDetalle(o);
-  h+='<div class="actions">';
-  if(st==='finalizado'){ h+='<button class="btn-primary" onclick="openEntrega()">Registrar entrega + encuesta</button>'; }
-  if(st==='entregado'){ h+='<div class="miniinfo" style="text-align:center;color:var(--ok);font-weight:700;border-color:#bfe6ce;background:#eafaf1">✓ Servicio entregado y con encuesta registrada</div>'; }
-  h+='</div>';
-  if(o.salida){
-    h+='<div class="dsec"><div class="h">Entrega del vehículo (salida)</div><div class="b"><div class="dgrid">'
-      +di('Fecha salida',fmtDate(o.salida.fecha))+di('Hora salida',o.salida.hora)+di('Km salida',o.salida.km)
-      +di('Combustible salida',o.salida.fuel!=null?FUEL[o.salida.fuel]:'')+'</div></div></div>';
-  }
-  h+=renderEncuestaCard(o);
-  h+='</div>'; // /dtab checklist
-
-  // ================= PESTAÑA: COSTOS Y PAGO =================
-  h+='<div class="dtab" data-tab="costos">';
-  h+=renderCobro(o);
-  h+=renderRentabilidad(o);
-  h+=renderFinalizadoCard(o);
-  h+='<div class="actions">';
-  if(st==='aprobado'){ h+='<button class="btn-primary" onclick="openFinalizar()">Finalizar trabajo</button>'; }
-  h+='</div>';
-  h+='</div>'; // /dtab costos
+  // ================= PESTAÑA: CIERRE Y ENTREGA (v26.5) =================
+  h+='<div class="dtab'+(t0==='cierre'?' active':'')+'" data-tab="cierre">';
+  h+=renderCierre(o);
+  h+='</div>'; // /dtab cierre
+  h+='<div class="dtab'+(t0==='entrega'?' active':'')+'" data-tab="entrega">';
+  h+=renderEntregaTab(o);
+  h+='</div>'; // /dtab entrega
 
   h+='</div>';                       // /dmain
   h+='<div class="dside">'+renderTimeline(o)+renderDocsBlock(o)+'</div>';
@@ -4054,6 +4065,8 @@ function switchDetailTab(name){
     var on=(el.getAttribute('data-tab')===name); el.classList.toggle('active',on); if(on)found=true;
   });
   if(!found) return; // pestaña inexistente en esta orden: no hace nada
+  if(detailOrder) _tabDet={id:detailOrder.id, tab:name};   // v26.5
+  setTimeout(v265NavVisible,0);
   main.querySelectorAll('.dtab-btn').forEach(function(el){
     el.classList.toggle('active', el.getAttribute('data-tab-btn')===name);
   });
@@ -4620,6 +4633,11 @@ async function saveEntrega(){
   }
   if(_pg.estado==='parcial' && _pg.cobrado<=0){
     toast('Captura el monto recibido'); return;
+  }
+  var _pPrev=o.pago||{};   // v26.5
+  if(_pg.estado==='pagado'){
+    if(_pPrev.estado && _pPrev.estado!=='pagado') _pg.deCredito=_pPrev.estado;
+    else if(_pPrev.estado==='pagado'){ if(_pPrev.deCredito) _pg.deCredito=_pPrev.deCredito; if(_pPrev.fecha){ _pg.fecha=_pPrev.fecha; _pg.hora=_pPrev.hora||_pg.hora; } }
   }
   o.pago=_pg;
   o.estatus='entregado';
@@ -6225,7 +6243,7 @@ function msgCliente(o,tipo,url){
   var v=o.vehiculo||{}, veh=[v.marca,v.modelo].filter(Boolean).join(' ')||'vehículo', pl=v.placas?' ('+v.placas+')':'';
   var hola=saludo(o), tot=money((o.cotizacion||{}).total), nom=marcaDe(o).nombre;
   if(tipo==='recibido') return hola+', recibimos su '+veh+pl+' en '+nom+'. 🚗\n\nAquí puede ver su orden de recepción con las fotos de cómo llegó:\n'+url+'\n\nFolio '+(o.folio||'')+'. Le avisamos por aquí en cuanto tengamos el diagnóstico.';
-  if(tipo==='cotizacion') return hola+', ya tenemos el diagnóstico de su '+veh+pl+'. 🔍\n\nAquí puede ver lo que encontramos, con fotos y el precio de cada trabajo, y autorizar desde su celular:\n'+url+'\n\nTotal: '+tot+'. Si tiene dudas, escríbanos por aquí.';
+  if(tipo==='cotizacion') return hola+', ya tenemos el diagnóstico de su '+veh+pl+'. 🔍\n\nAquí puede ver lo que encontramos, con fotos y el precio de cada trabajo, y autorizar desde su celular:\n'+url+'\n\nTotal: '+tot+'.\n\nSi tiene alguna duda sobre la cotización o algún comentario, escríbanos por este WhatsApp y con gusto le atendemos.';
   if(tipo==='listo') return hola+', ¡su '+veh+pl+' está listo! ✅\n\nAquí puede ver el trabajo terminado con fotos:\n'+url+'\n\nTotal: '+tot+'. ¿A qué hora pasa por él?';
   return hola+', aquí puede ver el avance de su '+veh+pl+':\n'+url+'\n\nFolio '+(o.folio||'')+'.';
 }
@@ -6529,6 +6547,135 @@ async function printQuote(mode){
   if(ligaUrl(o)) h+='<div class="liga">Vea las fotos en grande y autorice en línea: <b>'+esc(ligaUrl(o))+'</b></div>';
   h+='<div class="warr"><b>COMPROMISO '+esc(m.nombre.toUpperCase())+' — CALIDAD, HONESTIDAD Y TRANSPARENCIA.</b> '+P26_GAR+'</div>';
   printDoc(mode||'print','Cotizacion_'+(o.folio||''),p26Wrap(o,h));
+}
+
+/* =====================================================================
+   v26.5 · Tiempos del servicio y pestaña "Cierre y entrega"
+   - Una orden entregada y pagada queda toda en verde (sin punto amarillo).
+   - Si salió a crédito, aparece el paso "Pago pendiente" en amarillo; al
+     registrar el pago queda "Pago liquidado" en verde.
+   - Checklist → Evidencias → Costos → Entrega, pago y encuesta en una sola
+     pestaña, en ese orden, sin brincar entre pestañas.
+   ===================================================================== */
+function v265PagoPend(o){ var p=o.pago||{}; return o.estatus==='entregado' && !!p.estado && p.estado!=='pagado' && (Number(p.saldo)||0)>0; }
+function v265Cerrada(o){ return o.estatus==='entregado' && !v265PagoPend(o); }
+function pasosFlujo(o){
+  var pasos=pasosFlujoV25(o), p=o.pago||{}, sal=o.salida||{};
+  if(o.estatus==='entregado' && p.estado){
+    if(v265PagoPend(o)) pasos.push({k:'pago', lbl:'Pago pendiente ('+(p.estado==='parcial'?'parcial':'crédito')+')', f:'', h:'', pend:true,
+      txt:'Saldo '+money(p.saldo)+(p.fechaCompromiso?' · vence '+fmtDate(p.fechaCompromiso):'')});
+    else if(p.estado==='pagado' && p.deCredito && p.fecha)   // salió a crédito y después se pagó
+      pasos.push({k:'pago', lbl:'Pago liquidado', f:p.fecha, h:p.hora});
+  }
+  return pasos;
+}
+function renderTimeline(o){
+  var pasos=pasosFlujo(o), cerrada=v265Cerrada(o), enCurso=o.estatus!=='entregado';
+  var hechos=pasos.filter(function(p){return !!p.f;});
+  var prev=null, filas='', tPrimero=null, tUltimo=null;
+  pasos.forEach(function(p){
+    var d=tsOf(p.f,p.h);
+    var esUlt = hechos.length && hechos[hechos.length-1].k===p.k;
+    var cls = p.f ? ((esUlt && enCurso)?'done now':'done') : (p.pend?'wait':'pend');
+    var gap='';
+    if(d){
+      if(p.k!=='pago'){ if(tPrimero===null) tPrimero=d; tUltimo=d; }
+      if(prev){
+        var ms=d.getTime()-prev.getTime(), g=fmtDur(ms);
+        var cl = p.k==='pago' ? 'pg' : (ms<=(2*864e5)?'ok':(ms<=(5*864e5)?'wait':''));
+        if(g) gap='<div class="gap '+cl+'">+'+g+'</div>';
+      }
+      prev=d;
+    }
+    var linea = p.f ? (fmtDate(p.f)+(p.h?' · '+p.h:'')) : (p.txt||'Pendiente');
+    filas+='<div class="tstep '+cls+'"><div class="dot"></div>'
+      +'<div><div class="lbl">'+p.lbl+'</div><div class="dt">'+esc(linea)+'</div></div>'
+      +'<div>'+gap+'</div></div>';
+  });
+  var totTxt='—';
+  if(tPrimero&&tUltimo&&tUltimo.getTime()>tPrimero.getTime()) totTxt=fmtDur(tUltimo.getTime()-tPrimero.getTime());
+  var enTaller=diasTaller(o);
+  var badge = cerrada ? '<span class="tot cerr">✓ Cerrada</span>'
+    : (v265PagoPend(o) ? '<span class="tot cobr">Por cobrar</span>' : '<span class="tot">'+hechos.length+'/'+pasos.length+'</span>');
+  var h='<div class="tline'+(cerrada?' cerrada':'')+'"><div class="th">⏱️ Tiempos del servicio'+badge+'</div><div class="tb">'
+    +filas
+    +'<div class="tfoot"><span>'+(o.estatus==='entregado'?'Ciclo total (ingreso → entrega)':'Ciclo acumulado')+'</span><b>'+totTxt+'</b></div>';
+  if(enTaller!=null){
+    h+='<div class="tfoot" style="border-top:none;padding-top:4px"><span>En taller hoy</span>'
+     +'<span class="dtag big '+diasColor(enTaller)+'">'+enTaller+(enTaller===1?' día':' días')+'</span></div>';
+  }
+  h+='<div class="tnote">El “+tiempo” es lo que tardó cada etapa respecto a la anterior. Verde ≤2 días · ámbar ≤5 días · rojo +5 días.'+(v265PagoPend(o)?' El paso amarillo es el cobro pendiente.':'')+'</div>';
+  h+='</div></div>';
+  return h;
+}
+
+/* ---- pestañas "Checklist, evidencias y costos" (pasos 1-3) y "Entrega, pago y encuesta" (paso 4) ---- */
+var _tabDet=null;   // pestaña abierta de la orden actual (al guardar regresa a la misma)
+function v265Paso(n, titulo, est, estTxt, cuerpo){
+  return '<div class="ci-paso '+est+'"><div class="ci-ph"><span class="ci-n">'+(est==='hecho'?'✓':n)+'</span><b>'+titulo+'</b>'
+    +(estTxt?'<span class="ci-est">'+estTxt+'</span>':'')+'</div><div class="ci-pb">'+cuerpo+'</div></div>';
+}
+function v265FlagCierre(o){
+  var st=o.estatus||'';
+  return st==='aprobado' || ((st==='finalizado'||st==='entregado') && !(costoTotal(o.costos||{})>0));
+}
+function v265FlagEntrega(o){ return (o.estatus||'')==='finalizado' || v265PagoPend(o); }
+function renderCierre(o){
+  var st=o.estatus||'recepcion';
+  if(['aprobado','finalizado','entregado'].indexOf(st)<0)
+    return '<div class="miniinfo">Esta parte empieza cuando la cotización está <b>aprobada</b>. Aquí vas a llevar, en orden: '
+      +'<b>1</b> checklist de la unidad · <b>2</b> evidencias del trabajo terminado · <b>3</b> costos. Después sigue la pestaña <b>Entrega, pago y encuesta</b>.</div>';
+  var e=ecEstado(o), fi=o.finalizado||{}, fin=(st==='finalizado'||st==='entregado'), k=o.costos||{}, cos=costoTotal(k);
+  var h='<div class="ci-wrap">';
+  // 1 · Checklist de la unidad
+  var e1 = e.puedeTerminar ? (e.puedeEntregar?'hecho':'parcial') : 'aqui';
+  var t1 = e.puedeTerminar ? (e.puedeEntregar?'Completo':'Falta sección 5 y firmas (para entregar)') : (e.iniciado?'Incompleto':'Pendiente');
+  h+=v265Paso(1,'Checklist de la unidad',e1,t1, ecBotonDetalle(o)
+    +(e.puedeTerminar && !e.puedeEntregar && fin?'<div class="ci-hint">Para entregar: termina la sección 5 y las dos firmas (técnico y cliente).</div>':''));
+  // 2 · Evidencias del trabajo terminado
+  var b2='';
+  if(fin){
+    b2+=renderFinalizadoCard(o)||'<div class="ci-hint">Se finalizó sin notas ni fotos.</div>';
+    b2+='<button class="btn-light" onclick="openFinalizar()">🔒 Editar evidencias</button>';
+  } else {
+    b2+='<div class="ci-hint">Notas del trabajo y fotos de cómo quedó. En la misma pantalla capturas el costo (paso 3).</div>';
+    b2+='<button class="btn-primary" onclick="openFinalizar()">📷 Evidencias y costo → Finalizar trabajo</button>';
+  }
+  h+=v265Paso(2,'Evidencias del trabajo terminado', fin?'hecho':(e.puedeTerminar?'aqui':''), fin?('Finalizado '+fmtDate(fi.fecha)):'', b2);
+  // 3 · Costos
+  var b3 = fin ? renderRentabilidad(o) : '<div class="ci-hint">Refacciones, mano de obra pagada y otros gastos. Se captura junto con las evidencias, al finalizar.</div>';
+  h+=v265Paso(3,'Costos del servicio', cos>0?'hecho':(fin?'aqui':''), cos>0?money(cos):(fin?'Sin costo capturado':''), b3);
+  if(st==='finalizado') h+='<button class="btn-primary ci-sig" onclick="switchDetailTab(\'entrega\');window.scrollTo(0,0)">Siguiente: Entrega, pago y encuesta →</button>';
+  h+='</div>';
+  return h;
+}
+function renderEntregaTab(o){
+  var st=o.estatus||'recepcion', e=ecEstado(o);
+  if(['finalizado','entregado'].indexOf(st)<0)
+    return '<div class="miniinfo">Se habilita cuando el trabajo está <b>finalizado</b> (pestaña <b>Checklist, evidencias y costos</b>).</div>';
+  var h='<div class="ci-wrap">';
+  // 4 · Entrega, pago y encuesta
+  var b4='', e4='', t4='';
+  if(st==='entregado'){
+    e4 = v265PagoPend(o)?'parcial':'hecho'; t4 = v265PagoPend(o)?'Entregado · pago pendiente':'Entregado';
+    if(o.salida) b4+='<div class="dgrid">'+di('Fecha salida',fmtDate(o.salida.fecha))+di('Hora salida',o.salida.hora)+di('Km salida',o.salida.km)+di('','')+'</div>';
+    b4+=renderCobro(o)+renderEncuestaCard(o);
+  } else if(st==='finalizado'){
+    e4='aqui'; t4='Pendiente';
+    if(!e.puedeEntregar) b4+='<div class="ci-hint">Antes de entregar: sección 5 del checklist y las dos firmas (pestaña anterior, paso 1).</div>';
+    b4+=renderCobro(o)+'<button class="btn-primary" onclick="openEntrega()">🚗 Registrar entrega, pago y encuesta</button>';
+  } else {
+    b4='<div class="ci-hint">Se habilita al finalizar el trabajo.</div>';
+  }
+  h+=v265Paso(4,'Entrega, pago y encuesta', e4, t4, b4);
+  h+='</div>';
+  return h;
+}
+/* la pestaña activa siempre a la vista en la barra (en celular la barra se desliza de lado) */
+function v265NavVisible(){
+  var nav=document.querySelector('.dtabs-nav'), b=nav&&nav.querySelector('.dtab-btn.active'); if(!b) return;
+  var l=b.offsetLeft-nav.offsetLeft, r=l+b.offsetWidth;
+  if(l<nav.scrollLeft) nav.scrollLeft=l-8; else if(r>nav.scrollLeft+nav.clientWidth) nav.scrollLeft=r-nav.clientWidth+8;
 }
 
 </script>
