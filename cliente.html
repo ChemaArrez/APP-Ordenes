@@ -61,6 +61,19 @@ p.lead{color:var(--muted);margin:0 0 16px}
 .item p{margin:8px 0 0;max-width:62ch}
 .item ul,.expl ul{margin:8px 0 0;padding-left:22px;display:grid;gap:3px}
 .item .p small{display:block;text-align:right;font-family:var(--body);font-size:11px;font-weight:400;color:var(--muted);letter-spacing:.02em}
+/* v27.2 · desglose de cada trabajo */
+.pz{margin:12px 0 2px;padding:0;display:grid;gap:0;border-top:1px solid var(--line)}
+.pz div{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+.pz dt{min-width:0;font-size:15px;line-height:1.35}
+.pz dd{margin:0;white-space:nowrap;font-size:15px}
+.pz small{color:var(--muted)}
+.tp{display:inline-block;font-style:normal;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;border-radius:4px;padding:2px 6px;margin-right:7px;vertical-align:1px;background:var(--soft);color:var(--muted)}
+.tp.mo{background:var(--fg);color:var(--card)}
+.tp.serv{border:1px solid var(--line);background:transparent}
+.pz-t{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--muted);margin-top:8px}
+.pz-t b{color:var(--fg);font-weight:600}
+.sum .dg{color:var(--muted);font-size:14px}
+.sum .dg.first{border-top:1px solid var(--line);padding-top:8px;margin-top:6px}
 .fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
 .fgrid .ph img{aspect-ratio:1/1}
 .expl p{margin:4px 0 0}
@@ -292,13 +305,33 @@ function v26r2(n){ n=Number(n)||0; var s=n<0?-1:1; return s*Math.round((Math.abs
 function v26importe(it){ return v26r2((Number(it&&it.cantidad)||0)*(Number(it&&it.precio)||0)); }
 function v26cuentas(sub, conIva){ sub=v26r2(sub); var iva=conIva?v26r2(sub*0.16):0; return {sub:sub, iva:iva, total:v26r2(sub+iva)}; }
 function v26cuentasCot(co){ var s=0; ((co&&co.items)||[]).forEach(function(it){ s+=v26importe(it); }); return v26cuentas(s, !!(co&&co.iva)); }
+/* v27.2 · desglose: refacciones, servicios y mano de obra (los calcula el servidor) */
+var TP_TXT={ref:'Refacción',serv:'Servicio',mo:'Mano de obra'}, TP_TOT={ref:'Refacciones',serv:'Servicios',mo:'Mano de obra'};
+function desgloseTrabajo(t){
+  if(!t.partidas||!t.partidas.length) return '';
+  var h='<dl class="pz">'+t.partidas.map(function(p){
+    var sinNombre=p.tipo==='mo' && /^mano de obra\.?$/i.test(p.concepto||'');
+    return '<div><dt><i class="tp '+p.tipo+'">'+TP_TXT[p.tipo]+'</i>'+(sinNombre?'':esc(p.concepto))+(p.cantidad&&p.cantidad!==1?' <small>× '+esc(p.cantidad)+'</small>':'')+'</dt><dd class="num">'+fmt(p.importe)+'</dd></div>';
+  }).join('')+'</dl>';
+  var tipos=['ref','serv','mo'].filter(function(k){ return t[k]>0; });
+  if(tipos.length>1 && t.partidas.length>tipos.length) h+='<div class="pz-t">'+tipos.map(function(k){ return '<span>'+TP_TOT[k]+' <b class="num">'+fmt(t[k])+'</b></span>'; }).join('')+'</div>';
+  return h;
+}
+function desgloseTotal(o,keys){
+  var r={ref:0,serv:0,mo:0}, hay=false;
+  o.trabajos.forEach(function(t){ if(keys.indexOf(t.k)<0||!t.partidas) return; hay=true; r.ref+=t.ref||0; r.serv+=t.serv||0; r.mo+=t.mo||0; });
+  if(!hay) return null;
+  r.ref=v26r2(r.ref); r.serv=v26r2(r.serv); r.mo=v26r2(r.mo);
+  return r;
+}
 function hayExplic(o){ return o.trabajos.some(function(t){ return String(t.explicacion||'').trim(); }); }
 function precio(o,n){ return '<span class="p num">'+fmt(n)+(o.iva?'<small>+ IVA</small>':'')+'</span>'; }
 function rejilla(fotos,cap){ return fotos&&fotos.length? '<div class="fgrid">'+fotos.map(function(u,i){ return ph(u,cap+' · foto '+(i+1)); }).join('')+'</div>' : ''; }
 function item(o,t,sel){
   var on=sel.indexOf(t.k)>=0;
   var h='<article class="item" data-k="'+esc(t.k)+'"><div class="row"><h3>'+esc(t.titulo)+'</h3>'+precio(o,t.subtotal)+'</div>';
-  h+=v26explicHtml(t.explicacion,t.incluye,esc);
+  h+=v26explicHtml(t.explicacion,t.partidas&&t.partidas.length?[]:t.incluye,esc);
+  h+=desgloseTrabajo(t);   // v27.2
   h+=rejilla(t.fotos,t.titulo);   // v26.4: se autoriza la cotización completa, no trabajo por trabajo
   return h+'</article>';
 }
@@ -309,6 +342,8 @@ function lista(o,keys,conNo){
     var on=keys.indexOf(t.k)>=0; if(!on && !conNo) return;
     h+='<div class="fila'+(on?'':' no')+'"><span>'+(on?'✓ ':'')+esc(t.titulo)+(on?'':' <small>· no autorizado</small>')+'</span><span class="num">'+(on?fmt(t.subtotal):'')+'</span></div>';
   });
+  var dg=desgloseTotal(o,keys);   // v27.2
+  if(dg) ['ref','serv','mo'].forEach(function(k){ if(dg[k]>0) h+='<div class="fila sub"><span>'+TP_TOT[k]+'</span><span class="num">'+fmt(dg[k])+'</span></div>'; });
   if(o.iva){ var tt=totales(o,keys); h+='<div class="fila sub"><span>Subtotal</span><span class="num">'+fmt(tt.sub)+'</span></div><div class="fila sub"><span>IVA (16%)</span><span class="num">'+fmt(tt.iva)+'</span></div>'; }
   return h+'</div>';
 }
@@ -316,6 +351,8 @@ function sumHtml(o,keys){
   var t=totales(o,keys), rows='';
   o.trabajos.forEach(function(x){ if(keys.indexOf(x.k)>=0) rows+='<div><span>'+esc(x.titulo)+'</span><span class="num">'+fmt(x.subtotal)+'</span></div>'; });
   if(!rows) rows='<div><span>Ningún trabajo seleccionado</span></div>';
+  var dg=desgloseTotal(o,keys), dk=dg?['ref','serv','mo'].filter(function(k){ return dg[k]>0; }):[];   // v27.2
+  dk.forEach(function(k,i){ rows+='<div class="dg'+(i===0?' first':'')+'"><span>'+TP_TOT[k]+'</span><span class="num">'+fmt(dg[k])+'</span></div>'; });
   if(o.iva) rows+='<div class="sep"><span><b>Subtotal</b></span><span class="num"><b>'+fmt(t.sub)+'</b></span></div><div><span>IVA (16%)</span><span class="num">'+fmt(t.iva)+'</span></div>';
   return rows+'<div class="tot"><span>Total</span><span class="num">'+fmt(t.total)+'</span></div>';
 }
@@ -401,7 +438,9 @@ function pintar(){
 function msgAut(o,keys,nombre,coment){
   var t=totales(o,keys), si=o.trabajos.filter(function(x){ return keys.indexOf(x.k)>=0; }), no=o.trabajos.filter(function(x){ return keys.indexOf(x.k)<0; });
   var txt='✅ AUTORIZO la orden '+o.folio+'\n'+veh(o)+(o.vehiculo&&o.vehiculo.placas?' · '+o.vehiculo.placas:'')+'\n\n'
-    +si.map(function(x){ return '• '+x.titulo+' — '+fmt(x.subtotal); }).join('\n')+'\n\nTotal: '+fmt(t.total)+(o.iva?' (IVA incluido)':'');
+    +si.map(function(x){ return '• '+x.titulo+' — '+fmt(x.subtotal); }).join('\n')
+    +(function(){ var dg=desgloseTotal(o,keys); if(!dg) return ''; return '\n\n'+['ref','serv','mo'].filter(function(k){ return dg[k]>0; }).map(function(k){ return TP_TOT[k]+': '+fmt(dg[k]); }).join('\n'); })()   // v27.2
+    +'\n\nTotal: '+fmt(t.total)+(o.iva?' (IVA incluido)':'');
   if(no.length) txt+='\n\nNo autorizo:\n'+no.map(function(x){ return '• '+x.titulo; }).join('\n');
   if(coment) txt+='\n\nComentarios: '+coment;
   return txt+'\n\n'+(nombre||'');

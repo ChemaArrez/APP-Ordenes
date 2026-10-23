@@ -1,6 +1,8 @@
 /****************************************************************
  *  ARSAN MOTORS · Órdenes de servicio — Backend v26 (Netlify)
  *  v26: liga del cliente (/o/<llave>) con autorización en línea. Ver "v26 · LIGA DEL CLIENTE".
+ *  v27: precios — catálogo oficial (sólo dirección lo edita), solicitudes de precio e historial
+ *       de lo cotizado. Ver "v27 · PRECIOS".
  *
  *  Reemplaza al Apps Script como backend de la app. Habla EXACTAMENTE
  *  el mismo idioma que el Apps Script de v23 (mismas acciones, mismas
@@ -10,7 +12,8 @@
  *    store "ordenes"  → idx (resumen de todas las órdenes), o/<id> (orden
  *                       completa), borradas/<id>, usuarios, ses/<token>,
  *                       tok/<token>, bit/<fecha>_<n> (bitácora), clientes,
- *                       componentes, cobranza_gs, config
+ *                       componentes, cobranza_gs, config,
+ *                       catalogo, catalogo_sol, precios_hist (v27)
  *    store "medios"   → fotos y firmas (una por llave, binario)
  *
  *  Google se queda como PUENTE (no frena la app):
@@ -28,7 +31,7 @@
  ****************************************************************/
 import { getStore } from "@netlify/blobs";
 
-const BACKEND_VERSION = "2026-10-19-v26.5";
+const BACKEND_VERSION = "2026-10-23-v27.2";
 const ETAPAS_ORDEN = ["cita", "recepcion", "cotizado", "aprobado", "finalizado", "entregado"];
 const CANDADO_DESDE = "aprobado";
 const HORAS_SESION = 12;
@@ -820,6 +823,7 @@ async function guardar(o, token, ses) {
     }
   } catch {}
   try { await registrarComponentes((o.cotizacion || {}).items); } catch {}
+  try { await histTrasGuardar(x, prev); } catch {}   // v27
   return { ok: true, folio: folioFinal, drive: x.driveUrl, urls, v25: x._v25, rev: x._rev };
 }
 
@@ -854,6 +858,7 @@ async function moverABorradas(o, motivo) {
   await st.setJSON("borradas/" + o.id, { ...o, _borrada: { ts: now(), motivo } });
   await mutate(st, "idx", idxInit, async (idx) => { delete idx.o[o.id]; return true; });
   await st.delete("o/" + o.id);
+  try { await histQuitar(o.id); } catch {}   // v27
 }
 
 /* ------------- rescate de fotos del checklist de entrega (bug de v23) -------------
@@ -1189,7 +1194,7 @@ function proyeccionCliente(o) {
     motivo: s.motivo || "", asesor: s.asesor || "", danos: o.estado || "", observaciones: o.observaciones || "",
     fotosRecepcion: fotosDeSeccion(o, "recepcion"),
     diagnostico: hayCot || ["cotizado"].indexOf(estatus) >= 0 ? String(di.texto || "") : "",
-    trabajos: trab.map((t) => ({ k: t.k, titulo: t.titulo, explicacion: t.explicacion, incluye: t.incluye, fotos: t.fotos, subtotal: t.subtotal })),
+    trabajos: trab.map((t) => ({ k: t.k, titulo: t.titulo, explicacion: t.explicacion, incluye: t.incluye, fotos: t.fotos, subtotal: t.subtotal, ...v27desglose(co, t) })),
     fotosDiagnostico: hayCot ? diagF.filter((u) => !usadas.has(u)) : [],
     iva: !!co.iva, notas: hayCot ? String(co.notas || "") : "",
     huella: hayCot ? v26huella(co) : "",
@@ -1282,6 +1287,317 @@ async function autorizarCliente(tok, b, req) {
   return { ok: true, autorizacion: { ts: rec.ts, nombre: rec.nombre, total: rec.total, n: rec.trabajos.length } };
 }
 
+/* =====================================================================
+   v27 · PRECIOS — catálogo oficial, solicitudes de precio e historial de lo cobrado
+   Pedido de Chema (23-oct-2026): la secretaria pregunta los precios a cada rato.
+   · "catalogo"      Lo da de alta y lo cambia SÓLO dirección (rol CEO, gerencia, director, admin).
+                     Oficina lo consulta y agrega sus partidas a la cotización tal cual.
+                     El costo de proveedor y el margen NUNCA salen del servidor para oficina.
+   · "catalogo_sol"  Lo que oficina buscó y no estaba: "Pedir precio a Chema".
+   · "precios_hist"  Las partidas cotizadas de cada orden (vehículo, tipo de cliente, precio),
+                     se actualiza al guardar la orden y se reconstruye por tandas la primera vez.
+   El técnico no ve nada de esto: la entrada lo bloquea igual que la cotización.
+   ===================================================================== */
+const CAT_TIPOS_TRAB = ["Refaccion", "Servicio", "Mano de Obra"];
+const CAT_TIPOS_CLI = ["todos", "particular", "flotilla", "gs"];
+const CAT_CFG0 = { tarifaMO: 480, margenGrande: 1.3, margenChico: 1.6, descFlotilla: 0, descGS: 0, soloCatalogo: false };
+const CAT_MAX_PARTIDAS = 15;
+const SOL_MAX = 300;
+const HIST_TANDA = 40;
+const ctxt = (x, n) => String(x == null ? "" : x).replace(/\s+/g, " ").trim().slice(0, n);
+const ctxtL = (x, n) => String(x == null ? "" : x).replace(/\r\n?/g, "\n").trim().slice(0, n);
+const cnum = (x, min, max, d) => { const n = Number(x); return isNaN(n) ? d : Math.min(max, Math.max(min, n)); };
+
+// Tipo de cliente de una orden (para el historial y para proponer el filtro)
+function tipoClienteDe(o) {
+  const fl = String(((o && o.flotilla) || {}).nombre || "").trim(), cl = String(((o && o.cliente) || {}).nombre || "").trim();
+  if (/salinas|azteca|elektra|italika|totalplay/i.test(fl + " " + cl)) return "gs";
+  if (fl && !/^particular$/i.test(fl)) return "flotilla";
+  return "particular";
+}
+
+async function catLeer() {
+  const d = await getJSON(S(), "catalogo");
+  return d && d.items ? d : { items: {}, config: { ...CAT_CFG0 }, _u: 0 };
+}
+const catCfg = (d) => ({ ...CAT_CFG0, ...((d && d.config) || {}) });
+const catTotal = (it) => v26r2((it.partidas || []).reduce((s, p) => s + v26importe(p), 0));
+
+// Lo que ve oficina: sin costo, margen, notas internas ni historial de cambios
+function catPublico(it, dir) {
+  if (dir) return it;
+  const { notas, cambios, creadoPor, porAct, ...resto } = it;
+  return { ...resto, partidas: (it.partidas || []).map(({ costo, margen, ...p }) => p) };
+}
+
+async function verCatalogo(ses) {
+  const dir = esDireccion(ses.rol);
+  const d = await catLeer();
+  const cfg = catCfg(d);
+  const items = Object.values(d.items || {}).filter((it) => dir || it.activo !== false).map((it) => catPublico(it, dir));
+  const sd = (await getJSON(S(), "catalogo_sol")) || { lista: [] };
+  const corte = now() - 30 * 864e5;
+  const solicitudes = (sd.lista || []).filter((s) => s.estado === "pendiente" || nz(s.tsResuelta) > corte)
+    .filter((s) => dir || s.porU === ses.usuario || s.estado === "pendiente" || s.estado === "resuelta")
+    .sort((a, b) => b.ts - a.ts);
+  return { ok: true, items, puedeEditar: dir, u: d._u || 0, solicitudes,
+    config: dir ? cfg : { tarifaMO: cfg.tarifaMO, descFlotilla: cfg.descFlotilla, descGS: cfg.descGS, soloCatalogo: !!cfg.soloCatalogo } };
+}
+
+function limpiarPartida(p, i) {
+  p = p || {};
+  const tt = CAT_TIPOS_TRAB.find((t) => t.toLowerCase() === String(p.tipoTrabajo || "").trim().toLowerCase());
+  const out = { concepto: ctxt(p.concepto, 140), tipoTrabajo: tt || "", componente: ctxt(p.componente, 90), marca: ctxt(p.marca, 60),
+    cantidad: v26r2(cnum(p.cantidad, 0, 9999, 0)), precio: v26r2(cnum(p.precio, 0, 9999999, 0)) };
+  if (p.costo !== undefined && p.costo !== "" && p.costo !== null) out.costo = v26r2(cnum(p.costo, 0, 9999999, 0));
+  if (p.margen !== undefined && p.margen !== "" && p.margen !== null) out.margen = cnum(p.margen, 1, 5, 1);
+  if (p.horas !== undefined && p.horas !== "" && p.horas !== null) out.horas = v26r2(cnum(p.horas, 0, 500, 0));
+  const falta = [];
+  if (!out.concepto) falta.push("descripción");
+  if (!out.tipoTrabajo) falta.push("tipo de trabajo");
+  if (!out.componente) falta.push("componente");
+  if (!(out.cantidad > 0)) falta.push("cantidad");
+  if (!(out.precio > 0)) falta.push("precio");
+  return { p: out, error: falta.length ? `Partida ${i + 1}: falta ${falta.join(", ")}` : "" };
+}
+
+async function guardarCatItem(b, ses) {
+  if (!esDireccion(ses.rol)) return { ok: false, soloDireccion: true, error: "Sólo dirección puede dar de alta o cambiar precios. Pídelo con “Pedir precio”." };
+  const e = (b && b.item) || {};
+  const nombre = ctxt(e.nombre, 140);
+  if (!nombre) return { ok: false, error: "Escribe el nombre del servicio" };
+  const pin = Array.isArray(e.partidas) ? e.partidas.slice(0, CAT_MAX_PARTIDAS) : [];
+  if (!pin.length) return { ok: false, error: "Agrega al menos una partida con su precio" };
+  const partidas = [];
+  for (let i = 0; i < pin.length; i++) { const r = limpiarPartida(pin[i], i); if (r.error) return { ok: false, error: r.error }; partidas.push(r.p); }
+  const pal = (Array.isArray(e.palabras) ? e.palabras : String(e.palabras || "").split(/[,;\n]/))
+    .map((x) => ctxt(x, 40).toLowerCase()).filter(Boolean);
+  const tc = CAT_TIPOS_CLI.indexOf(String(e.tipoCliente || "todos")) >= 0 ? String(e.tipoCliente || "todos") : "todos";
+  const id = /^c_[A-Za-z0-9_-]{4,40}$/.test(String(e.id || "")) ? String(e.id) : "c_" + uuid().replace(/-/g, "").slice(0, 12);
+  let antes = null, item = null;
+  await mutate(S(), "catalogo", () => ({ items: {}, config: { ...CAT_CFG0 }, _u: 0 }), async (d) => {
+    d.items = d.items || {};
+    const prev = d.items[id] || null;
+    if (e.id && !prev) throw new Error("Ese servicio ya no existe en el catálogo. Recarga la pantalla.");
+    antes = prev ? catTotal(prev) : null;
+    item = {
+      id, nombre, palabras: [...new Set(pal)].slice(0, 30), categoria: ctxt(e.categoria, 40), marca: ctxt(e.marca, 40), modelo: ctxt(e.modelo, 40),
+      tipoCliente: tc, partidas, incluye: ctxtL(e.incluye, 1200), notas: ctxtL(e.notas, 600), activo: e.activo === false ? false : true,
+      creado: prev ? prev.creado : now(), creadoPor: prev ? prev.creadoPor : usuarioTxt(ses), actualizado: now(), porAct: usuarioTxt(ses),
+      cambios: ((prev && prev.cambios) || []).slice(-19),
+    };
+    const total = catTotal(item);
+    if (!prev || antes !== total) item.cambios.push({ ts: now(), por: usuarioTxt(ses), total });
+    d.items[id] = item; d._u = now();
+    return true;
+  });
+  let sol = null;
+  if (b.solicitud) sol = await marcarSolicitud(String(b.solicitud), "resuelta", ses, { itemId: id, nombre });
+  await logBitacora({ que: antes === null ? "CATÁLOGO DE PRECIOS · ALTA" : "CATÁLOGO DE PRECIOS · CAMBIO",
+    antes: `${nombre}${item.marca ? " · " + item.marca + (item.modelo ? " " + item.modelo : "") : ""} · cliente ${tc}` + (antes === null ? "" : ` · total antes ${antes}`),
+    despues: `Total ${catTotal(item)} · ${partidas.length} partida(s) · ${usuarioTxt(ses)}` });
+  return { ok: true, item, solicitud: sol };
+}
+
+// v27.1 · Precarga: Chema carga de un jalón lo que ya se cotizó (lo arma la app con el historial;
+// él sólo valida los que tienen precios distintos para el mismo vehículo)
+const CAT_MAX_IMPORT = 600;
+async function importarCatalogo(b, ses) {
+  if (!esDireccion(ses.rol)) return { ok: false, soloDireccion: true, error: "Sólo dirección puede cargar precios al catálogo" };
+  const lista = Array.isArray(b.items) ? b.items.slice(0, CAT_MAX_IMPORT) : [];
+  if (!lista.length) return { ok: false, error: "No hay servicios para cargar" };
+  const listos = [], rechazados = [];
+  for (let k = 0; k < lista.length; k++) {
+    const e = lista[k] || {};
+    const nombre = ctxt(e.nombre, 140);
+    const pin = Array.isArray(e.partidas) ? e.partidas.slice(0, CAT_MAX_PARTIDAS) : [];
+    let err = !nombre ? "sin nombre" : !pin.length ? "sin partidas" : "";
+    const partidas = [];
+    for (let i = 0; !err && i < pin.length; i++) { const r = limpiarPartida(pin[i], i); if (r.error) err = r.error; else partidas.push(r.p); }
+    if (err) { rechazados.push({ i: k, nombre, error: err }); continue; }
+    const pal = (Array.isArray(e.palabras) ? e.palabras : String(e.palabras || "").split(/[,;\n]/)).map((x) => ctxt(x, 40).toLowerCase()).filter(Boolean);
+    const tc = CAT_TIPOS_CLI.indexOf(String(e.tipoCliente || "todos")) >= 0 ? String(e.tipoCliente || "todos") : "todos";
+    const o = e.origen || {};
+    listos.push({ id: "c_" + uuid().replace(/-/g, "").slice(0, 12), nombre, palabras: [...new Set(pal)].slice(0, 30), categoria: ctxt(e.categoria, 40),
+      marca: ctxt(e.marca, 40), modelo: ctxt(e.modelo, 40), tipoCliente: tc, partidas, incluye: ctxtL(e.incluye, 1200), notas: ctxtL(e.notas, 600),
+      activo: true, creado: now(), creadoPor: usuarioTxt(ses), actualizado: now(), porAct: usuarioTxt(ses),
+      origen: { folio: ctxt(o.folio, 30), fecha: ctxt(o.fecha, 10), veces: Math.max(0, Math.floor(nz(o.veces))) },
+      cambios: [{ ts: now(), por: usuarioTxt(ses) + " · precarga", total: catTotal({ partidas }) }] });
+  }
+  if (listos.length) {
+    await mutate(S(), "catalogo", () => ({ items: {}, config: { ...CAT_CFG0 }, _u: 0 }), async (d) => {
+      d.items = d.items || {};
+      for (const it of listos) d.items[it.id] = it;
+      d._u = now();
+      return true;
+    });
+    await logBitacora({ que: "CATÁLOGO DE PRECIOS · PRECARGA", antes: `${listos.length} servicio(s) desde cotizaciones anteriores`, despues: usuarioTxt(ses) + (rechazados.length ? ` · ${rechazados.length} rechazado(s)` : "") });
+  }
+  return { ok: true, cargados: listos.length, rechazados };
+}
+
+async function activarCatItem(b, ses) {
+  if (!esDireccion(ses.rol)) return { ok: false, soloDireccion: true, error: "Sólo dirección puede cambiar el catálogo" };
+  const id = String(b.id || ""), activo = b.activo !== false;
+  let nombre = "";
+  const r = await mutate(S(), "catalogo", () => ({ items: {}, config: { ...CAT_CFG0 }, _u: 0 }), async (d) => {
+    const it = d.items && d.items[id];
+    if (!it) return false;
+    it.activo = activo; it.actualizado = now(); it.porAct = usuarioTxt(ses); nombre = it.nombre; d._u = now();
+    return true;
+  });
+  if (!r) return { ok: false, error: "Ese servicio ya no existe" };
+  await logBitacora({ que: "CATÁLOGO DE PRECIOS · " + (activo ? "REACTIVADO" : "DESACTIVADO"), antes: nombre, despues: usuarioTxt(ses) });
+  return { ok: true };
+}
+
+async function configCatalogo(b, ses) {
+  if (!esDireccion(ses.rol)) return { ok: false, soloDireccion: true, error: "Sólo dirección puede cambiar la configuración de precios" };
+  const c = (b && b.config) || {};
+  let cfg = null;
+  await mutate(S(), "catalogo", () => ({ items: {}, config: { ...CAT_CFG0 }, _u: 0 }), async (d) => {
+    const prev = catCfg(d);
+    cfg = { tarifaMO: v26r2(cnum(c.tarifaMO, 0, 20000, prev.tarifaMO)), margenGrande: cnum(c.margenGrande, 1, 5, prev.margenGrande),
+      margenChico: cnum(c.margenChico, 1, 5, prev.margenChico), descFlotilla: cnum(c.descFlotilla, 0, 60, prev.descFlotilla), descGS: cnum(c.descGS, 0, 60, prev.descGS),
+      soloCatalogo: c.soloCatalogo === undefined ? !!prev.soloCatalogo : !!c.soloCatalogo };
+    d.config = cfg; d._u = now();
+    return true;
+  });
+  await logBitacora({ que: "CATÁLOGO DE PRECIOS · CONFIGURACIÓN", antes: usuarioTxt(ses), despues: JSON.stringify(cfg) });
+  return { ok: true, config: cfg };
+}
+
+/* ---- solicitudes de precio (oficina → Chema) ---- */
+async function solicitarPrecio(b, ses) {
+  const texto = ctxt(b.texto, 120);
+  if (texto.length < 3) return { ok: false, error: "Escribe qué servicio o pieza necesitas cotizar" };
+  const s = { id: "s_" + uuid().replace(/-/g, "").slice(0, 12), texto, marca: ctxt(b.marca, 40), modelo: ctxt(b.modelo, 40), anio: ctxt(b.anio, 6),
+    tipo: CAT_TIPOS_CLI.indexOf(String(b.tipo || "")) >= 0 ? String(b.tipo) : "", nota: ctxtL(b.nota, 300),
+    folio: ctxt(b.folio, 30), orden: ctxt(b.orden, 60), ts: now(), por: usuarioTxt(ses), porU: ses.usuario, porNombre: ses.nombre, estado: "pendiente" };
+  let out = s, repetida = false;
+  await mutate(S(), "catalogo_sol", () => ({ lista: [] }), async (d) => {
+    d.lista = d.lista || [];
+    const k = (x) => [v26norm(x.texto), v26norm(x.marca), v26norm(x.modelo), x.tipo || ""].join("|");
+    const ya = d.lista.find((x) => x.estado === "pendiente" && k(x) === k(s));
+    if (ya) { out = ya; repetida = true; return undefined; }
+    d.lista.push(s);
+    if (d.lista.length > SOL_MAX) {
+      const pend = d.lista.filter((x) => x.estado === "pendiente"), resto = d.lista.filter((x) => x.estado !== "pendiente");
+      d.lista = pend.concat(resto.sort((a, c) => nz(c.tsResuelta) - nz(a.tsResuelta)).slice(0, Math.max(0, SOL_MAX - pend.length)));
+    }
+    return true;
+  });
+  if (!repetida) await logBitacora({ folio: s.folio, que: "SOLICITUD DE PRECIO", antes: texto + (s.marca ? " · " + s.marca + " " + s.modelo : ""), despues: "Pidió: " + s.por });
+  return { ok: true, solicitud: out, repetida };
+}
+async function marcarSolicitud(id, estado, ses, extra) {
+  let out = null;
+  await mutate(S(), "catalogo_sol", () => ({ lista: [] }), async (d) => {
+    const s = (d.lista || []).find((x) => x.id === id);
+    if (!s) return undefined;
+    s.estado = estado; s.tsResuelta = now(); s.resolvio = usuarioTxt(ses);
+    if (extra) Object.assign(s, extra);
+    out = s;
+    return true;
+  });
+  return out;
+}
+async function resolverSolicitud(b, ses) {
+  if (!esDireccion(ses.rol)) return { ok: false, soloDireccion: true, error: "Sólo dirección atiende las solicitudes de precio" };
+  const estado = b.estado === "resuelta" ? "resuelta" : "descartada";
+  const s = await marcarSolicitud(String(b.id || ""), estado, ses, { respuesta: ctxtL(b.respuesta, 300), ...(b.itemId ? { itemId: String(b.itemId) } : {}) });
+  return s ? { ok: true, solicitud: s } : { ok: false, error: "Esa solicitud ya no existe" };
+}
+// Para el contador de 1 minuto: Chema ve cuántas hay pendientes; quien pidió, cuáles ya tienen precio
+async function avisosPrecios(ses) {
+  const d = await getJSON(S(), "catalogo_sol");
+  const lista = (d && d.lista) || [];
+  if (esDireccion(ses.rol)) return { preciosPend: lista.filter((s) => s.estado === "pendiente").length };
+  const corte = now() - 7 * 864e5;
+  return { misPrecios: lista.filter((s) => s.porU === ses.usuario && s.estado !== "pendiente" && nz(s.tsResuelta) > corte)
+    .map((s) => ({ id: s.id, texto: s.texto, estado: s.estado, nombre: s.nombre || "", ts: s.tsResuelta })) };
+}
+
+/* ---- historial de lo cotizado (precios_hist) ---- */
+function histEntrada(o) {
+  if (!o || !o.id) return null;
+  const co = o.cotizacion || {};
+  const items = (co.items || []).filter((it) => it && (String(it.concepto || "").trim() || nz(it.precio)))
+    .map((it) => [ctxt(it.concepto, 140), ctxt(it.componente, 90), ctxt(it.tipoTrabajo, 20), nz(it.cantidad), nz(it.precio)]);
+  if (!items.length) return null;
+  const v = o.vehiculo || {};
+  return { f: o.folio || "", d: o.fecha || "", s: o.sucursal || "", t: tipoClienteDe(o), c: ctxt((o.flotilla || {}).nombre, 60),
+    ma: ctxt(v.marca, 30), mo: ctxt(v.modelo, 40), a: ctxt(v.anio, 6), e: o.estatus || "", p: !!o._prueba, i: items };
+}
+async function histActualizar(ords) {
+  const cambios = ords.filter(Boolean).map((o) => [o.id, histEntrada(o)]);
+  if (!cambios.length) return;
+  await mutate(S(), "precios_hist", () => ({ o: {}, completo: false }), async (d) => {
+    d.o = d.o || {};
+    let algo = false;
+    for (const [id, e] of cambios) {
+      if (e) { if (JSON.stringify(d.o[id]) !== JSON.stringify(e)) { d.o[id] = e; algo = true; } }
+      else if (d.o[id]) { delete d.o[id]; algo = true; }
+    }
+    return algo ? true : undefined;
+  });
+}
+async function histTrasGuardar(x, prev) {
+  if (prev && JSON.stringify(histEntrada(prev)) === JSON.stringify(histEntrada(x))) return;
+  await histActualizar([x]);
+}
+async function histQuitar(id) {
+  await mutate(S(), "precios_hist", () => ({ o: {}, completo: false }), async (d) => {
+    if (!d.o || !d.o[id]) return undefined;
+    delete d.o[id];
+    return true;
+  });
+}
+async function historialPrecios() {
+  const d = (await getJSON(S(), "precios_hist")) || { o: {}, completo: false };
+  const hist = Object.entries(d.o || {}).map(([id, e]) => ({ id, ...e }));
+  return { ok: true, hist, completo: !!d.completo, n: hist.length };
+}
+// Primera vez: recorre todas las órdenes por tandas (la app repite la llamada hasta terminar)
+async function reconstruirHist(b) {
+  const st = S();
+  const idx = (await getJSON(st, "idx")) || idxInit();
+  const ids = Object.keys(idx.o).sort();
+  const desde = Math.max(0, Math.floor(nz(b.cursor)));
+  const tanda = ids.slice(desde, desde + HIST_TANDA);
+  const ords = (await Promise.all(tanda.map((id) => getJSON(st, "o/" + id)))).filter(Boolean);
+  if (desde === 0) {
+    // borra lo que ya no existe
+    await mutate(st, "precios_hist", () => ({ o: {}, completo: false }), async (d) => {
+      d.o = d.o || {};
+      let algo = false;
+      for (const id of Object.keys(d.o)) if (!idx.o[id]) { delete d.o[id]; algo = true; }
+      return algo ? true : undefined;
+    });
+  }
+  await histActualizar(ords);
+  const siguiente = desde + tanda.length < ids.length ? desde + tanda.length : null;
+  if (siguiente === null) await mutate(st, "precios_hist", () => ({ o: {}, completo: false }), async (d) => { d.completo = true; d.ts = now(); return true; });
+  return { ok: true, hechos: desde + tanda.length, total: ids.length, siguiente };
+}
+
+/* v27.2 · Para el cliente: cada trabajo con sus partidas (refacción, servicio, mano de obra) y
+   sus importes; la liga y el PDF muestran el desglose por pieza y el total de cada tipo. */
+function v27tipo(it) {
+  if (v26esMO(it) || String((it && it.tipo) || "") === "mano_obra") return "mo";
+  return /^servicio/i.test(String((it && it.tipoTrabajo) || "").trim()) ? "serv" : "ref";
+}
+function v27desglose(co, t) {
+  const items = (co && co.items) || [], r = { ref: 0, serv: 0, mo: 0, partidas: [] };
+  for (const k of t.idx || []) {
+    const it = items[k] || {}, imp = v26importe(it), tp = v27tipo(it);
+    r[tp] += imp;
+    r.partidas.push({ concepto: String(it.concepto || "").trim(), cantidad: nz(it.cantidad), importe: imp, tipo: tp });
+  }
+  r.ref = v26r2(r.ref); r.serv = v26r2(r.serv); r.mo = v26r2(r.mo);
+  return r;
+}
+
 /* ------------------------- ENTRADA ------------------------- */
 export default async (req) => {
   const url = new URL(req.url);
@@ -1326,7 +1642,9 @@ export default async (req) => {
       if (a === "tec") return json(await vistaTecnico(s));
       if (a === "tecOrden") return json(absOut(await ordenTecnico(p.id, s), origin));
       if (esTecnico(s.rol)) return json({ ok: false, soloTaller: true, error: "Tu usuario es de taller: esa información la ve oficina." });
-      if (a === "solicitudes") return json(await listaSolicitudes());
+      if (a === "solicitudes") { const r = await listaSolicitudes(); try { Object.assign(r, await avisosPrecios(s)); } catch {} return json(r); }
+      if (a === "catalogo") return json(await verCatalogo(s));   // v27
+      if (a === "historialPrecios") return json(await historialPrecios());   // v27
       if (a === "tecnicos") return json(await listaTecnicos());
       if (a === "list") return json({ ok: true, ordenes: await listar() });
       if (a === "get") { const o = await obtener(p.id, p.folio); return json({ ok: true, orden: o ? absOut(o, origin) : null }); }
@@ -1364,6 +1682,13 @@ export default async (req) => {
       case "pedirFotos": return json(await pedirFotos(b, ses));
       case "solicitud": return json(await cambiarSolicitud(b, ses));
       case "ligaCliente": return json(await ligaCliente(b, ses, origin)); // v26
+      case "catalogoGuardar": return json(await guardarCatItem(b, ses));   // v27: sólo dirección
+      case "catalogoActivo": return json(await activarCatItem(b, ses));    // v27: sólo dirección
+      case "catalogoImportar": return json(await importarCatalogo(b, ses)); // v27.1: precarga, sólo dirección
+      case "catalogoConfig": return json(await configCatalogo(b, ses));    // v27: sólo dirección
+      case "precioSolicitud": return json(await resolverSolicitud(b, ses)); // v27: sólo dirección
+      case "precioSolicitar": return json(await solicitarPrecio(b, ses));   // v27: oficina
+      case "historialReconstruir": return json(await reconstruirHist(b));  // v27
       case "save": return json(await guardar(b.orden, b.token, ses));
       case "subir": { const u = await guardarMedio(b.data); return json(u ? { ok: true, url: origin + u } : { ok: false, error: "No se pudo guardar la foto" }); }
       case "clientes": return json(await listClientes());
