@@ -35,7 +35,7 @@
  ****************************************************************/
 import { getStore } from "@netlify/blobs";
 
-const BACKEND_VERSION = "2026-10-25-v28.1";
+const BACKEND_VERSION = "2026-10-25-v28.3";
 const ETAPAS_ORDEN = ["cita", "recepcion", "cotizado", "aprobado", "finalizado", "entregado"];
 const CANDADO_DESDE = "aprobado";
 const HORAS_SESION = 12;
@@ -1615,7 +1615,7 @@ function v27desglose(co, t) {
    Textos para el cliente (diagnóstico, explicación de un trabajo, trabajo terminado) y lectura de
    fotos en recepción (tarjeta de circulación, tablero, fotos del vehículo). Siempre es una propuesta:
    oficina decide si la usa. Instrucciones revisadas con Chema (25-oct-2026, prueba de 10 casos). */
-var V28_IA_TIPOS=['diagnostico','trabajo','terminado','recepcion'];
+var V28_IA_TIPOS=['diagnostico','trabajo','terminado','recepcion','danos'];   // v28.3: danos = revisión de golpes con fotos del vehículo
 var V28_IA_FUEL=['Vacío','1/8','1/4','3/8','1/2','5/8','3/4','7/8','Lleno'];
 var V28_IA_REGLAS=[
  'Eres quien redacta los textos para los clientes de Arsan Motors, taller mecánico en Tlalpan, CDMX.',
@@ -1667,12 +1667,21 @@ function v28iaPrompt(tipo, d){
     var orden=(d.fotos||[]).map(function(f,i){ return 'Imagen '+(i+1)+': '+({tarjeta:'tarjeta de circulación',tablero:'tablero del vehículo (kilometraje y gasolina)',vehiculo:'foto del vehículo'}[f]||'foto'); }).join('\n');
     return 'Eres el asistente de recepción de Arsan Motors, taller mecánico en CDMX. Lee las imágenes y propone los datos del vehículo para la orden de recepción. Oficina revisa todo antes de guardarlo.\n'
       +'- Copia sólo lo que se lea con claridad. Si un dato no se lee o no viene, déjalo en "" y dilo en el aviso.\n'
-      +'- De la tarjeta de circulación toma sólo datos del vehículo: marca, modelo (línea o submarca), año modelo, placas y número de serie (VIN). NUNCA copies el nombre, domicilio ni RFC del propietario.\n'
+      +'- De la tarjeta de circulación toma sólo datos del vehículo: marca, modelo (línea o submarca), año modelo, color, placas y número de serie (VIN). NUNCA copies el nombre, domicilio ni RFC del propietario.\n'
       +'- El número de serie tiene 17 caracteres, sin las letras I, O ni Q. Si no cumple, déjalo en "" y avisa.\n'
-      +'- Del tablero: kilometraje (sólo números) y nivel de gasolina como una de estas opciones: '+V28_IA_FUEL.join(', ')+'.\n'
-      +'- De las fotos del vehículo: el color y una lista de golpes, rayones o piezas dañadas que se vean claramente, con su ubicación (ej. "Rayón en defensa trasera izquierda"). Si algo no es claro, escríbelo como "Posible …". No inventes daños.\n\n'
+      +'- Del tablero: kilometraje total del odómetro (sólo números, no el parcial ni la autonomía) y nivel de gasolina como una de estas opciones: '+V28_IA_FUEL.join(', ')+'.\n\n'
       +'Imágenes, en este orden:\n'+(orden||'(sin imágenes)')
-      +'\n\nResponde sólo JSON: {"marca":"","modelo":"","anio":"","placas":"","vin":"","color":"","km":"","gasolina":"","danos":[],"aviso":""}';
+      +'\n\nResponde sólo JSON: {"marca":"","modelo":"","anio":"","placas":"","vin":"","color":"","km":"","gasolina":"","aviso":""}';
+  }
+  if(tipo==='danos'){
+    return 'Eres el asistente de recepción de Arsan Motors, taller mecánico en CDMX. Revisa las fotos del vehículo que acaba de llegar y anota los daños de carrocería que se ven, para dejarlos registrados antes de trabajar. Oficina revisa la lista antes de guardarla.\n'
+      +'- Anota golpes, abolladuras, rayones, pintura dañada, cristales estrellados, faros o calaveras rotos, espejos dañados y rines o llantas dañados.\n'
+      +'- Cada daño en una línea corta con su ubicación, ej. "Rayón en defensa trasera izquierda", "Abolladura en puerta delantera derecha".\n'
+      +'- Sólo lo que se vea claramente. Si algo puede ser un reflejo, polvo, agua o sombra, no lo anotes; si hay duda real, escríbelo como "Posible …".\n'
+      +'- Si la misma parte sale en varias fotos, anótala una sola vez. No inventes daños.\n'
+      +'- Si no se ve ningún daño, deja la lista vacía y dilo en el aviso. Si falta ver algún lado del vehículo, dilo en el aviso.\n'
+      +(d.vehiculo&&(d.vehiculo.marca||d.vehiculo.modelo)?'Vehículo: '+[d.vehiculo.marca,d.vehiculo.modelo,d.vehiculo.anio].filter(Boolean).join(' ')+'\n':'')
+      +'\nResponde sólo JSON: {"danos":[],"color":"","aviso":""}';
   }
   return '';
 }
@@ -1688,6 +1697,7 @@ function v28iaJson(text){
 /* Deja la respuesta en la forma que la app espera (y quita lo que no debe ir) */
 function v28iaLimpiar(tipo, v){
   v=v&&typeof v==='object'?v:{};
+  if(tipo==='danos') return {danos:(Array.isArray(v.danos)?v.danos:[]).map(function(x){ return v28iaTxt(x,160); }).filter(Boolean).slice(0,15), color:v28iaTxt(v.color,30), aviso:v28iaTxt(v.aviso,400)};
   if(tipo!=='recepcion') return {texto:v28iaTxt(v.texto,3000), aviso:v28iaTxt(v.aviso,600)};
   var avisos=[v28iaTxt(v.aviso,400)].filter(Boolean);
   var vin=String(v.vin||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
@@ -1766,16 +1776,25 @@ async function iaServidor(b, ses) {
   const prompt = v28iaPrompt(tipo, (b && b.datos) || {});
   const imgs = (Array.isArray(b.imagenes) ? b.imagenes : []).slice(0, 8).map((u) => /^data:(image\/(?:jpeg|png|webp|gif));base64,(.+)$/s.exec(String(u || ""))).filter((m) => m && m[2].length < 6e6)
     .map((m) => ({ type: "image", source: { type: "base64", media_type: m[1], data: m[2] } }));
-  const model = tipo === "recepcion" ? env("IA_MODELO_FOTOS", "claude-haiku-5-5") : env("IA_MODELO_TEXTO", "claude-sonnet-5-5");
+  const model = (tipo === "recepcion" || tipo === "danos") ? env("IA_MODELO_FOTOS", "claude-haiku-5-5") : env("IA_MODELO_TEXTO", "claude-sonnet-5-5");
   const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), 9000);
   try {
     const ws = env("ANTHROPIC_WORKSPACE_ID") ? { "anthropic-workspace-id": env("ANTHROPIC_WORKSPACE_ID") } : {};
-    const cuerpo = JSON.stringify({ model, max_tokens: 1200, messages: [{ role: "user", content: [...imgs, { type: "text", text: prompt }] }] });
-    const llamar = (auth) => fetch("https://api.anthropic.com/v1/messages", { method: "POST", signal: ctl.signal,
-      headers: { ...auth, "anthropic-version": "2023-06-01", "content-type": "application/json", ...ws }, body: cuerpo });
+    // v28.2: los modelos 5.5 piensan antes de responder (thinking adaptativo, viene encendido) y ese pensamiento
+    // cuenta dentro de max_tokens. Con 1200 se quedaba sin texto. Se da espacio y se pide poco esfuerzo (más rápido).
+    const base = { model, max_tokens: 6000, messages: [{ role: "user", content: [...imgs, { type: "text", text: prompt }] }] };
+    let conEsfuerzo = env("IA_ESFUERZO", "low") !== "no";
+    const cuerpo = () => JSON.stringify(conEsfuerzo ? { ...base, output_config: { effort: env("IA_ESFUERZO", "low") } } : base);
+    let auth = { authorization: "Bearer " + key };
+    const llamar = () => fetch("https://api.anthropic.com/v1/messages", { method: "POST", signal: ctl.signal,
+      headers: { ...auth, "anthropic-version": "2023-06-01", "content-type": "application/json", ...ws }, body: cuerpo() });
     // v28.1: la forma documentada es Authorization: Bearer; si la llave la rechaza, se intenta con x-api-key (forma anterior)
-    let r = await llamar({ authorization: "Bearer " + key });
-    if (r.status === 401) r = await llamar({ "x-api-key": key });
+    let r = await llamar();
+    if (r.status === 401) { auth = { "x-api-key": key }; r = await llamar(); }
+    if (r.status === 400 && conEsfuerzo) {   // si el modelo no acepta output_config.effort, se repite sin él
+      const e = await r.clone().json().catch(() => null);
+      if (/effort|output_config/i.test(String((e && e.error && e.error.message) || ""))) { conEsfuerzo = false; r = await llamar(); }
+    }
     let j = null; try { j = await r.json(); } catch {}
     if (!r.ok) {
       const t = (j && j.error && j.error.type) || r.status, msg = String((j && j.error && j.error.message) || "");
@@ -1788,7 +1807,11 @@ async function iaServidor(b, ses) {
     }
     const text = ((j && j.content) || []).filter((c) => c.type === "text").map((c) => c.text).join("");
     const val = v28iaJson(text);
-    if (!val) return { ok: false, error: "La IA respondió en un formato inesperado. Intenta otra vez." };
+    if (!val) {
+      console.log("IA formato", j && j.stop_reason, text.slice(0, 300));
+      if (j && j.stop_reason === "max_tokens") return { ok: false, error: "La IA no alcanzó a terminar su respuesta. Intenta otra vez o con menos fotos." };
+      return { ok: false, error: "La IA respondió en un formato inesperado. Intenta otra vez. (" + ((j && j.stop_reason) || "") + (text ? ": " + text.slice(0, 80) : ": sin texto") + ")" };
+    }
     await logBitacora({ que: "IA · " + tipo, antes: usuarioTxt(ses), despues: model + " · " + nz(j.usage && j.usage.input_tokens) + "/" + nz(j.usage && j.usage.output_tokens) + " tokens" });
     return { ok: true, resultado: v28iaLimpiar(tipo, val), modelo: model };
   } catch (e) {

@@ -1157,6 +1157,16 @@ body.tec-form #preBtn, body.modo-tec #preBtn{display:none !important;}
 #view-entregacheck > .arow button, #view-entregacheck > .btn-primary{flex:1;width:100%;border-radius:11px;padding:14px;font-weight:800;font-size:14px;min-height:50px;box-shadow:var(--shadow);}
 #view-entregacheck > .arow .btn-light{flex:0 0 34%;}
 .mpalert div b{display:inline;margin:0;}
+/* v28.3 · recepción con IA en dos pasos */
+.iar-paso{font-size:11.5px;font-weight:800;color:#6d4bd8;background:#f4f0ff;border-radius:20px;padding:2px 8px;margin-left:6px;vertical-align:middle;white-space:nowrap;}
+.iar-pick{position:relative;padding:0;border:3px solid transparent;border-radius:11px;background:none;cursor:pointer;}
+.iar-pick img{opacity:.55;}
+.iar-pick.on{border-color:#6d4bd8;} .iar-pick.on img{opacity:1;}
+.iar-chk{position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.9);border:2px solid #6d4bd8;color:#4a2fb0;font-weight:900;font-size:14px;line-height:20px;text-align:center;}
+.iar-pick.on .iar-chk{background:#6d4bd8;color:#fff;}
+.iar-row.iar-dano{grid-template-columns:24px minmax(0,1fr) !important;}
+.iar-row input.iar-dtxt{width:100%;height:auto;font:inherit;font-size:14px;border:1px solid var(--line);border-radius:8px;padding:7px 9px;min-height:38px;}
+.iar-dest{margin-bottom:4px;} .iar-dest button{font-size:13px;}
 </style>
 </head>
 <body>
@@ -1293,7 +1303,7 @@ body.tec-form #preBtn, body.modo-tec #preBtn{display:none !important;}
   </div></div>
 
   <div class="section"><div class="head">Datos del vehículo</div><div class="body">
-    <button type="button" class="ia-btn" style="margin:0 0 12px" onclick="v28iaRecep()">✨ Llenar con IA desde fotos</button>
+    <button type="button" class="ia-btn" style="margin:0 0 12px" onclick="v28iaRecep()">✨ Llenar con IA (tarjeta y tablero)</button>
     <div class="row2">
       <div class="field"><label>Marca</label>
         <select id="f_veh_marca" onchange="onMarca()"><option value="">— Selecciona marca —</option></select>
@@ -1338,6 +1348,7 @@ body.tec-form #preBtn, body.modo-tec #preBtn{display:none !important;}
     <input type="file" id="photoInput" accept="image/*" multiple style="display:none" onchange="addPhotos(event)">
     <div class="thumbs" id="thumbs"></div>
     <div class="phint" id="photoHint">Sugerencia: frente, posterior, ambos laterales, tablero/odómetro, interior y daños previos.</div>
+    <button type="button" class="ia-btn" onclick="v28iaRecep('danos')">✨ Revisar golpes con IA</button>
   </div></div>
 
   <div class="section"><div class="head">Autorización del cliente</div><div class="body">
@@ -7801,7 +7812,7 @@ function v27pdfTotales(co){
    Textos para el cliente (diagnóstico, explicación de un trabajo, trabajo terminado) y lectura de
    fotos en recepción (tarjeta de circulación, tablero, fotos del vehículo). Siempre es una propuesta:
    oficina decide si la usa. Instrucciones revisadas con Chema (25-oct-2026, prueba de 10 casos). */
-var V28_IA_TIPOS=['diagnostico','trabajo','terminado','recepcion'];
+var V28_IA_TIPOS=['diagnostico','trabajo','terminado','recepcion','danos'];   // v28.3: danos = revisión de golpes con fotos del vehículo
 var V28_IA_FUEL=['Vacío','1/8','1/4','3/8','1/2','5/8','3/4','7/8','Lleno'];
 var V28_IA_REGLAS=[
  'Eres quien redacta los textos para los clientes de Arsan Motors, taller mecánico en Tlalpan, CDMX.',
@@ -7853,12 +7864,21 @@ function v28iaPrompt(tipo, d){
     var orden=(d.fotos||[]).map(function(f,i){ return 'Imagen '+(i+1)+': '+({tarjeta:'tarjeta de circulación',tablero:'tablero del vehículo (kilometraje y gasolina)',vehiculo:'foto del vehículo'}[f]||'foto'); }).join('\n');
     return 'Eres el asistente de recepción de Arsan Motors, taller mecánico en CDMX. Lee las imágenes y propone los datos del vehículo para la orden de recepción. Oficina revisa todo antes de guardarlo.\n'
       +'- Copia sólo lo que se lea con claridad. Si un dato no se lee o no viene, déjalo en "" y dilo en el aviso.\n'
-      +'- De la tarjeta de circulación toma sólo datos del vehículo: marca, modelo (línea o submarca), año modelo, placas y número de serie (VIN). NUNCA copies el nombre, domicilio ni RFC del propietario.\n'
+      +'- De la tarjeta de circulación toma sólo datos del vehículo: marca, modelo (línea o submarca), año modelo, color, placas y número de serie (VIN). NUNCA copies el nombre, domicilio ni RFC del propietario.\n'
       +'- El número de serie tiene 17 caracteres, sin las letras I, O ni Q. Si no cumple, déjalo en "" y avisa.\n'
-      +'- Del tablero: kilometraje (sólo números) y nivel de gasolina como una de estas opciones: '+V28_IA_FUEL.join(', ')+'.\n'
-      +'- De las fotos del vehículo: el color y una lista de golpes, rayones o piezas dañadas que se vean claramente, con su ubicación (ej. "Rayón en defensa trasera izquierda"). Si algo no es claro, escríbelo como "Posible …". No inventes daños.\n\n'
+      +'- Del tablero: kilometraje total del odómetro (sólo números, no el parcial ni la autonomía) y nivel de gasolina como una de estas opciones: '+V28_IA_FUEL.join(', ')+'.\n\n'
       +'Imágenes, en este orden:\n'+(orden||'(sin imágenes)')
-      +'\n\nResponde sólo JSON: {"marca":"","modelo":"","anio":"","placas":"","vin":"","color":"","km":"","gasolina":"","danos":[],"aviso":""}';
+      +'\n\nResponde sólo JSON: {"marca":"","modelo":"","anio":"","placas":"","vin":"","color":"","km":"","gasolina":"","aviso":""}';
+  }
+  if(tipo==='danos'){
+    return 'Eres el asistente de recepción de Arsan Motors, taller mecánico en CDMX. Revisa las fotos del vehículo que acaba de llegar y anota los daños de carrocería que se ven, para dejarlos registrados antes de trabajar. Oficina revisa la lista antes de guardarla.\n'
+      +'- Anota golpes, abolladuras, rayones, pintura dañada, cristales estrellados, faros o calaveras rotos, espejos dañados y rines o llantas dañados.\n'
+      +'- Cada daño en una línea corta con su ubicación, ej. "Rayón en defensa trasera izquierda", "Abolladura en puerta delantera derecha".\n'
+      +'- Sólo lo que se vea claramente. Si algo puede ser un reflejo, polvo, agua o sombra, no lo anotes; si hay duda real, escríbelo como "Posible …".\n'
+      +'- Si la misma parte sale en varias fotos, anótala una sola vez. No inventes daños.\n'
+      +'- Si no se ve ningún daño, deja la lista vacía y dilo en el aviso. Si falta ver algún lado del vehículo, dilo en el aviso.\n'
+      +(d.vehiculo&&(d.vehiculo.marca||d.vehiculo.modelo)?'Vehículo: '+[d.vehiculo.marca,d.vehiculo.modelo,d.vehiculo.anio].filter(Boolean).join(' ')+'\n':'')
+      +'\nResponde sólo JSON: {"danos":[],"color":"","aviso":""}';
   }
   return '';
 }
@@ -7874,6 +7894,7 @@ function v28iaJson(text){
 /* Deja la respuesta en la forma que la app espera (y quita lo que no debe ir) */
 function v28iaLimpiar(tipo, v){
   v=v&&typeof v==='object'?v:{};
+  if(tipo==='danos') return {danos:(Array.isArray(v.danos)?v.danos:[]).map(function(x){ return v28iaTxt(x,160); }).filter(Boolean).slice(0,15), color:v28iaTxt(v.color,30), aviso:v28iaTxt(v.aviso,400)};
   if(tipo!=='recepcion') return {texto:v28iaTxt(v.texto,3000), aviso:v28iaTxt(v.aviso,600)};
   var avisos=[v28iaTxt(v.aviso,400)].filter(Boolean);
   var vin=String(v.vin||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
@@ -8243,7 +8264,7 @@ function v28iaOv(){
     el.onclick=function(e){ if(e.target===el) v28iaCerrar(); }; document.body.appendChild(el); }
   return el;
 }
-function v28iaCerrar(){ var el=$('iaOv'); if(el){ el.classList.add('hide'); el.innerHTML=''; } window._iaCtx=null; IAR={tarjeta:'', tablero:'', fotos:[], res:null}; }   // la tarjeta no se queda
+function v28iaCerrar(){ var el=$('iaOv'); if(el){ el.classList.add('hide'); el.innerHTML=''; } window._iaCtx=null; IAR={paso:'datos', tarjeta:'', tablero:'', res:null, sel:[], danos:null, destino:'obs'}; }   // la tarjeta no se queda
 function v28iaTextoHtml(t){
   var out='', li=[];
   function cierra(){ if(li.length){ out+='<ul>'+li.map(function(x){ return '<li>'+esc(x)+'</li>'; }).join('')+'</ul>'; li=[]; } }
@@ -8322,12 +8343,27 @@ filaCliente=function(i){
   return h.replace('<button type="button" class="mo-btn" onclick="fotosItem('+i+')">','<button type="button" class="mo-btn ia-mini" onclick="v28iaTrabajo('+i+')" title="Mejorar con IA">✨ IA</button><button type="button" class="mo-btn" onclick="fotosItem('+i+')">');
 };
 
-/* ---- Recepción: llenar datos con fotos ---- */
-var IAR={tarjeta:'', tablero:'', fotos:[], res:null};
-function v28iaRecep(){
-  IAR={tarjeta:'', tablero:'', fotos:(curPhotos||[]).filter(function(x){ return typeof x==='string' && x; }).slice(0,6), res:null};
+/* ---- Recepción con IA (v28.3) ----
+   Paso 1 · Datos: tarjeta de circulación + tablero → marca, modelo, año, color, placas, serie, km, gasolina.
+   Paso 2 · Golpes: fotos del vehículo (las de la orden y las que se tomen aquí, que se suman a la evidencia de la
+   orden) → lista de daños para palomear → se agrega a Observaciones o a Estado / daños al ingreso.
+   La foto de la tarjeta no se guarda en la orden y se borra de memoria al cerrar. */
+var IAR={paso:'datos', tarjeta:'', tablero:'', res:null, sel:[], danos:null, destino:'obs'};
+function v28iaRecep(paso){
+  IAR={paso:paso==='danos'?'danos':'datos', tarjeta:'', tablero:'', res:null, sel:v28iarSelIni(), danos:null, destino:'obs'};
   v28iaRecepPintar();
   v28iaOv().classList.remove('hide');
+}
+function v28iarFotosOrden(){ return (curPhotos||[]).filter(function(x){ return typeof x==='string' && x; }); }
+function v28iarSelIni(){ var n=v28iarFotosOrden().length; var a=[]; for(var i=Math.max(0,n-6);i<n;i++) a.push(i); return a; }   // las 6 más recientes
+/* Las fotos de tarjeta y tablero se guardan más grandes que las normales para que se lean los números */
+function v28iarComprimir(file, max, q, cb){
+  var fr=new FileReader();
+  fr.onload=function(e){ var img=new Image(); img.onload=function(){
+    var w=img.width,h=img.height; if(w>h&&w>max){h=Math.round(h*max/w);w=max;} else if(h>=w&&h>max){w=Math.round(w*max/h);h=max;}
+    var cv=document.createElement('canvas'); cv.width=w; cv.height=h; cv.getContext('2d').drawImage(img,0,0,w,h); cb(cv.toDataURL('image/jpeg',q)); };
+    img.onerror=function(){ cb(''); }; img.src=e.target.result; };
+  fr.onerror=function(){ cb(''); }; fr.readAsDataURL(file);
 }
 function v28iaRecepSlot(k, titulo, desc){
   var u=IAR[k];
@@ -8338,54 +8374,116 @@ function v28iaRecepSlot(k, titulo, desc){
     +'<input type="file" id="iar_g_'+k+'" accept="image/*" hidden onchange="v28iaRecepFoto(\''+k+'\',event)"></div>';
 }
 function v28iaRecepFoto(k, ev){
-  var arr=[];
-  compressAdd(ev, arr, k==='fotos'?6:1, function(){
-    if(k==='fotos'){ IAR.fotos=IAR.fotos.concat(arr).slice(0,6); } else if(arr[0]) IAR[k]=arr[0];
-    v28iaRecepPintar();
+  var f=(ev.target.files||[])[0]; ev.target.value=''; if(!f) return;
+  v28iarComprimir(f, 1600, 0.75, function(u){ if(u){ IAR[k]=u; v28iaRecepPintar(); } });
+}
+/* Fotos nuevas del vehículo: se agregan UNA vez a la evidencia de la orden y quedan seleccionadas */
+function v28iarAgregarFotos(ev){
+  var files=Array.prototype.slice.call(ev.target.files||[]); ev.target.value='';
+  var lugar=24-v28iarFotosOrden().length; if(lugar<=0){ toast('Máximo 24 fotos por orden'); return; }
+  files=files.slice(0,lugar); var pend=files.length, nuevas=[]; if(!pend) return;
+  files.forEach(function(file,i){
+    v28iarComprimir(file, 900, 0.5, function(u){
+      nuevas[i]=u;
+      if(--pend===0){
+        nuevas.filter(Boolean).forEach(function(x){ if(curPhotos.indexOf(x)<0){ curPhotos.push(x); IAR.sel.push(curPhotos.length-1); } });
+        while(IAR.sel.length>6) IAR.sel.shift();
+        try{ renderThumbs(); }catch(e){}
+        v28iaRecepPintar();
+      }
+    });
   });
 }
+function v28iarToggle(i){
+  var p=IAR.sel.indexOf(i);
+  if(p>=0) IAR.sel.splice(p,1); else { if(IAR.sel.length>=6){ toast('Máximo 6 fotos por revisión'); return; } IAR.sel.push(i); }
+  v28iaRecepPintar();
+}
 function v28iaRecepPintar(){
-  var el=v28iaOv();
-  var h='<div class="ov-card ia-card"><div class="ov-h">✨ Llenar con IA desde fotos</div>'
-    +'<div class="fmini" style="margin:-6px 0 10px">La IA lee las fotos y propone los datos. Tú decides qué se usa. La foto de la tarjeta no se guarda en la orden.</div>';
-  if(!IAR.res){
-    h+=v28iaRecepSlot('tarjeta','Tarjeta de circulación','Marca, modelo, año, placas y número de serie')
-      +v28iaRecepSlot('tablero','Tablero','Kilometraje y gasolina')
-      +'<div class="iar-slot"><div class="iar-t"><b>Fotos del vehículo</b><span>Color y daños visibles · '+IAR.fotos.length+'/6</span></div>'
-      +(IAR.fotos.length?'<div class="iar-fotos">'+IAR.fotos.map(function(u,i){ return '<div class="iar-img sm"><img src="'+u+'" alt="Foto '+(i+1)+'"><button type="button" class="del" aria-label="Quitar" onclick="IAR.fotos.splice('+i+',1);v28iaRecepPintar()">&times;</button></div>'; }).join('')+'</div>':'')
-      +(IAR.fotos.length<6?'<div class="iar-btns"><button type="button" class="photobtn" onclick="$(\'iar_c_fotos\').click()">📷 Tomar</button><button type="button" class="photobtn alt" onclick="$(\'iar_g_fotos\').click()">📂 Galería</button></div>':'')
-      +'<input type="file" id="iar_c_fotos" accept="image/*" capture="environment" hidden onchange="v28iaRecepFoto(\'fotos\',event)">'
-      +'<input type="file" id="iar_g_fotos" accept="image/*" multiple hidden onchange="v28iaRecepFoto(\'fotos\',event)"></div>'
-      +'<div id="iar_msg"></div>'
-      +'<div class="ov-btns"><button class="cancel" onclick="v28iaCerrar()">Cancelar</button><button class="save" id="iar_go" onclick="v28iaRecepLeer()">Leer con IA</button></div>';
+  var el=v28iaOv(), h='<div class="ov-card ia-card">';
+  if(IAR.paso==='datos'){
+    h+='<div class="ov-h">✨ Datos del vehículo con IA <span class="iar-paso">Paso 1 de 2</span></div>';
+    if(!IAR.res){
+      h+='<div class="fmini" style="margin:-6px 0 10px">Toma la tarjeta de circulación y el tablero. La IA propone los datos y tú decides cuáles se usan. La foto de la tarjeta no se guarda en la orden.</div>'
+        +v28iaRecepSlot('tarjeta','Tarjeta de circulación','Marca, modelo, año, color, placas y número de serie')
+        +v28iaRecepSlot('tablero','Tablero','Kilometraje y gasolina')
+        +'<div id="iar_msg"></div>'
+        +'<div class="ov-btns"><button class="cancel" onclick="v28iaCerrar()">Cancelar</button>'
+        +'<button class="cancel" onclick="IAR.paso=\'danos\';v28iaRecepPintar()">Saltar a golpes</button>'
+        +'<button class="save" id="iar_go" onclick="v28iaRecepLeer()">Leer datos con IA</button></div>';
+    } else {
+      var r=IAR.res, filas=[
+        ['marca','Marca',getMarcaVal(),r.marca],['modelo','Modelo',getModeloVal(),r.modelo],['anio','Año',$('f_veh_anio').value,r.anio],
+        ['placas','Placas',$('f_veh_placas').value,r.placas],['vin','No. de serie',$('f_veh_vin').value,r.vin],['color','Color',$('f_veh_color').value,r.color],
+        ['km','Kilometraje',$('f_veh_km').value,r.km],['gasolina','Gasolina',FUEL[Number($('f_veh_fuel').value)]||'',r.gasolina!==''?FUEL[r.gasolina]:'']];
+      h+='<div class="fmini" style="margin:-6px 0 10px">Palomea lo que quieres pasar a la orden. A la izquierda lo que ya tiene la orden; a la derecha lo que leyó la IA.</div>'
+        +'<div class="iar-tab" role="table">'+filas.map(function(f){
+        var hay=String(f[3]||'').trim()!=='', igual=hay && v28n(f[2])===v28n(f[3]);
+        return '<label class="iar-row'+(hay?'':' vacio')+'"><input type="checkbox" data-k="'+f[0]+'"'+(hay&&!igual?' checked':'')+(hay?'':' disabled')+'>'
+          +'<span class="iar-c">'+f[1]+'</span><span class="iar-a">'+esc(f[2]||'—')+'</span><span class="iar-n">'+(hay?esc(f[3]):'No se leyó')+'</span></label>';
+      }).join('')+'</div>';
+      if(r.aviso) h+='<div class="ia-aviso"><b>Aviso</b>'+esc(r.aviso)+'</div>';
+      h+='<div class="ov-btns"><button class="cancel" onclick="IAR.res=null;v28iaRecepPintar()">Volver</button><button class="save" onclick="v28iaRecepUsar()">Pasar a la orden y seguir</button></div>';
+    }
   } else {
-    var r=IAR.res, filas=[
-      ['marca','Marca',getMarcaVal(),r.marca],['modelo','Modelo',getModeloVal(),r.modelo],['anio','Año',$('f_veh_anio').value,r.anio],
-      ['placas','Placas',$('f_veh_placas').value,r.placas],['vin','No. de serie',$('f_veh_vin').value,r.vin],['color','Color',$('f_veh_color').value,r.color],
-      ['km','Kilometraje',$('f_veh_km').value,r.km],['gasolina','Gasolina',FUEL[Number($('f_veh_fuel').value)]||'',r.gasolina!==''?FUEL[r.gasolina]:'']];
-    h+='<div class="iar-tab" role="table">'+filas.map(function(f){
-      var hay=String(f[3]||'').trim()!=='', igual=hay && v28n(f[2])===v28n(f[3]);
-      return '<label class="iar-row'+(hay?'':' vacio')+'"><input type="checkbox" data-k="'+f[0]+'"'+(hay&&!igual?' checked':'')+(hay?'':' disabled')+'>'
-        +'<span class="iar-c">'+f[1]+'</span><span class="iar-a">'+esc(f[2]||'—')+'</span><span class="iar-n">'+(hay?esc(f[3]):'No se leyó')+'</span></label>';
-    }).join('')+'</div>';
-    if(r.danos&&r.danos.length) h+='<label class="iar-row iar-danos"><input type="checkbox" data-k="danos" checked><span class="iar-c">Daños vistos</span><span class="iar-n">'+r.danos.map(esc).join('<br>')+'</span></label>';
-    if(r.aviso) h+='<div class="ia-aviso"><b>Aviso</b>'+esc(r.aviso)+'</div>';
-    h+='<div class="ov-btns"><button class="cancel" onclick="IAR.res=null;v28iaRecepPintar()">Volver</button><button class="save" onclick="v28iaRecepUsar()">Pasar a la orden</button></div>';
+    var fo=v28iarFotosOrden();
+    h+='<div class="ov-h">✨ Revisar golpes con IA <span class="iar-paso">Paso 2 de 2</span></div>';
+    if(!IAR.danos){
+      h+='<div class="fmini" style="margin:-6px 0 10px">Toma fotos del vehículo por fuera (frente, atrás y los dos lados). Se guardan en la evidencia de la orden. Marca hasta 6 para que la IA las revise.</div>'
+        +'<div class="iar-slot"><div class="iar-t"><b>Fotos del vehículo</b><span>'+IAR.sel.length+' de 6 seleccionadas · '+fo.length+' en la orden</span></div>'
+        +(fo.length?'<div class="iar-fotos">'+fo.map(function(u,i){ var on=IAR.sel.indexOf(i)>=0;
+            return '<button type="button" class="iar-img sm iar-pick'+(on?' on':'')+'" aria-pressed="'+on+'" onclick="v28iarToggle('+i+')"><img src="'+u+'" alt="Foto '+(i+1)+'"><span class="iar-chk">'+(on?'✓':'')+'</span></button>'; }).join('')+'</div>':'')
+        +'<div class="iar-btns"><button type="button" class="photobtn" onclick="$(\'iar_c_fotos\').click()">📷 Tomar</button><button type="button" class="photobtn alt" onclick="$(\'iar_g_fotos\').click()">📂 Galería</button></div>'
+        +'<input type="file" id="iar_c_fotos" accept="image/*" capture="environment" hidden onchange="v28iarAgregarFotos(event)">'
+        +'<input type="file" id="iar_g_fotos" accept="image/*" multiple hidden onchange="v28iarAgregarFotos(event)"></div>'
+        +'<div id="iar_msg"></div>'
+        +'<div class="ov-btns"><button class="cancel" onclick="v28iaCerrar()">'+(IAR.vieneDeDatos?'Terminar sin revisar':'Cancelar')+'</button><button class="save" id="iar_go" onclick="v28iaDanosLeer()">Revisar golpes con IA</button></div>';
+    } else {
+      var d=IAR.danos;
+      if(d.danos.length){
+        h+='<div class="fmini" style="margin:-6px 0 10px">Palomea los que sí están. Puedes corregir el texto antes de agregarlo.</div><div class="iar-tab">'
+          +d.danos.map(function(t,i){ return '<label class="iar-row iar-dano"><input type="checkbox" data-d="'+i+'"'+((d.off||[]).indexOf(i)>=0?'':' checked')+'><input type="text" class="iar-dtxt" data-dt="'+i+'" value="'+esc(t)+'" aria-label="Daño '+(i+1)+'"></label>'; }).join('')+'</div>';
+        h+='<div class="ia-lbl">Agregar a</div><div class="tc-seg iar-dest" role="group">'
+          +'<button type="button" class="'+(IAR.destino==='obs'?'on':'')+'" aria-pressed="'+(IAR.destino==='obs')+'" onclick="IAR.destino=\'obs\';v28iarDest()">Observaciones</button>'
+          +'<button type="button" class="'+(IAR.destino==='estado'?'on':'')+'" aria-pressed="'+(IAR.destino==='estado')+'" onclick="IAR.destino=\'estado\';v28iarDest()">Estado / daños al ingreso</button></div>';
+      } else h+='<div class="ia-aviso" style="background:#e8f6ee;color:#185c37"><b>Sin golpes a la vista</b>La IA no vio daños claros en estas fotos.</div>';
+      if(d.aviso) h+='<div class="ia-aviso"><b>Aviso</b>'+esc(d.aviso)+'</div>';
+      h+='<div class="ov-btns"><button class="cancel" onclick="IAR.danos=null;v28iaRecepPintar()">Volver</button>'
+        +(d.danos.length?'<button class="save" onclick="v28iaDanosUsar()">Agregar a la orden</button>':'<button class="save" onclick="v28iaCerrar()">Listo</button>')+'</div>';
+    }
   }
   el.innerHTML=h+'</div>';
+}
+function v28iarDest(){   // guarda lo palomeado/editado antes de repintar
+  v28iarLeerDanos(); v28iaRecepPintar();
+}
+function v28iarLeerDanos(){
+  var d=IAR.danos; if(!d) return [];
+  var out=[]; d.off=[];
+  d.danos.forEach(function(t,i){ var c=document.querySelector('#iaOv input[data-d="'+i+'"]'), tx=document.querySelector('#iaOv input[data-dt="'+i+'"]');
+    if(tx) d.danos[i]=tx.value.trim(); if(!c || c.checked) out.push(d.danos[i]); else d.off.push(i); });
+  return out.filter(Boolean);
 }
 async function v28iaRecepLeer(){
   var fotos=[], imgs=[];
   if(IAR.tarjeta){ fotos.push('tarjeta'); imgs.push(IAR.tarjeta); }
   if(IAR.tablero){ fotos.push('tablero'); imgs.push(IAR.tablero); }
-  IAR.fotos.forEach(function(u){ fotos.push('vehiculo'); imgs.push(u); });
-  if(!imgs.length){ $('iar_msg').innerHTML='<div class="ia-err">Agrega al menos una foto.</div>'; return; }
+  if(!imgs.length){ $('iar_msg').innerHTML='<div class="ia-err">Toma la tarjeta, el tablero o los dos.</div>'; return; }
   var b=$('iar_go'); if(b){ b.disabled=true; b.textContent='Leyendo…'; }
-  $('iar_msg').innerHTML='<div class="ia-load" role="status">La IA está leyendo '+imgs.length+' foto(s)…</div>';
-  for(var i=0;i<imgs.length;i++) imgs[i]=await v28aDataUrl(imgs[i]);
-  var j=await v28iaPedir('recepcion',{fotos:fotos},imgs.filter(Boolean));
-  if(!(j&&j.ok)){ if(b){ b.disabled=false; b.textContent='Leer con IA'; } $('iar_msg').innerHTML='<div class="ia-err">'+esc((j&&j.error)||'No se pudo leer')+'</div>'; return; }
+  $('iar_msg').innerHTML='<div class="ia-load" role="status">La IA está leyendo '+(imgs.length===2?'la tarjeta y el tablero':fotos[0]==='tarjeta'?'la tarjeta':'el tablero')+'…</div>';
+  var j=await v28iaPedir('recepcion',{fotos:fotos},imgs);
+  if(!(j&&j.ok)){ if(b){ b.disabled=false; b.textContent='Leer datos con IA'; } $('iar_msg').innerHTML='<div class="ia-err">'+esc((j&&j.error)||'No se pudo leer')+'</div>'; return; }
   IAR.res=j.resultado||{}; v28iaRecepPintar();
+}
+async function v28iaDanosLeer(){
+  var fo=v28iarFotosOrden(), imgs=IAR.sel.map(function(i){ return fo[i]; }).filter(Boolean);
+  if(!imgs.length){ $('iar_msg').innerHTML='<div class="ia-err">Toma o marca al menos una foto del vehículo.</div>'; return; }
+  var b=$('iar_go'); if(b){ b.disabled=true; b.textContent='Revisando…'; }
+  $('iar_msg').innerHTML='<div class="ia-load" role="status">La IA está revisando '+imgs.length+' foto(s)…</div>';
+  for(var i=0;i<imgs.length;i++) imgs[i]=await v28aDataUrl(imgs[i]);
+  var j=await v28iaPedir('danos',{vehiculo:{marca:getMarcaVal(),modelo:getModeloVal(),anio:$('f_veh_anio').value}},imgs.filter(Boolean));
+  if(!(j&&j.ok)){ if(b){ b.disabled=false; b.textContent='Revisar golpes con IA'; } $('iar_msg').innerHTML='<div class="ia-err">'+esc((j&&j.error)||'No se pudo revisar')+'</div>'; return; }
+  var r=j.resultado||{}; IAR.danos={danos:(r.danos||[]).slice(), aviso:r.aviso||'', color:r.color||''}; v28iaRecepPintar();
 }
 function v28iaRecepUsar(){
   var r=IAR.res||{}, on={};
@@ -8401,8 +8499,18 @@ function v28iaRecepUsar(){
   if(on.color) $('f_veh_color').value=r.color;
   if(on.km) $('f_veh_km').value=r.km;
   if(on.gasolina && r.gasolina!==''){ $('f_veh_fuel').value=r.gasolina; updateFuel(); }
-  if(on.danos && r.danos && r.danos.length){ var est=$('f_estado'); est.value=(est.value.trim()?est.value.trim()+'\n':'')+r.danos.join('\n'); }
-  v28iaCerrar(); toast('Datos pasados a la orden. Revísalos antes de guardar.');
+  // la tarjeta ya no se necesita: se suelta de memoria y se pasa a los golpes
+  IAR.tarjeta=''; IAR.tablero=''; IAR.res=null; IAR.paso='danos'; IAR.vieneDeDatos=true;
+  toast('Datos pasados a la orden. Ahora, si quieres, los golpes.');
+  v28iaRecepPintar();
+}
+function v28iaDanosUsar(){
+  var lista=v28iarLeerDanos(); if(!lista.length){ toast('No palomeaste ningún daño'); return; }
+  var dest=IAR.destino, el=$(dest==='estado'?'f_estado':'f_obs');
+  var txt=(dest==='obs'?'Daños vistos al recibirlo:\n':'')+lista.map(function(x){ return '- '+x; }).join('\n');
+  el.value=(el.value.trim()?el.value.trim()+'\n':'')+txt;
+  v28iaCerrar(); toast('Agregado a '+(dest==='estado'?'Estado / daños al ingreso':'Observaciones')+'. Revísalo antes de guardar.');
+  try{ el.scrollIntoView({block:'center'}); }catch(e){}
 }
 
 </script>
