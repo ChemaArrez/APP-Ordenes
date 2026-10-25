@@ -3,6 +3,8 @@
  *  v26: liga del cliente (/o/<llave>) con autorización en línea. Ver "v26 · LIGA DEL CLIENTE".
  *  v27: precios — catálogo oficial (sólo dirección lo edita), solicitudes de precio e historial
  *       de lo cotizado. Ver "v27 · PRECIOS".
+ *  v28: IA (textos para el cliente y lectura de fotos en recepción) y checklists en la liga del
+ *       cliente. Ver "v28 · IA".
  *
  *  Reemplaza al Apps Script como backend de la app. Habla EXACTAMENTE
  *  el mismo idioma que el Apps Script de v23 (mismas acciones, mismas
@@ -28,10 +30,12 @@
  *    WA_TALLER       (v26, opcional) WhatsApp del taller, 10 dígitos: el cliente le contesta ahí
  *    WA_ARREZ        (v26, opcional) WhatsApp de Servicio Arrez (si no, usa WA_TALLER)
  *    CLAVE           clave de la app (por omisión "arsan")
+ *    ANTHROPIC_API_KEY (v28) llave de la IA; sin ella el botón de IA avisa que falta
+ *    IA_MODELO_TEXTO / IA_MODELO_FOTOS (v28, opcionales) modelo para textos / para fotos
  ****************************************************************/
 import { getStore } from "@netlify/blobs";
 
-const BACKEND_VERSION = "2026-10-23-v27.2";
+const BACKEND_VERSION = "2026-10-25-v28";
 const ETAPAS_ORDEN = ["cita", "recepcion", "cotizado", "aprobado", "finalizado", "entregado"];
 const CANDADO_DESDE = "aprobado";
 const HORAS_SESION = 12;
@@ -1176,7 +1180,7 @@ function resumenAut(o) {
   return { ts: a.ts, nombre: a.nombre || "", total: nz(a.total), n: (a.trabajos || []).length, de: (a.trabajos || []).length + (a.noAut || []).length };
 }
 
-function proyeccionCliente(o) {
+function proyeccionClienteV27(o) {
   const v = o.vehiculo || {}, s = o.servicio || {}, c = o.cliente || {}, fl = o.flotilla || {}, co = o.cotizacion || {};
   const di = o.diagnostico || {}, fi = o.finalizado || {}, ap = o.aprobacion || {}, sal = o.salida || {};
   const pick = (x, ks) => { const r = {}; for (const k of ks) if (x && x[k] != null && x[k] !== "") r[k] = x[k]; return r; };
@@ -1598,6 +1602,195 @@ function v27desglose(co, t) {
   return r;
 }
 
+/* =====================================================================
+   v28 · IA EN LA APP Y CHECKLISTS EN LA LIGA DEL CLIENTE (25-oct-2026, pedido de Chema)
+   · POST ia {tipo, datos, imagenes[]}: propuesta de texto para el cliente (diagnóstico, trabajo,
+     terminado) o lectura de fotos en recepción. Usa ANTHROPIC_API_KEY (variable de Netlify).
+     Modelos: IA_MODELO_TEXTO (por omisión claude-sonnet-5-5) e IA_MODELO_FOTOS (claude-haiku-5-5,
+     más rápido para leer fotos). Netlify corta la función a los 10 s: se aborta a los 9 s.
+   · Liga del cliente: inventario de recepción, revisión de 25 puntos (desde cotización), checklist de
+     salida (al terminar) y la entrega (fotos de salida, preguntas, firma) — sólo lo que el cliente puede ver.
+   ===================================================================== */
+/* ---- v28 · IA (común: servidor, app y página de prueba usan EXACTAMENTE esto) ----
+   Textos para el cliente (diagnóstico, explicación de un trabajo, trabajo terminado) y lectura de
+   fotos en recepción (tarjeta de circulación, tablero, fotos del vehículo). Siempre es una propuesta:
+   oficina decide si la usa. Instrucciones revisadas con Chema (25-oct-2026, prueba de 10 casos). */
+var V28_IA_TIPOS=['diagnostico','trabajo','terminado','recepcion'];
+var V28_IA_FUEL=['Vacío','1/8','1/4','3/8','1/2','5/8','3/4','7/8','Lleno'];
+var V28_IA_REGLAS=[
+ 'Eres quien redacta los textos para los clientes de Arsan Motors, taller mecánico en Tlalpan, CDMX.',
+ 'Reescribe el texto del taller para que lo entienda el dueño del vehículo.',
+ '- Háblale de usted, en español de México, claro y amable. Sin tecnicismos: si una pieza necesita su nombre técnico, explícala en pocas palabras la primera vez.',
+ '- Usa SÓLO los datos que vienen abajo (texto del taller, partidas de la cotización, vehículo, revisión). No inventes síntomas, medidas, porcentajes, causas, garantías ni resultados de pruebas.',
+ '- Nunca pongas precios, costos, márgenes ni nombres de proveedores o técnicos.',
+ '- Garantías y errores del taller: dilo con honestidad, sin excusas y sin culpar al cliente.',
+ '- Flotillas y empresas: tono profesional y directo (de "ustedes" si es una empresa). Particulares: cercano.',
+ '- Para hacer una lista, empieza cada renglón con "- ".',
+ '- Si falta un dato que el cliente necesitaría para entender, escríbelo aparte como aviso para oficina (el aviso no se manda al cliente). Si no falta nada, el aviso va vacío.'
+].join('\n');
+function v28iaTxt(x,n){ return String(x==null?'':x).replace(/\s+\n/g,'\n').trim().slice(0,n||2000); }
+function v28iaPartidas(lista){
+  return (lista||[]).slice(0,40).map(function(p){
+    var q=Number(p.cantidad)||0;
+    return '- '+v28iaTxt(p.concepto,160)+(p.tipoTrabajo?' ['+v28iaTxt(p.tipoTrabajo,20)+']':'')+(q&&q!==1?' × '+q:'');
+  }).join('\n');
+}
+function v28iaContexto(d){
+  var v=d.vehiculo||{}, veh=[v.marca,v.modelo,v.anio].map(function(x){ return v28iaTxt(x,40); }).filter(Boolean).join(' ');
+  return 'Vehículo: '+(veh||'sin datos')+'\nCliente: '+(d.tipoCliente==='flotilla'?'empresa / flotilla':'particular');
+}
+function v28iaPrompt(tipo, d){
+  d=d||{};
+  var ctx=v28iaContexto(d), fin='\n\nResponde sólo JSON: {"texto": "...", "aviso": "..."}';
+  if(tipo==='diagnostico')
+    return V28_IA_REGLAS+'\n- Diagnóstico: 2 a 5 frases o una lista corta de lo que se encontró. Si algo falta por revisar, dilo y que le avisaremos.\n\n'
+      +ctx+'\nLo que pidió el cliente: '+v28iaTxt(d.motivo,400)
+      +'\n\nDiagnóstico que escribió el taller:\n'+v28iaTxt(d.texto,2000)
+      +(d.partidas&&d.partidas.length?'\n\nPartidas de la cotización (sólo como contexto, sin precios):\n'+v28iaPartidas(d.partidas):'')
+      +(d.revision?'\n\nPuntos de la revisión de 25 puntos que necesitan atención:\n'+v28iaTxt(d.revision,1200):'')
+      +fin;
+  if(tipo==='trabajo')
+    return V28_IA_REGLAS+'\n- Explicación de UN trabajo de la cotización: 1 o 2 frases de por qué se hace y después una lista con "- " de lo que incluye. Sin título.\n\n'
+      +ctx+'\nTrabajo: '+v28iaTxt(d.titulo,160)
+      +'\nPartidas de este trabajo:\n'+v28iaPartidas(d.partidas)
+      +(d.texto?'\n\nExplicación que escribió el taller:\n'+v28iaTxt(d.texto,1500):'')
+      +(d.diagnostico?'\n\nDiagnóstico general (contexto):\n'+v28iaTxt(d.diagnostico,1200):'')
+      +fin;
+  if(tipo==='terminado')
+    return V28_IA_REGLAS+'\n- Notas de trabajo terminado: qué se hizo, en 2 a 4 frases, y que el vehículo está listo para recogerse. No digas que se hizo una prueba si no viene en los datos.\n\n'
+      +ctx
+      +'\n\nNotas que escribió el taller:\n'+v28iaTxt(d.texto,1500)
+      +(d.partidas&&d.partidas.length?'\n\nTrabajos autorizados (partidas):\n'+v28iaPartidas(d.partidas):'')
+      +(d.checklist?'\n\nObservaciones del checklist de salida:\n'+v28iaTxt(d.checklist,800):'')
+      +fin;
+  if(tipo==='recepcion'){
+    var orden=(d.fotos||[]).map(function(f,i){ return 'Imagen '+(i+1)+': '+({tarjeta:'tarjeta de circulación',tablero:'tablero del vehículo (kilometraje y gasolina)',vehiculo:'foto del vehículo'}[f]||'foto'); }).join('\n');
+    return 'Eres el asistente de recepción de Arsan Motors, taller mecánico en CDMX. Lee las imágenes y propone los datos del vehículo para la orden de recepción. Oficina revisa todo antes de guardarlo.\n'
+      +'- Copia sólo lo que se lea con claridad. Si un dato no se lee o no viene, déjalo en "" y dilo en el aviso.\n'
+      +'- De la tarjeta de circulación toma sólo datos del vehículo: marca, modelo (línea o submarca), año modelo, placas y número de serie (VIN). NUNCA copies el nombre, domicilio ni RFC del propietario.\n'
+      +'- El número de serie tiene 17 caracteres, sin las letras I, O ni Q. Si no cumple, déjalo en "" y avisa.\n'
+      +'- Del tablero: kilometraje (sólo números) y nivel de gasolina como una de estas opciones: '+V28_IA_FUEL.join(', ')+'.\n'
+      +'- De las fotos del vehículo: el color y una lista de golpes, rayones o piezas dañadas que se vean claramente, con su ubicación (ej. "Rayón en defensa trasera izquierda"). Si algo no es claro, escríbelo como "Posible …". No inventes daños.\n\n'
+      +'Imágenes, en este orden:\n'+(orden||'(sin imágenes)')
+      +'\n\nResponde sólo JSON: {"marca":"","modelo":"","anio":"","placas":"","vin":"","color":"","km":"","gasolina":"","danos":[],"aviso":""}';
+  }
+  return '';
+}
+/* Lee el JSON de la respuesta (aunque venga con texto alrededor o en un bloque de código) */
+function v28iaJson(text){
+  var t=String(text||'').trim();
+  try{ return JSON.parse(t); }catch(e){}
+  var m=/```(?:json)?\s*([\s\S]*?)```/.exec(t); if(m){ try{ return JSON.parse(m[1]); }catch(e){} }
+  var a=t.indexOf('{'), b=t.lastIndexOf('}');
+  if(a>=0&&b>a){ try{ return JSON.parse(t.slice(a,b+1)); }catch(e){} }
+  return null;
+}
+/* Deja la respuesta en la forma que la app espera (y quita lo que no debe ir) */
+function v28iaLimpiar(tipo, v){
+  v=v&&typeof v==='object'?v:{};
+  if(tipo!=='recepcion') return {texto:v28iaTxt(v.texto,3000), aviso:v28iaTxt(v.aviso,600)};
+  var avisos=[v28iaTxt(v.aviso,400)].filter(Boolean);
+  var vin=String(v.vin||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+  if(vin && !/^[A-HJ-NPR-Z0-9]{17}$/.test(vin)){ avisos.push('El número de serie leído ('+vin+') no tiene 17 caracteres válidos: revísalo en la tarjeta.'); vin=''; }
+  var anio=String(v.anio||'').replace(/\D/g,''); if(anio && !(anio.length===4 && +anio>=1950 && +anio<=2100)) anio='';
+  var km=String(v.km||'').replace(/[^\d]/g,'');
+  var gas=V28_IA_FUEL.indexOf(String(v.gasolina||'').trim());
+  var danos=(Array.isArray(v.danos)?v.danos:[]).map(function(x){ return v28iaTxt(x,160); }).filter(Boolean).slice(0,15);
+  return {marca:v28iaTxt(v.marca,40), modelo:v28iaTxt(v.modelo,60), anio:anio, placas:v28iaTxt(v.placas,15).toUpperCase().replace(/\s+/g,''),
+    vin:vin, color:v28iaTxt(v.color,30), km:km, gasolina:gas>=0?gas:'', danos:danos, aviso:avisos.join(' ')};
+}
+
+const V28_INV = [["antena","Antena"],["espejos","Espejos"],["tapones","Tapones"],["rines","Rines"],["tapon_gas","Tapón de gasolina"],
+  ["radio","Radio / estéreo"],["encendedor","Encendedor"],["tapetes","Tapetes"],["refaccion","Llanta de refacción"],["herramienta","Herramienta"],
+  ["reflejantes","Triángulos / reflejantes"],["extintor","Extintor"],["cables","Cables pasacorriente"],["gato","Gato"],
+  ["objetos","Objetos de valor"],["vestiduras","Vestiduras"],["cristales","Cristales"],["otros","Otros"]];
+const V28_MP = {1:"Luces exteriores (faros, calaveras, direccionales, stop)",2:"Testigos del tablero (check engine, ABS, airbag)",3:"Plumas limpiaparabrisas y chisguetes",
+  4:"Claxon",5:"Cinturones de seguridad y A/C",6:"Nivel y estado de aceite de motor",7:"Anticongelante, radiador, mangueras y tapón",8:"Líquido de frenos",
+  9:"Líquido / sistema de dirección",10:"Bandas y poleas",11:"Batería (terminales y carga)",12:"Filtros de aire y de cabina",13:"Llanta delantera izquierda",
+  14:"Llanta delantera derecha",15:"Llanta trasera izquierda",16:"Llanta trasera derecha y refacción",17:"Balatas delanteras y discos",18:"Balatas traseras / tambores",
+  19:"Amortiguadores y resortes",20:"Terminales, rótulas y bujes de suspensión",21:"Fugas (motor, transmisión, dirección, diferencial)",22:"Sistema de escape y soportes",
+  23:"Juntas homocinéticas y guardapolvos",24:"Escaneo de códigos de falla (OBD-II)",25:"Prueba de ruta (frenado, ruidos, temperatura)"};
+const V28_MP_U = {11:"V",13:"mm",14:"mm",15:"mm",16:"mm",17:"mm",18:"mm"};
+const V28_EC = {
+  s1: ["Verificación técnica", ["Trabajos de la orden completados","Testigos del tablero apagados","Niveles (aceite, anticongelante, frenos)","Sin fugas visibles (piso y motor)",
+    "Torque de birlos verificado","Presión de llantas + refacción","Luces, claxon y limpiaparabrisas","Batería y arranque"]],
+  s2: ["Prueba de ruta", ["Frenado sin ruidos ni vibración","Temperatura estable","Sin ruidos en suspensión / dirección","Cambios de transmisión normales"]],
+  s3: ["Presentación y pertenencias", ["Interior sin grasa (volante, palanca, vestiduras)","Protecciones de papel/plástico retiradas","Pertenencias completas vs inventario de entrada",
+    "Herramienta, gato y refacción en su lugar","Piezas reemplazadas listas para mostrar"]],
+};
+const V28_PREGUNTAS = ["Se le explicaron los trabajos realizados y las piezas cambiadas","Se le mostraron las piezas reemplazadas","Se le entregó y explicó el checklist",
+  "Se le comentaron los trabajos no realizados o pendientes","Se le explicó la garantía (90 días o 5,000 km)"];
+const V28_FOTOS_SALIDA = { frente: "Frente", atras: "Atrás", izq: "Lateral izquierdo", der: "Lateral derecho", tablero: "Tablero" };
+const V28_FUEL = ["Vacío","1/8","1/4","3/8","1/2","5/8","3/4","7/8","Lleno"];
+
+function v28parseInv(str) {
+  const o = {};
+  String(str || "").split(";").forEach((p) => { p = p.trim(); const i = p.indexOf("="); if (i > 0) o[p.slice(0, i).trim()] = p.slice(i + 1).trim(); });
+  return o;
+}
+function v28proyeccion(o) {
+  const st = o.estatus || "recepcion", idx = ETAPAS_ORDEN.indexOf(st), desde = (e) => idx >= ETAPAS_ORDEN.indexOf(e);
+  const out = {};
+  const inv = o.inventario && typeof o.inventario === "object" ? o.inventario : v28parseInv(o.inventarioStr);
+  out.inventario = V28_INV.map(([k, t]) => ({ t, v: String(inv[k] || "") })).filter((x) => x.v === "si" || x.v === "no");
+  const mp = o.multipuntos;
+  if (mp && Array.isArray(mp.puntos) && mp.puntos.length && desde("cotizado"))
+    out.inspeccion = { fecha: String(mp.fecha || ""), puntos: mp.puntos.filter((p) => p && p.estatus && p.estatus !== "sin").map((p) => ({
+      id: nz(p.id), t: V28_MP[p.id] || "Punto " + p.id, estatus: String(p.estatus), medicion: p.medicion == null || p.medicion === "" ? "" : String(p.medicion),
+      u: V28_MP_U[p.id] || "", nota: String(p.nota || "").slice(0, 300) })) };
+  const ec = o.entregaCheck || null, items = (ec && ec.items) || {};
+  if (ec && desde("finalizado") && Object.keys(items).some((k) => /^s[123]_/.test(k)))
+    out.salida = { fecha: String(ec.fecha || ""), secciones: ["s1", "s2", "s3"].map((s) => ({ titulo: V28_EC[s][0],
+      items: V28_EC[s][1].map((t, i) => ({ t, e: (items[s + "_" + i] || {}).e || "", n: String((items[s + "_" + i] || {}).n || "").slice(0, 300) })).filter((x) => x.e) })).filter((x) => x.items.length) };
+  if (ec && (st === "entregado" || ec.firmaClienteUrl)) {
+    const fu = ec.fotosUrls && typeof ec.fotosUrls === "object" ? ec.fotosUrls : {};
+    out.entrega = { fecha: String((o.salida || {}).fecha || ec.fechaEntrega || ""), hora: String((o.salida || {}).hora || ""),
+      km: String((o.salida || {}).km || ec.km || ""), gasolina: ec.fuel != null && ec.fuel !== "" ? V28_FUEL[Number(ec.fuel)] || "" : "",
+      fotos: Object.keys(V28_FOTOS_SALIDA).filter((k) => fu[k]).map((k) => ({ t: V28_FOTOS_SALIDA[k], u: fu[k] })),
+      firma: String(ec.firmaClienteUrl || ""), recibio: String(ec.recibio || "").slice(0, 80),
+      preguntas: V28_PREGUNTAS.map((t, i) => ({ t, e: (items["s5_" + i] || {}).e || "", n: String((items["s5_" + i] || {}).n || "").slice(0, 300) })),
+      noRealizados: String(ec.noRealizados || "").slice(0, 1200),
+      pendientes: (ec.pendientes || []).map((p) => String((p && p.texto) || p || "").slice(0, 200)).filter(Boolean) };
+  }
+  return out;
+}
+function proyeccionCliente(o) { return { ...proyeccionClienteV27(o), ...v28proyeccion(o) }; }
+
+/* ---- IA ---- */
+async function iaServidor(b, ses) {
+  const tipo = String((b && b.tipo) || "");
+  if (V28_IA_TIPOS.indexOf(tipo) < 0) return { ok: false, error: "Tipo de texto desconocido" };
+  const key = env("ANTHROPIC_API_KEY");
+  if (!key) return { ok: false, sinLlave: true, error: "La IA todavía no está activada: falta la llave ANTHROPIC_API_KEY en Netlify." };
+  const prompt = v28iaPrompt(tipo, (b && b.datos) || {});
+  const imgs = (Array.isArray(b.imagenes) ? b.imagenes : []).slice(0, 8).map((u) => /^data:(image\/(?:jpeg|png|webp|gif));base64,(.+)$/s.exec(String(u || ""))).filter((m) => m && m[2].length < 6e6)
+    .map((m) => ({ type: "image", source: { type: "base64", media_type: m[1], data: m[2] } }));
+  const model = tipo === "recepcion" ? env("IA_MODELO_FOTOS", "claude-haiku-5-5") : env("IA_MODELO_TEXTO", "claude-sonnet-5-5");
+  const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), 9000);
+  try {
+    const r = await fetch("https://api.anthropic.com/v1/messages", { method: "POST", signal: ctl.signal,
+      headers: { "authorization": "Bearer " + key, "anthropic-version": "2023-06-01", "content-type": "application/json",
+        ...(env("ANTHROPIC_WORKSPACE_ID") ? { "anthropic-workspace-id": env("ANTHROPIC_WORKSPACE_ID") } : {}) },
+      body: JSON.stringify({ model, max_tokens: 1200, messages: [{ role: "user", content: [...imgs, { type: "text", text: prompt }] }] }) });
+    let j = null; try { j = await r.json(); } catch {}
+    if (!r.ok) {
+      const t = (j && j.error && j.error.type) || r.status, msg = String((j && j.error && j.error.message) || "");
+      if (/workspace/i.test(msg)) return { ok: false, error: "La llave de IA no está asignada a un workspace. Crea la llave eligiendo un workspace (ver PASOS_IA)." };
+      if (/credit|billing|balance/i.test(msg)) return { ok: false, error: "La cuenta de Claude no tiene saldo. Recarga créditos en platform.claude.com → Billing." };
+      return { ok: false, error: t === "authentication_error" ? "La llave de IA no es válida o ya venció. Revisa ANTHROPIC_API_KEY en Netlify."
+        : t === "rate_limit_error" || t === 429 ? "La IA está saturada en este momento. Intenta en un minuto."
+        : "La IA no respondió (" + t + "). Intenta otra vez." };
+    }
+    const text = ((j && j.content) || []).filter((c) => c.type === "text").map((c) => c.text).join("");
+    const val = v28iaJson(text);
+    if (!val) return { ok: false, error: "La IA respondió en un formato inesperado. Intenta otra vez." };
+    await logBitacora({ que: "IA · " + tipo, antes: usuarioTxt(ses), despues: model + " · " + nz(j.usage && j.usage.input_tokens) + "/" + nz(j.usage && j.usage.output_tokens) + " tokens" });
+    return { ok: true, resultado: v28iaLimpiar(tipo, val), modelo: model };
+  } catch (e) {
+    return { ok: false, error: e && e.name === "AbortError" ? "La IA tardó demasiado. Intenta otra vez." : "No se pudo hablar con la IA. Revisa la conexión." };
+  } finally { clearTimeout(timer); }
+}
+
 /* ------------------------- ENTRADA ------------------------- */
 export default async (req) => {
   const url = new URL(req.url);
@@ -1634,7 +1827,7 @@ export default async (req) => {
       if (a === "ping") {
         const cfg = await getConfig();
         return json({ ok: true, msg: "Backend Arsan activo (Netlify)", version: BACKEND_VERSION, borrado: true, login: true,
-          netlify: true, modo: cfg.modo, puente: env("PUENTE_URL") });
+          netlify: true, modo: cfg.modo, puente: env("PUENTE_URL"), ia: !!env("ANTHROPIC_API_KEY") });
       }
       const s = await sesionValida(p.sesion);
       if (!s.ok) return json({ ok: false, auth: true, error: "Sesión no válida. Inicia sesión de nuevo." });
@@ -1689,6 +1882,7 @@ export default async (req) => {
       case "precioSolicitud": return json(await resolverSolicitud(b, ses)); // v27: sólo dirección
       case "precioSolicitar": return json(await solicitarPrecio(b, ses));   // v27: oficina
       case "historialReconstruir": return json(await reconstruirHist(b));  // v27
+      case "ia": return json(await iaServidor(b, ses));                     // v28
       case "save": return json(await guardar(b.orden, b.token, ses));
       case "subir": { const u = await guardarMedio(b.data); return json(u ? { ok: true, url: origin + u } : { ok: false, error: "No se pudo guardar la foto" }); }
       case "clientes": return json(await listClientes());

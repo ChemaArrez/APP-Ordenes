@@ -1092,6 +1092,71 @@ input.pr-lock{background:#f1f2f4 !important;color:#3f4248;border-style:dashed !i
 .pr-pre-bar span{font-weight:800;font-size:14px;}
 .pr-pre-bar .pr-btn{background:var(--gold);border-color:var(--gold);color:#2b2100;}
 body.tec-form #preBtn, body.modo-tec #preBtn{display:none !important;}
+/* v28 · ajustes de plataforma + IA */
+.home-acc{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:10px;margin-bottom:14px;}
+.home-acc .bignew{margin:0;}
+.home-acc .cita-btn{border:2px solid var(--ink);background:var(--card);color:var(--ink);border-radius:14px;font-weight:900;font-size:15px;min-height:52px;padding:10px;box-shadow:var(--shadow);}
+.home-acc .cita-btn:active{transform:scale(.98);}
+@media(max-width:380px){ .home-acc{grid-template-columns:1fr;} }
+.v28-pl-k{font-size:12px !important;letter-spacing:1.5px;text-transform:uppercase;}
+.v28-vehs{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.v28-vbtn{display:flex;flex-direction:column;align-items:flex-start;gap:1px;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 11px;min-height:44px;text-align:left;color:var(--ink);}
+.v28-vbtn b{font-size:14px;letter-spacing:.5px;} .v28-vbtn span{font-size:12px;color:var(--muted);} .v28-vbtn i{font-style:normal;font-size:11.5px;font-weight:800;color:var(--dred);}
+/* columna derecha fija en la orden (Tiempos + Documentos) */
+@media(min-width:900px){
+  .tline{position:static !important;}
+  .dside{position:sticky;top:74px;max-height:calc(100vh - 90px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;padding-bottom:6px;}
+}
+/* particular / flotilla */
+.tc-seg{display:flex;border:1.5px solid var(--ink);border-radius:11px;overflow:hidden;}
+.tc-seg button{flex:1;min-height:44px;font-weight:800;font-size:14px;color:var(--ink);background:var(--card);}
+.tc-seg button + button{border-left:1.5px solid var(--ink);}
+.tc-seg button.on{background:var(--ink);color:#fff;}
+/* checklist del técnico vs entrega con el cliente */
+#view-entregacheck.ec-tecnico #ecSecFotos, #view-entregacheck.ec-tecnico #ecHost5, #view-entregacheck.ec-tecnico #ecSecFirmas,
+#view-entregacheck.ec-tecnico #ecKmFuel, #view-entregacheck.ec-tecnico #ecSecNR, #view-entregacheck.ec-tecnico #ecPend, #view-entregacheck.ec-tecnico #ecGarantia{display:none !important;}
+#view-entregacheck.ec-entrega #ecHost, #view-entregacheck.ec-entrega #ecRespBox, #view-entregacheck.ec-entrega #ecFirmaTBox{display:none !important;}
+/* evidencias / terminar */
+#view-finalizar .savebar .inner{display:flex;gap:8px;}
+#view-finalizar .savebar .inner button{flex:1;}
+#view-finalizar .savebar .ev{background:var(--card);color:var(--ink);border:1.5px solid var(--ink);border-radius:11px;padding:13px;font-weight:800;}
+/* IA */
+.ia-btn{display:inline-flex;align-items:center;gap:6px;border:1.5px solid #6d4bd8;color:#4a2fb0;background:#f4f0ff;border-radius:10px;padding:9px 13px;font-weight:800;font-size:13.5px;min-height:42px;margin-top:8px;}
+.ia-btn:active{transform:scale(.98);}
+.mo-btn.ia-mini{border-color:#b9a6f3;color:#4a2fb0;background:#f4f0ff;}
+.ia-card{max-width:560px;}
+.ia-load{padding:16px 4px;font-weight:700;color:#4a2fb0;}
+.ia-err{background:#fdecec;border:1px solid #f3c0c2;color:#8a1116;border-radius:10px;padding:10px 12px;font-size:14px;margin:6px 0;}
+.ia-lbl{font-size:11.5px;font-weight:800;color:#54585f;text-transform:uppercase;letter-spacing:.5px;margin:10px 0 4px;}
+.ia-lbl span{text-transform:none;letter-spacing:0;font-weight:600;color:var(--muted);}
+.ia-antes{font-size:13.5px;color:#55585f;background:#f4f5f7;border-radius:9px;padding:9px 11px;white-space:pre-wrap;max-height:130px;overflow:auto;}
+.ia-txt{width:100%;font:inherit;font-size:15px;line-height:1.45;border:1.5px solid #6d4bd8;border-radius:10px;padding:10px 11px;resize:vertical;}
+.ia-prev{font-size:14px;color:#3f4248;border-left:3px solid #6d4bd8;padding:2px 0 2px 10px;margin-top:8px;}
+.ia-prev p{margin:0 0 5px;} .ia-prev ul{margin:0;padding-left:18px;}
+.ia-aviso{background:#fdf3d2;color:#6b4c00;border-radius:10px;padding:9px 11px;font-size:13.5px;margin-top:10px;}
+.ia-aviso b{display:block;font-size:11px;letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px;}
+#iaOv .ov-btns{flex-wrap:wrap;}
+#iaOv .ov-btns button{min-width:120px;}
+.iar-slot{border:1px solid var(--line);border-radius:12px;padding:10px 11px;margin-bottom:10px;}
+.iar-t b{display:block;font-size:14.5px;} .iar-t span{font-size:12.5px;color:var(--muted);}
+.iar-btns{display:flex;gap:8px;margin-top:8px;} .iar-btns .photobtn{flex:1;margin:0;}
+.iar-img{position:relative;margin-top:8px;max-width:220px;} .iar-img img{display:block;width:100%;border-radius:9px;}
+.iar-img.sm{max-width:none;margin:0;} .iar-img.sm img{aspect-ratio:1/1;object-fit:cover;}
+.iar-img .del{position:absolute;top:4px;right:4px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font-size:18px;}
+.iar-fotos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:8px;}
+.iar-tab{display:grid;gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+.iar-row{display:grid;grid-template-columns:24px 92px minmax(0,1fr) minmax(0,1.2fr);gap:8px;align-items:center;padding:9px 10px;border-top:1px solid #eef0f3;font-size:13.5px;cursor:pointer;}
+.iar-row:first-child{border-top:0;}
+.iar-row input{width:20px;height:20px;}
+.iar-c{font-weight:800;color:#3f4248;} .iar-a{color:var(--muted);overflow-wrap:anywhere;} .iar-n{font-weight:700;color:var(--ink);overflow-wrap:anywhere;}
+.iar-row.vacio{opacity:.55;cursor:default;} .iar-row.vacio .iar-n{font-weight:500;font-style:italic;}
+.iar-danos{grid-template-columns:24px 92px minmax(0,1fr);border:1px solid var(--line);border-radius:10px;margin-top:8px;}
+@media(max-width:480px){ .iar-row{grid-template-columns:24px minmax(0,1fr);} .iar-row .iar-a{grid-column:2;} .iar-row .iar-n{grid-column:2;} .iar-danos{grid-template-columns:24px minmax(0,1fr);} }
+/* botones al pie del checklist / entrega */
+#view-entregacheck > .arow{display:flex;gap:10px;}
+#view-entregacheck > .arow button, #view-entregacheck > .btn-primary{flex:1;width:100%;border-radius:11px;padding:14px;font-weight:800;font-size:14px;min-height:50px;box-shadow:var(--shadow);}
+#view-entregacheck > .arow .btn-light{flex:0 0 34%;}
+.mpalert div b{display:inline;margin:0;}
 </style>
 </head>
 <body>
@@ -1113,7 +1178,7 @@ body.tec-form #preBtn, body.modo-tec #preBtn{display:none !important;}
 
 <!-- ============ HOME ============ -->
 <div id="view-kanban" class="wrap hide">
-  <div class="navtabs"><button onclick="goDash()">Panel</button><button class="on" onclick="goKanban()">Tablero</button><button onclick="goPiso()">Taller</button><button onclick="goPlaca()">Placas</button><button onclick="goHome()">Órdenes</button></div>
+  <div class="navtabs"><button onclick="goDash()">Panel</button><button onclick="goPiso()">Taller</button><button onclick="goPlaca()">Placas</button><button onclick="goHome()">Órdenes</button></div>
   <div id="kbSuc"></div>
   <div id="kbKpis" class="kb-kpis"></div>
   <div class="kb-actions"><button class="bignew" style="margin:0" onclick="newOrder()"><span class="plus">+</span> Registrar recepción</button>
@@ -1144,7 +1209,7 @@ body.tec-form #preBtn, body.modo-tec #preBtn{display:none !important;}
 </div></div>
 
 <div id="view-dashboard" class="wrap hide">
-  <div class="navtabs"><button class="on" onclick="goDash()">Panel</button><button onclick="goKanban()">Tablero</button><button onclick="goPiso()">Taller</button><button onclick="goPlaca()">Placas</button><button onclick="goHome()">Órdenes</button></div>
+  <div class="navtabs"><button class="on" onclick="goDash()">Panel</button><button onclick="goPiso()">Taller</button><button onclick="goPlaca()">Placas</button><button onclick="goHome()">Órdenes</button></div>
   <div class="dashhdr"><div class="t">Desempeño y análisis</div>
     <select id="dashPeriod" onchange="renderDashboard()">
       <option value="all">Todo el histórico</option>
@@ -1158,20 +1223,20 @@ body.tec-form #preBtn, body.modo-tec #preBtn{display:none !important;}
 </div>
 
 <div id="view-piso" class="wrap hide">
-  <div class="navtabs"><button onclick="goDash()">Panel</button><button onclick="goKanban()">Tablero</button><button class="on" onclick="goPiso()">Taller</button><button onclick="goPlaca()">Placas</button><button onclick="goHome()">Órdenes</button></div>
+  <div class="navtabs"><button onclick="goDash()">Panel</button><button class="on" onclick="goPiso()">Taller</button><button onclick="goPlaca()">Placas</button><button onclick="goHome()">Órdenes</button></div>
   <div id="pzSuc"></div>
   <div id="pzBody"><div class="loading">Cargando taller…</div></div>
 </div>
 
 <div id="view-placa" class="wrap hide">
-  <div class="navtabs"><button onclick="goDash()">Panel</button><button onclick="goKanban()">Tablero</button><button onclick="goPiso()">Taller</button><button class="on" onclick="goPlaca()">Placas</button><button onclick="goHome()">Órdenes</button></div>
-  <div class="pl-search"><input id="pl_q" list="dl_placas" placeholder="Placa, económico, VIN o folio GS" autocapitalize="characters" autocorrect="off" oninput="buscarPlaca()" onkeydown="if(event.key==='Enter')buscarPlaca()"><datalist id="dl_placas"></datalist><button onclick="buscarPlaca()">Buscar</button></div>
+  <div class="navtabs"><button onclick="goDash()">Panel</button><button onclick="goPiso()">Taller</button><button class="on" onclick="goPlaca()">Placas</button><button onclick="goHome()">Órdenes</button></div>
+  <div class="pl-search"><input id="pl_q" list="dl_placas" placeholder="Placa, económico, VIN, folio GS, modelo o cliente" autocapitalize="off" autocorrect="off" oninput="buscarPlaca()" onkeydown="if(event.key==='Enter')buscarPlaca()"><datalist id="dl_placas"></datalist><button onclick="buscarPlaca()">Buscar</button></div>
   <div id="plBody"></div>
 </div>
 
 <div id="view-home" class="wrap">
-  <div class="navtabs"><button onclick="goDash()">Panel</button><button onclick="goKanban()">Tablero</button><button onclick="goPiso()">Taller</button><button onclick="goPlaca()">Placas</button><button class="on" onclick="goHome()">Órdenes</button></div>
-  <button class="bignew" onclick="newOrder()"><span class="plus">+</span> Nueva orden</button>
+  <div class="navtabs"><button onclick="goDash()">Panel</button><button onclick="goPiso()">Taller</button><button onclick="goPlaca()">Placas</button><button class="on" onclick="goHome()">Órdenes</button></div>
+  <div class="home-acc"><button class="bignew" onclick="newOrder()"><span class="plus">+</span> Nueva orden de recepción</button><button type="button" class="cita-btn" onclick="v28NuevaCita()">＋ Agregar cita</button></div>
   <div id="homeSuc"></div>
   <div class="stats">
     <div class="stat"><div class="n" id="stTotal">0</div><div class="l">Órdenes totales</div></div>
@@ -1214,9 +1279,11 @@ body.tec-form #preBtn, body.modo-tec #preBtn{display:none !important;}
     </div>
     <div class="field"><label>¿Servicio a domicilio?</label>
       <div class="seg" data-seg="dom"><button type="button" data-v="si">Sí</button><button type="button" data-v="no">No</button></div></div>
+    <div class="field"><label id="tc_lbl">¿Es cliente particular o flotilla?</label>
+      <div class="tc-seg" id="tc_seg" role="group" aria-labelledby="tc_lbl"><button type="button" data-v="particular" aria-pressed="true" class="on" onclick="v28TipoCli('particular')">Particular</button><button type="button" data-v="flotilla" aria-pressed="false" onclick="v28TipoCli('flotilla')">Flotilla / empresa</button></div></div>
   </div></div>
 
-  <div class="section"><div class="head">Datos de flotilla <span class="opt">(si aplica · cliente corporativo)</span></div><div class="body">
+  <div class="section hide" id="secFlotilla"><div class="head">Datos de la flotilla o empresa</div><div class="body">
     <div class="field"><label>Nombre de la flotilla</label><input type="text" id="f_flo_nombre"></div>
     <div class="row3">
       <div class="field"><label>Zona</label><input type="text" id="f_flo_zona"></div>
@@ -1226,6 +1293,7 @@ body.tec-form #preBtn, body.modo-tec #preBtn{display:none !important;}
   </div></div>
 
   <div class="section"><div class="head">Datos del vehículo</div><div class="body">
+    <button type="button" class="ia-btn" style="margin:0 0 12px" onclick="v28iaRecep()">✨ Llenar con IA desde fotos</button>
     <div class="row2">
       <div class="field"><label>Marca</label>
         <select id="f_veh_marca" onchange="onMarca()"><option value="">— Selecciona marca —</option></select>
@@ -1351,26 +1419,30 @@ body.tec-form #preBtn, body.modo-tec #preBtn{display:none !important;}
 <!-- ============ DIAGNÓSTICO Y COTIZACIÓN ============ -->
 <div id="view-entregacheck" class="wrap hide">
   <div class="miniinfo" id="ecInfo"></div>
-  <div class="section"><div class="head">Datos de la entrega</div><div class="body">
-    <div class="grid2">
+  <div class="section"><div class="head" id="ecDatosH">Datos de la entrega</div><div class="body">
+    <div class="grid2" id="ecKmFuel">
       <div class="field"><label>Km de salida</label><input id="ec_km" inputmode="numeric" placeholder="Kilometraje"></div>
       <div class="field"><label>Combustible</label><select id="ec_fuel"></select></div>
     </div>
-    <div class="field"><label>Revisó / jefe de taller</label><input id="ec_resp" placeholder="Nombre de quien revisa"></div>
-    <div class="mphint">Garantía de mano de obra: <b>90 días o 5,000 km</b>, lo que ocurra primero</div>
+    <div class="field" id="ecRespBox"><label>Revisó / jefe de taller</label><input id="ec_resp" placeholder="Nombre de quien revisa"></div>
+    <div class="mphint" id="ecGarantia">Garantía de mano de obra: <b>90 días o 5,000 km</b>, lo que ocurra primero</div>
   </div></div>
   <div id="ecHost"></div>
 
-  <div class="section"><div class="head">4 · Evidencia de salida</div><div class="body">
-    <div class="ecfotos" id="ecFotos"></div>
-    <div class="mphint">Las 5 fotos quedan dentro del PDF de entrega.</div>
-  </div></div>
-
   <div id="ecHost5"></div>
   <div id="ecPend"></div>
+  <div class="section" id="ecSecNR"><div class="head">Trabajos no realizados o pendientes</div><div class="body">
+    <div class="field"><label for="ec_nr">Lo que se le comentó al cliente para que lo tenga en cuenta</label><textarea id="ec_nr" style="min-height:70px" placeholder="Ej. Balatas traseras al 30 %: revisar en 3 meses"></textarea></div>
+  </div></div>
 
-  <div class="section"><div class="head">Firmas</div><div class="body">
-    <div class="field"><label>Firma del técnico / jefe de taller</label>
+  <div class="section" id="ecSecFotos"><div class="head">Fotos de salida</div><div class="body">
+    <div class="ecfotos" id="ecFotos"></div>
+    <div class="mphint">Se toman al entregar el vehículo. Quedan en el PDF de entrega y en la liga del cliente.</div>
+  </div></div>
+
+  <div class="section" id="ecSecFirmas"><div class="head">Firma de conformidad</div><div class="body">
+    <div class="field"><label for="ec_recibe">Recibe (nombre)</label><input id="ec_recibe" placeholder="Nombre de quien recibe el vehículo"></div>
+    <div class="field" id="ecFirmaTBox"><label>Firma del técnico / jefe de taller</label>
       <canvas class="sigpad" id="sigT"></canvas>
       <button type="button" class="btn-light" style="margin-top:6px" onclick="clearSig('T')">Limpiar firma</button>
     </div>
@@ -1384,7 +1456,7 @@ body.tec-form #preBtn, body.modo-tec #preBtn{display:none !important;}
   <div id="ecResumen"></div>
   <div class="arow" style="margin-top:12px">
     <button class="btn-light" onclick="goDetailBack()">Cancelar</button>
-    <button class="btn-dark" onclick="saveEntregaCheck()">Guardar checklist</button>
+    <button class="btn-dark" id="ecGuardar" onclick="saveEntregaCheck()">Guardar checklist</button>
   </div>
   <button class="btn-primary" style="margin-top:10px" onclick="ecImprimir()">&#128424; Visualizar PDF de entrega</button>
 </div>
@@ -1411,7 +1483,7 @@ body.tec-form #preBtn, body.modo-tec #preBtn{display:none !important;}
 <div id="view-cotizacion" class="wrap hide">
   <div class="miniinfo" id="czInfo"></div>
   <div class="section"><div class="head">Diagnóstico</div><div class="body">
-    <div class="field"><label>Hallazgos / diagnóstico técnico</label><textarea id="cz_diag" style="min-height:80px" placeholder="Describe lo encontrado y lo que se recomienda…"></textarea></div>
+    <div class="field"><label>Hallazgos / diagnóstico técnico</label><textarea id="cz_diag" style="min-height:80px" placeholder="Describe lo encontrado y lo que se recomienda…"></textarea><button type="button" class="ia-btn" onclick="v28iaDiag()">✨ Mejorar con IA</button></div>
     <div class="photorow">
       <button type="button" class="photobtn" onclick="document.getElementById('czPhotoCam').click()">&#128247; Tomar foto</button>
       <button type="button" class="photobtn alt" onclick="document.getElementById('czPhoto').click()">&#128194; Elegir de galería</button>
@@ -1444,7 +1516,7 @@ body.tec-form #preBtn, body.modo-tec #preBtn{display:none !important;}
 <div id="view-finalizar" class="wrap hide">
   <div class="miniinfo" id="fnInfo"></div>
   <div class="section"><div class="head">2 · Evidencias del trabajo terminado</div><div class="body">
-    <div class="field"><label>Notas de finalización</label><textarea id="fn_notas" style="min-height:70px" placeholder="Trabajos realizados, refacciones instaladas, pruebas…"></textarea></div>
+    <div class="field"><label>Notas de finalización</label><textarea id="fn_notas" style="min-height:70px" placeholder="Trabajos realizados, refacciones instaladas, pruebas…"></textarea><button type="button" class="ia-btn" onclick="v28iaTerminado()">✨ Mejorar con IA</button></div>
     <div class="photorow">
       <button type="button" class="photobtn" onclick="document.getElementById('fnPhotoCam').click()">&#128247; Tomar foto</button>
       <button type="button" class="photobtn alt" onclick="document.getElementById('fnPhoto').click()">&#128194; Elegir de galería</button>
@@ -1454,7 +1526,7 @@ body.tec-form #preBtn, body.modo-tec #preBtn{display:none !important;}
     <div class="thumbs" id="fnThumbs"></div>
   </div></div>
 
-  <div class="section"><div class="head">3 · Costo real del servicio <span class="opt">— para el análisis de rentabilidad</span></div><div class="body">
+  <div class="section"><div class="head">3 · Costo real del servicio <span class="opt">— lo puede capturar administración después</span></div><div class="body">
     <div class="row2">
       <div class="field"><label>Refacciones / insumos ($)</label>
         <input type="number" id="fn_cRef" inputmode="decimal" min="0" step="0.01" placeholder="0.00" oninput="calcUtilidad()"></div>
@@ -1474,7 +1546,8 @@ body.tec-form #preBtn, body.modo-tec #preBtn{display:none !important;}
   </div></div>
   <div class="savebar"><div class="inner">
     <button class="cancel" onclick="openDetail(workOrder.id)">Cancelar</button>
-    <button class="save" onclick="saveFinalizar()">Marcar como finalizado</button>
+    <button class="ev" id="fnGuardar" onclick="saveEvidencias()">Guardar evidencias</button>
+    <button class="save" id="fnTerminar" onclick="saveFinalizar()">Terminar trabajo</button>
   </div></div>
 </div>
 
@@ -1789,7 +1862,7 @@ var IDB=(function(){
   };
 })();
 var hasIDB = IDB.avail();
-var APP_VERSION='2026-10-23-v27.2';
+var APP_VERSION='2026-10-25-v28';
 
 /* ---- Manifiesto de app (se genera al vuelo para no romper el archivo unico) ----
    'maskable' es la clave: sin esto Android encoge el icono y le pone
@@ -1959,7 +2032,7 @@ async function loadClientes(){
   if(cloudOn()){ var cl=await cloudClientes(); if(cl&&cl.length){ CLIENTES_CACHE=cl; try{localStorage.setItem('am_clientes',JSON.stringify(cl));}catch(e){} paintClientesDatalist(); } }
 }
 function paintClientesDatalist(){ var dl=$('dl_clientes'); if(!dl)return; dl.innerHTML=CLIENTES_CACHE.map(function(c){return '<option value="'+esc(c.nombre)+'">';}).join(''); }
-function onClienteName(v){
+function onClienteNameV27(v){
   var key=(v||'').trim().toLowerCase(); if(!key)return;
   var c=CLIENTES_CACHE.find(function(x){return String(x.nombre||'').trim().toLowerCase()===key;});
   if(!c)return;
@@ -2543,11 +2616,12 @@ var EN_SECCIONES=[
    'Pertenencias completas vs inventario de entrada',
    'Herramienta, gato y refacción en su lugar',
    'Piezas reemplazadas listas para mostrar']},
- {s:'s5', titulo:'5 · Entrega con el cliente', bloquea:false, items:[
-   'Se explicaron los trabajos realizados',
-   'Se mostraron las piezas reemplazadas',
-   'Se informaron las recomendaciones pendientes',
-   'Se explicó la garantía (90 días / 5,000 km)']}
+ {s:'s5', titulo:'Preguntas al entregar', bloquea:false, items:[
+   'Se le explicaron los trabajos realizados y las piezas cambiadas',
+   'Se le mostraron las piezas reemplazadas',
+   'Se le entregó y explicó el checklist',
+   'Se le comentaron los trabajos no realizados o pendientes',
+   'Se le explicó la garantía (90 días o 5,000 km)']}
 ];
 var EN_FOTOS=[
  {k:'frente',  t:'Frente'},
@@ -2817,7 +2891,7 @@ async function ecRequeridoEntregar(o){
 
 /* ---- Pantalla del checklist de entrega ---- */
 var _ecSigsReady=false;
-async function openEntregaCheck(){
+async function openEntregaCheckV27(){
   await esperarFresca();   // v25
   var o=detailOrder; if(!o){ toast('Abre una orden primero'); return; }
   // Llenar o completar el checklist antes de entregar no requiere clave: es
@@ -2845,7 +2919,7 @@ async function openEntregaCheck(){
   renderEC();
 }
 
-function renderEC(){
+function renderECV27(){
   var h='', h5='';
   EN_SECCIONES.forEach(function(sc){
     var marca=h.length;
@@ -3161,7 +3235,7 @@ async function saveCita(){
   var sum={id:o.id,folio:o.folio,cliente:o.cliente.nombre,marca:o.vehiculo.marca,modelo:o.vehiculo.modelo,anio:'',placas:o.vehiculo.placas,fecha:o.fecha,sucursal:o.sucursal,estatus:'cita',total:0,calif:0,createdAt:o.createdAt};
   var i=idx.findIndex(function(x){return x.id===o.id;}); if(i>=0)idx[i]=sum; else idx.push(sum); await sIndex(idx);
   if(cloudOn()){ o.media={}; var ok=await cloudSave(o); if(!ok) addPending(o.id); }
-  IDX=idx; closeCita(); toast('Cita registrada'); renderKanban();
+  IDX=idx; closeCita(); toast('Cita registrada'); if(window._view==='home') renderList(); else if(window._view==='kanban') renderKanban();   // v28
   } finally { _busy=false; hideBusy(); }
 }
 async function recibirCita(id){
@@ -3716,7 +3790,7 @@ function renderList(){
 /* ============ FORM ============ */
 function newOrder(){ curEdit=null; openForm(null); }
 var _editBase=null;
-async function openForm(order){
+async function openFormV27(order){
   _editBase = order || null;
   $('barTitle').innerHTML=(order?'Editar orden':'Nueva orden')+'<small>'+esc(order?marcaDe(order).nombre:'Arsan Motors')+'</small>';
   $('storeNote').style.display=persists?'none':'block';
@@ -5494,7 +5568,7 @@ async function goPlaca(q){
   if (typeof q === 'string'){ $('pl_q').value = q; }
   buscarPlaca();
 }
-function buscarPlaca(){
+function buscarPlacaV27(){
   var q = normPl($('pl_q').value);
   var host = $('plBody');
   if (!q){ host.innerHTML = '<div class="empty-sm" style="padding:18px 6px">Escribe una placa, número económico, VIN o folio GS para ver todo lo que se le ha hecho al vehículo.</div>'; return; }
@@ -6570,7 +6644,7 @@ function verAutorizaciones(){
 }
 
 /* ---- cotización: explicación para el cliente y fotos por trabajo ---- */
-function filaCliente(i){
+function filaClienteV27(i){
   var it=curItems[i]||{}, n=(it.fotosIdx||[]).length;
   if(v26esMO(it)) return '';   // la mano de obra no lleva explicación propia: va con su refacción
   return '<div class="r2 cz-cli" style="margin-top:6px;align-items:flex-start"><textarea rows="3" placeholder="Explicación para el cliente (opcional): qué tiene y qué le hacemos. Para hacer lista, empiece el renglón con -" oninput="setItem('+i+',\'explicacion\',this.value)">'+esc(it.explicacion||'')+'</textarea>'
@@ -7708,6 +7782,627 @@ function v27pdfPartidas(co,t){
 function v27pdfTotales(co){
   var d=v27desgloseCot(co), ks=['ref','serv','mo'].filter(function(k){ return d[k]>0; });
   return ks.map(function(k,i){ return '<div style="color:#626870'+(i===0?';border-top:1px solid #e3e1dc;padding-top:6px;margin-top:4px':'')+'"><span>'+V27_TOT[k]+'</span><span>'+money(d[k])+'</span></div>'; }).join('');
+}
+
+
+/* =====================================================================
+   v28 · AJUSTES DE PLATAFORMA + IA (25-oct-2026, pedido de Chema)
+   1) Panel: sin la pestaña Tablero. Placas: también busca por modelo y por cliente.
+   2) Órdenes: "Nueva orden" y "Agregar cita" arriba.
+   3) Orden: Tiempos del servicio y Documentos quedan fijos (sólo se desliza la izquierda).
+   4) Datos del cliente: primero el cliente y luego Particular / Flotilla (la flotilla se abre sólo si aplica).
+   5) Checklist (pestaña 3): sólo la revisión técnica (secciones 1 a 3), sin fotos de salida ni firmas.
+      Evidencias: se guardan sin costos; la orden pasa a Terminado sólo con checklist y costos.
+   6) Entrega (pestaña 4): 5 preguntas, lo no realizado, fotos de salida y firma de conformidad del cliente.
+   7) IA: "Mejorar con IA" en diagnóstico, explicación de cada trabajo y notas finales;
+      "Llenar con IA" en recepción (tarjeta de circulación, tablero y fotos del vehículo).
+   ===================================================================== */
+/* ---- v28 · IA (común: servidor, app y página de prueba usan EXACTAMENTE esto) ----
+   Textos para el cliente (diagnóstico, explicación de un trabajo, trabajo terminado) y lectura de
+   fotos en recepción (tarjeta de circulación, tablero, fotos del vehículo). Siempre es una propuesta:
+   oficina decide si la usa. Instrucciones revisadas con Chema (25-oct-2026, prueba de 10 casos). */
+var V28_IA_TIPOS=['diagnostico','trabajo','terminado','recepcion'];
+var V28_IA_FUEL=['Vacío','1/8','1/4','3/8','1/2','5/8','3/4','7/8','Lleno'];
+var V28_IA_REGLAS=[
+ 'Eres quien redacta los textos para los clientes de Arsan Motors, taller mecánico en Tlalpan, CDMX.',
+ 'Reescribe el texto del taller para que lo entienda el dueño del vehículo.',
+ '- Háblale de usted, en español de México, claro y amable. Sin tecnicismos: si una pieza necesita su nombre técnico, explícala en pocas palabras la primera vez.',
+ '- Usa SÓLO los datos que vienen abajo (texto del taller, partidas de la cotización, vehículo, revisión). No inventes síntomas, medidas, porcentajes, causas, garantías ni resultados de pruebas.',
+ '- Nunca pongas precios, costos, márgenes ni nombres de proveedores o técnicos.',
+ '- Garantías y errores del taller: dilo con honestidad, sin excusas y sin culpar al cliente.',
+ '- Flotillas y empresas: tono profesional y directo (de "ustedes" si es una empresa). Particulares: cercano.',
+ '- Para hacer una lista, empieza cada renglón con "- ".',
+ '- Si falta un dato que el cliente necesitaría para entender, escríbelo aparte como aviso para oficina (el aviso no se manda al cliente). Si no falta nada, el aviso va vacío.'
+].join('\n');
+function v28iaTxt(x,n){ return String(x==null?'':x).replace(/\s+\n/g,'\n').trim().slice(0,n||2000); }
+function v28iaPartidas(lista){
+  return (lista||[]).slice(0,40).map(function(p){
+    var q=Number(p.cantidad)||0;
+    return '- '+v28iaTxt(p.concepto,160)+(p.tipoTrabajo?' ['+v28iaTxt(p.tipoTrabajo,20)+']':'')+(q&&q!==1?' × '+q:'');
+  }).join('\n');
+}
+function v28iaContexto(d){
+  var v=d.vehiculo||{}, veh=[v.marca,v.modelo,v.anio].map(function(x){ return v28iaTxt(x,40); }).filter(Boolean).join(' ');
+  return 'Vehículo: '+(veh||'sin datos')+'\nCliente: '+(d.tipoCliente==='flotilla'?'empresa / flotilla':'particular');
+}
+function v28iaPrompt(tipo, d){
+  d=d||{};
+  var ctx=v28iaContexto(d), fin='\n\nResponde sólo JSON: {"texto": "...", "aviso": "..."}';
+  if(tipo==='diagnostico')
+    return V28_IA_REGLAS+'\n- Diagnóstico: 2 a 5 frases o una lista corta de lo que se encontró. Si algo falta por revisar, dilo y que le avisaremos.\n\n'
+      +ctx+'\nLo que pidió el cliente: '+v28iaTxt(d.motivo,400)
+      +'\n\nDiagnóstico que escribió el taller:\n'+v28iaTxt(d.texto,2000)
+      +(d.partidas&&d.partidas.length?'\n\nPartidas de la cotización (sólo como contexto, sin precios):\n'+v28iaPartidas(d.partidas):'')
+      +(d.revision?'\n\nPuntos de la revisión de 25 puntos que necesitan atención:\n'+v28iaTxt(d.revision,1200):'')
+      +fin;
+  if(tipo==='trabajo')
+    return V28_IA_REGLAS+'\n- Explicación de UN trabajo de la cotización: 1 o 2 frases de por qué se hace y después una lista con "- " de lo que incluye. Sin título.\n\n'
+      +ctx+'\nTrabajo: '+v28iaTxt(d.titulo,160)
+      +'\nPartidas de este trabajo:\n'+v28iaPartidas(d.partidas)
+      +(d.texto?'\n\nExplicación que escribió el taller:\n'+v28iaTxt(d.texto,1500):'')
+      +(d.diagnostico?'\n\nDiagnóstico general (contexto):\n'+v28iaTxt(d.diagnostico,1200):'')
+      +fin;
+  if(tipo==='terminado')
+    return V28_IA_REGLAS+'\n- Notas de trabajo terminado: qué se hizo, en 2 a 4 frases, y que el vehículo está listo para recogerse. No digas que se hizo una prueba si no viene en los datos.\n\n'
+      +ctx
+      +'\n\nNotas que escribió el taller:\n'+v28iaTxt(d.texto,1500)
+      +(d.partidas&&d.partidas.length?'\n\nTrabajos autorizados (partidas):\n'+v28iaPartidas(d.partidas):'')
+      +(d.checklist?'\n\nObservaciones del checklist de salida:\n'+v28iaTxt(d.checklist,800):'')
+      +fin;
+  if(tipo==='recepcion'){
+    var orden=(d.fotos||[]).map(function(f,i){ return 'Imagen '+(i+1)+': '+({tarjeta:'tarjeta de circulación',tablero:'tablero del vehículo (kilometraje y gasolina)',vehiculo:'foto del vehículo'}[f]||'foto'); }).join('\n');
+    return 'Eres el asistente de recepción de Arsan Motors, taller mecánico en CDMX. Lee las imágenes y propone los datos del vehículo para la orden de recepción. Oficina revisa todo antes de guardarlo.\n'
+      +'- Copia sólo lo que se lea con claridad. Si un dato no se lee o no viene, déjalo en "" y dilo en el aviso.\n'
+      +'- De la tarjeta de circulación toma sólo datos del vehículo: marca, modelo (línea o submarca), año modelo, placas y número de serie (VIN). NUNCA copies el nombre, domicilio ni RFC del propietario.\n'
+      +'- El número de serie tiene 17 caracteres, sin las letras I, O ni Q. Si no cumple, déjalo en "" y avisa.\n'
+      +'- Del tablero: kilometraje (sólo números) y nivel de gasolina como una de estas opciones: '+V28_IA_FUEL.join(', ')+'.\n'
+      +'- De las fotos del vehículo: el color y una lista de golpes, rayones o piezas dañadas que se vean claramente, con su ubicación (ej. "Rayón en defensa trasera izquierda"). Si algo no es claro, escríbelo como "Posible …". No inventes daños.\n\n'
+      +'Imágenes, en este orden:\n'+(orden||'(sin imágenes)')
+      +'\n\nResponde sólo JSON: {"marca":"","modelo":"","anio":"","placas":"","vin":"","color":"","km":"","gasolina":"","danos":[],"aviso":""}';
+  }
+  return '';
+}
+/* Lee el JSON de la respuesta (aunque venga con texto alrededor o en un bloque de código) */
+function v28iaJson(text){
+  var t=String(text||'').trim();
+  try{ return JSON.parse(t); }catch(e){}
+  var m=/```(?:json)?\s*([\s\S]*?)```/.exec(t); if(m){ try{ return JSON.parse(m[1]); }catch(e){} }
+  var a=t.indexOf('{'), b=t.lastIndexOf('}');
+  if(a>=0&&b>a){ try{ return JSON.parse(t.slice(a,b+1)); }catch(e){} }
+  return null;
+}
+/* Deja la respuesta en la forma que la app espera (y quita lo que no debe ir) */
+function v28iaLimpiar(tipo, v){
+  v=v&&typeof v==='object'?v:{};
+  if(tipo!=='recepcion') return {texto:v28iaTxt(v.texto,3000), aviso:v28iaTxt(v.aviso,600)};
+  var avisos=[v28iaTxt(v.aviso,400)].filter(Boolean);
+  var vin=String(v.vin||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+  if(vin && !/^[A-HJ-NPR-Z0-9]{17}$/.test(vin)){ avisos.push('El número de serie leído ('+vin+') no tiene 17 caracteres válidos: revísalo en la tarjeta.'); vin=''; }
+  var anio=String(v.anio||'').replace(/\D/g,''); if(anio && !(anio.length===4 && +anio>=1950 && +anio<=2100)) anio='';
+  var km=String(v.km||'').replace(/[^\d]/g,'');
+  var gas=V28_IA_FUEL.indexOf(String(v.gasolina||'').trim());
+  var danos=(Array.isArray(v.danos)?v.danos:[]).map(function(x){ return v28iaTxt(x,160); }).filter(Boolean).slice(0,15);
+  return {marca:v28iaTxt(v.marca,40), modelo:v28iaTxt(v.modelo,60), anio:anio, placas:v28iaTxt(v.placas,15).toUpperCase().replace(/\s+/g,''),
+    vin:vin, color:v28iaTxt(v.color,30), km:km, gasolina:gas>=0?gas:'', danos:danos, aviso:avisos.join(' ')};
+}
+
+
+/* ---------- 1) Placas: vehículo, modelo o cliente ---------- */
+function v28n(x){ return v26norm(x).replace(/\s+/g,' ').trim(); }
+function buscarPlaca(){
+  var raw=($('pl_q').value||'').trim(), q=normPl(raw), host=$('plBody');
+  if(!raw){ host.innerHTML='<div class="empty-sm" style="padding:18px 6px">Escribe una placa, número económico, VIN, folio GS, un <b>modelo</b> (ej. Lobo) o un <b>cliente</b> para ver sus servicios.</div>'; return; }
+  var porVeh=function(o){ return normPl(o.placas)===q || (q.length>=6 && normPl(o.vin).slice(-q.length)===q) || (o.eco && normPl(o.eco)===q) || folioGS(o)===q; };
+  if(IDX.some(porVeh) || (q.length>=3 && IDX.some(function(o){ return normPl(o.placas).indexOf(q)>=0; }) && !/\s/.test(raw) && /\d/.test(raw))) return buscarPlacaV27();
+  var t=v28n(raw); if(t.length<2){ host.innerHTML='<div class="empty-sm" style="padding:18px 6px">Escribe un poco más.</div>'; return; }
+  var serv=IDX.filter(function(o){ return o.estatus!=='cita'; });
+  var cli={}, mod={};
+  serv.forEach(function(o){
+    var nombres=[o.cliente,o.flotilla].filter(Boolean);
+    nombres.forEach(function(n){ if(v28n(n).indexOf(t)>=0){ var k=v28n(n); (cli[k]=cli[k]||{nombre:n,ords:[]}).ords.push(o); } });
+    var vm=[o.marca,o.modelo].filter(Boolean).join(' ');
+    if(vm && (v28n(vm).indexOf(t)>=0 || v28n(o.modelo).indexOf(t)>=0)){ var k2=v28n(vm); (mod[k2]=mod[k2]||{nombre:vm,ords:[]}).ords.push(o); }
+  });
+  var firmas={}, cliU={};   // mismo grupo de órdenes con dos nombres (cliente y flotilla) → uno solo
+  Object.keys(cli).forEach(function(k){ var g=cli[k], f=g.ords.map(function(o){ return o.id; }).sort().join('|');
+    if(firmas[f]){ if(v28n(firmas[f].nombre)!==v28n(g.nombre)) firmas[f].otros=(firmas[f].otros||[]).concat(g.nombre); } else { firmas[f]=g; cliU[k]=g; } });
+  cli=cliU;
+  var bloques=[].concat(
+    Object.keys(cli).map(function(k){ return {tipo:'Cliente',g:cli[k]}; }),
+    Object.keys(mod).map(function(k){ return {tipo:'Modelo',g:mod[k]}; }));
+  if(!bloques.length){ host.innerHTML='<div class="empty-sm" style="padding:18px 6px">Sin servicios para <b>'+esc(raw)+'</b>. Prueba con la placa, el modelo o el nombre del cliente.</div>'; return; }
+  bloques.sort(function(a,b){ return b.g.ords.length-a.g.ords.length; });
+  var h='';
+  bloques.slice(0,12).forEach(function(b){
+    var ords=b.g.ords.slice().sort(function(a,c){ return (c.fecha||'').localeCompare(a.fecha||''); });
+    var vehs={}; ords.forEach(function(o){ var p=normPl(o.placas)||('SIN PLACA · '+(o.vin||o.id)); (vehs[p]=vehs[p]||{p:p,o:o,n:0}).n++; });
+    var total=ords.reduce(function(a,o){ return a+(Number(o.total)||0); },0);
+    h+='<div class="pl-veh"><div class="pl-placa v28-pl-k">'+b.tipo+'</div><div class="pl-desc"><b>'+esc(b.g.nombre)+'</b>'+(b.g.otros?' <span style="color:var(--muted)">· '+esc(b.g.otros.join(' · '))+'</span>':'')+'</div>'
+      +'<div class="pl-stats"><div><b>'+ords.length+'</b><span>servicios</span></div><div><b>'+Object.keys(vehs).length+'</b><span>'+(Object.keys(vehs).length===1?'vehículo':'vehículos')+'</span></div>'
+      +'<div><b>'+money(total)+'</b><span>cotizado total</span></div><div><b>'+fmtDate(ords[0].fecha)+'</b><span>última visita</span></div></div>'
+      +'<div class="v28-vehs">'+Object.keys(vehs).map(function(k){ var x=vehs[k], o=x.o;
+          return '<button type="button" class="v28-vbtn" onclick="goPlaca(\''+esc(x.p.indexOf('SIN PLACA')===0?'':x.p)+'\')"><b>'+esc(x.p)+'</b><span>'+esc([o.marca,o.modelo,o.anio].filter(Boolean).join(' '))+(b.tipo==='Modelo'&&o.cliente?' · '+esc(o.cliente):'')+'</span><i>'+x.n+(x.n===1?' servicio':' servicios')+'</i></button>'; }).join('')+'</div></div>'
+      +'<div class="pl-tl">'+ords.slice(0,30).map(function(o){
+          return '<div class="pl-item"><div class="pl-row" onclick="openDetail(\''+o.id+'\')"><div class="pl-f">'+fmtDate(o.fecha)+'</div><div class="pl-main"><div><b>'+esc(o.folio||'')+'</b> '+stageChip(o.estatus||'recepcion')+'</div>'
+            +'<div class="pl-mot">'+esc([o.marca,o.modelo,o.anio].filter(Boolean).join(' '))+(o.placas?' · '+esc(o.placas):'')+(b.tipo==='Modelo'&&o.cliente?' · '+esc(o.cliente):'')+'</div>'
+            +'<div class="pl-sm">'+esc(o.motivo||'')+(o.total?' · '+money(o.total):'')+'</div></div></div></div>';
+        }).join('')+(ords.length>30?'<div class="fmini" style="padding:8px">y '+(ords.length-30)+' más</div>':'')+'</div>';
+  });
+  host.innerHTML=h;
+}
+var _goPlacaV27=goPlaca;
+goPlaca=async function(q){
+  await _goPlacaV27(q);
+  var dl=$('dl_placas'); if(!dl) return;
+  var seen={}, ops=[];
+  IDX.forEach(function(o){
+    [normPl(o.placas), o.cliente, o.flotilla, [o.marca,o.modelo].filter(Boolean).join(' ')].forEach(function(x){ var k=String(x||'').trim(); if(k && !seen[k.toLowerCase()]){ seen[k.toLowerCase()]=1; ops.push(k); } });
+  });
+  dl.innerHTML=ops.slice(0,800).map(function(x){ return '<option value="'+esc(x)+'">'; }).join('');
+};
+
+/* ---------- 2) Órdenes: agregar cita ---------- */
+function v28NuevaCita(){ openCita(); }
+
+/* ---------- 4) Particular / flotilla ---------- */
+var _v28Flo={nombre:'',zona:'',eco:'',aut:''}, V28_TIPO='particular';
+function v28TipoCli(t, silencio){
+  V28_TIPO=t==='flotilla'?'flotilla':'particular';
+  var sec=$('secFlotilla'); if(sec) sec.classList.toggle('hide', V28_TIPO!=='flotilla');
+  document.querySelectorAll('#tc_seg button').forEach(function(b){ var on=b.getAttribute('data-v')===V28_TIPO; b.classList.toggle('on',on); b.setAttribute('aria-pressed',on); });
+  var ids=['nombre','zona','eco','aut'];
+  if(V28_TIPO==='particular'){
+    ids.forEach(function(k){ var el=$('f_flo_'+k); if(el && el.value){ _v28Flo[k]=el.value; el.value=''; } });
+  } else {
+    ids.forEach(function(k){ var el=$('f_flo_'+k); if(el && !el.value && _v28Flo[k]) el.value=_v28Flo[k]; });
+    if(!silencio){ var n=$('f_flo_nombre'); if(n && !n.value) setTimeout(function(){ try{ n.focus(); }catch(e){} },60); }
+  }
+}
+openForm=async function(order){
+  _v28Flo={nombre:'',zona:'',eco:'',aut:''};
+  await openFormV27(order);
+  var fl=(order&&order.flotilla)||{};
+  v28TipoCli(fl.nombre && !/^particular$/i.test(String(fl.nombre).trim()) ? 'flotilla' : 'particular', true);
+};
+onClienteName=function(v){
+  onClienteNameV27(v);
+  var n=$('f_flo_nombre');
+  var key=(v||'').trim().toLowerCase(), c=key && CLIENTES_CACHE.find(function(x){ return String(x.nombre||'').trim().toLowerCase()===key; });
+  if(c && c.flotilla && !/^particular$/i.test(c.flotilla)){ v28TipoCli('flotilla',true); if(n) n.value=c.flotilla; }
+};
+
+/* ---------- 5 y 6) Checklist del técnico y entrega con el cliente ---------- */
+var EC_MODO='tecnico';
+function ecEstado(o){
+  var ec=(o&&o.entregaCheck)||{}, items=ec.items||{};
+  var r={faltan:0, sinNota:0, s5faltan:0, s5sinNota:0, fotos:0, firmaT:false, firmaC:false};
+  EN_SECCIONES.forEach(function(sc){
+    sc.items.forEach(function(_,i){
+      var it=items[enKey(sc.s,i)]||{};
+      var marcado=(it.e==='ok'||it.e==='atencion');
+      var faltaNota=(it.e==='atencion' && !String(it.n||'').trim());
+      if(sc.bloquea){ if(!marcado)r.faltan++; if(faltaNota)r.sinNota++; }
+      if(sc.s==='s5'){ if(!marcado)r.s5faltan++; if(faltaNota)r.s5sinNota++; }
+    });
+  });
+  var f=ec.fotos||{};
+  r.fotos=(typeof f==='object')?Object.keys(f).length:(Number(f)||0);
+  r.firmaT=!!ec.firmaTecnico; r.firmaC=!!ec.firmaCliente;
+  r.puedeTerminar=(r.faltan===0 && r.sinNota===0);
+  r.puedeEntregar=(r.s5faltan===0 && r.s5sinNota===0 && r.firmaC);   // v28: sólo la firma del cliente
+  r.iniciado=Object.keys(items).some(function(k){ return /^s[123]_/.test(k); });
+  r.entregaIniciada=Object.keys(items).some(function(k){ return /^s5_/.test(k); }) || r.firmaC || r.fotos>0;
+  return r;
+}
+function enPuedeEntregar(){
+  var a=enAvance('s5');
+  var firmaC=!!(enFirma('E')||enFirmaGuardada('E'));
+  return {ok:(a.sin===0&&a.faltanNota===0&&firmaC), faltan:a.sin, sinNota:a.faltanNota, firmaT:true, firmaC:firmaC};
+}
+async function ecRequeridoEntregar(o){
+  var e=ecEstado(o);
+  if(e.puedeEntregar) return true;
+  var faltas=[];
+  if(e.s5faltan) faltas.push(e.s5faltan+' de las 5 preguntas');
+  if(e.s5sinNota) faltas.push(e.s5sinNota+' nota(s)');
+  if(!e.firmaC) faltas.push('la firma del cliente');
+  if(confirm('Para registrar la entrega falta: '+faltas.join(', ')+'.\n\n¿Abrir "Entrega con el cliente"?')) await openEntregaCheck('entrega');
+  else toast('⛔ La entrega requiere las 5 preguntas y la firma del cliente');
+  return false;
+}
+openEntregaCheck=async function(modo){
+  EC_MODO=modo==='entrega'?'entrega':'tecnico';
+  if(EC_MODO==='entrega' && detailOrder && ['finalizado','entregado'].indexOf(detailOrder.estatus)<0){ toast('La entrega se llena cuando el trabajo está terminado'); return; }
+  await openEntregaCheckV27();
+  if(window._view!=='entregacheck') return;
+  var v=$('view-entregacheck'); v.classList.toggle('ec-entrega',EC_MODO==='entrega'); v.classList.toggle('ec-tecnico',EC_MODO!=='entrega');
+  $('barTitle').innerHTML=(EC_MODO==='entrega'?'Entrega con el cliente':'Checklist de la unidad')+'<small>'+esc((workOrder||{}).folio||'')+'</small>';
+  var h=$('ecDatosH'); if(h) h.textContent=EC_MODO==='entrega'?'Datos de la entrega':'Revisión del taller';
+  var g=$('ecGuardar'); if(g) g.textContent=EC_MODO==='entrega'?'Guardar entrega con el cliente':'Guardar checklist';
+  var nr=$('ec_nr'), ec=(workOrder&&workOrder.entregaCheck)||{};
+  if(nr) nr.value=ec.noRealizados!=null?ec.noRealizados:enPendientes(workOrder).map(function(p){ return p.texto; }).join('\n');
+  var rc=$('ec_recibe'); if(rc) rc.value=ec.recibio||((workOrder&&workOrder.cliente)||{}).nombre||'';
+  renderEC();
+  v28SigAjustar('E'); v28SigAjustar('T');
+};
+/* La firma se prepara la primera vez que se abre la pantalla; si entonces estaba oculta (modo técnico),
+   el lienzo quedaba angosto y sólo se podía firmar en una parte. Se ajusta al tamaño real al mostrarse. */
+function v28SigAjustar(k){
+  var s=sigs[k]; if(!s) return;
+  var cv=s.cv, w=cv.getBoundingClientRect().width; if(!(w>0)) return;
+  var ratio=window.devicePixelRatio||1, ancho=Math.max(300,Math.round(w*ratio));
+  if(Math.abs(cv.width-ancho)<=2) return;
+  var previa=s.isDirty()?cv.toDataURL('image/png'):'';
+  cv.width=ancho; cv.height=Math.round(150*ratio);
+  s.ctx.setTransform(ratio,0,0,ratio,0,0); s.ratio=ratio;
+  s.ctx.lineWidth=2.2; s.ctx.lineCap='round'; s.ctx.lineJoin='round'; s.ctx.strokeStyle='#111';
+  if(previa){ s.reset(); drawDataURL(k,previa); }
+}
+renderEC=function(){
+  renderECV27();
+  var h5=$('ecHost5'); if(!h5) return;
+  h5.querySelectorAll('.ecbtns button.ok').forEach(function(b){ b.textContent='Sí'; });
+  h5.querySelectorAll('.ecbtns button.at').forEach(function(b){ b.textContent='No'; });
+  h5.querySelectorAll('.ecnota input').forEach(function(i){ i.placeholder='¿Por qué no? (obligatorio)'; });
+};
+function renderECResumen(){
+  var t=enPuedeTerminar(), e=enPuedeEntregar(), fotos=Object.keys(enFotos).length, a5=enAvance('s5');
+  var h;
+  if(EC_MODO==='entrega'){
+    h='<div class="mpres" style="grid-template-columns:repeat(3,1fr)">'
+     + '<div class="'+(a5.sin===0&&a5.faltanNota===0?'v':'a')+'"><b>'+(a5.total-a5.sin)+'/'+a5.total+'</b><small>Preguntas</small></div>'
+     + '<div class="'+(fotos===5?'v':'a')+'"><b>'+fotos+'/5</b><small>Fotos de salida</small></div>'
+     + '<div class="'+(e.firmaC?'v':'a')+'"><b>'+(e.firmaC?'✓':'—')+'</b><small>Firma del cliente</small></div></div>';
+    if(a5.faltanNota>0) h+='<div class="mpreq">&#9888; Escribe por qué en las preguntas marcadas con “No”.</div>';
+  } else {
+    h='<div class="mpres" style="grid-template-columns:1fr">'
+     + '<div class="'+(t.ok?'v':'a')+'"><b>'+(t.ok?'✓':t.faltan)+'</b><small>'+(t.ok?'Revisión completa':'Puntos por revisar (secc. 1-3)')+'</small></div></div>';
+    if(t.sinNota>0) h+='<div class="mpreq">&#9888; Hay <b>'+t.sinNota+'</b> punto(s) en "Atención" sin nota. La nota es obligatoria.</div>';
+  }
+  $('ecResumen').innerHTML=h;
+}
+saveEntregaCheck=async function(){
+  var o=workOrder||detailOrder; if(!o) return;
+  var items={};
+  EN_SECCIONES.forEach(function(sc){ sc.items.forEach(function(_,i){
+    var k=enKey(sc.s,i), it=enState[k]||{};
+    if(it.e) items[k]={e:it.e, n:it.n||''};
+  });});
+  var t=enPuedeTerminar(), a5=enAvance('s5');
+  if(EC_MODO!=='entrega' && t.sinNota>0){ toast('⛔ Falta la nota en '+t.sinNota+' punto(s) en Atención'); return; }
+  if(EC_MODO==='entrega' && a5.faltanNota>0){ toast('⛔ Escribe por qué en las preguntas marcadas con “No”'); return; }
+  var prev=o.entregaCheck||{};
+  var nr=$('ec_nr'), rc=$('ec_recibe');
+  o.entregaCheck={
+    items:items, total:enTotalItems(),
+    responsable:($('ec_resp').value||'').trim()||prev.responsable||'',
+    km:($('ec_km').value||'').trim()||prev.km||'', fuel:EC_MODO==='entrega'?Number($('ec_fuel').value):(prev.fuel!=null?prev.fuel:Number($('ec_fuel').value)),
+    fotos:JSON.parse(JSON.stringify(enFotos)),
+    firmaTecnico: prev.firmaTecnico||'',
+    firmaCliente: enFirma('E')||prev.firmaCliente||'',
+    pendientes: enPendientes(o),
+    noRealizados: EC_MODO==='entrega'&&nr ? nr.value.trim() : (prev.noRealizados||''),
+    recibio: EC_MODO==='entrega'&&rc ? rc.value.trim() : (prev.recibio||''),
+    fecha: prev.fecha||todayISO(), hora: prev.hora||nowHM(),
+    fechaEntrega: EC_MODO==='entrega' ? (prev.fechaEntrega||todayISO()) : (prev.fechaEntrega||'')
+  };
+  detailOrder=o;
+  await persistWorkflow(o,{entrega:true},EC_MODO==='entrega'?'Entrega con el cliente guardada':'Checklist guardado');
+  openDetail(o.id);
+};
+function ecBotonDetalle(o){
+  var st=o.estatus||'recepcion';
+  if(['aprobado','finalizado','entregado'].indexOf(st)<0) return '';
+  var e=ecEstado(o), ec=o.entregaCheck||{};
+  if(!e.iniciado){
+    return '<div class="mpreq">&#9888; El <b>checklist de la unidad</b> es requisito para marcar el trabajo como terminado</div>'
+      +'<button class="btn-primary" onclick="openEntregaCheck(\'tecnico\')">&#9989; Llenar checklist</button>';
+  }
+  var h='<div class="mpcard"><div class="mpcard-h"><span>&#9989; Checklist de la unidad</span><span class="mpcard-f">'+esc(ec.fecha||'')+'</span></div>';
+  h+='<div class="mpres" style="margin:8px 0 6px;grid-template-columns:1fr"><div class="'+(e.puedeTerminar?'v':'a')+'"><b>'+(e.puedeTerminar?'✓':e.faltan)+'</b><small>'+(e.puedeTerminar?'Secciones 1 a 3 completas':'Faltan puntos (secc. 1-3)')+'</small></div></div>';
+  if(ec.responsable) h+='<div class="mphint">Revisó: <b>'+esc(ec.responsable)+'</b></div>';
+  h+='<div class="arow" style="margin-top:8px"><button class="btn-light" onclick="openEntregaCheck(\'tecnico\')">Editar checklist</button>'
+   + '<button class="btn-light" onclick="ecImprimirDe(\''+o.id+'\')">&#128424; PDF</button></div></div>';
+  return h;
+}
+
+/* ---------- 5) Evidencias sin costos ---------- */
+openFinalizar=async function(){
+  await esperarFresca();
+  var o=detailOrder; if(!o) return;
+  var _yaCerrada=(o.estatus==='finalizado'||o.estatus==='entregado');
+  if(_yaCerrada && !(await gateEdit(o))) return;
+  if(needsHydrate(o)) await hydrateMedia(o);
+  workOrder=o;
+  $('barTitle').innerHTML=(_yaCerrada?'Evidencias y costo':'Evidencias del trabajo')+'<small>'+esc(o.folio||'')+'</small>';
+  $('fnInfo').innerHTML=orderMini(o);
+  var f=o.finalizado||{}; $('fn_notas').value=f.notas||'';
+  var k=o.costos||{};
+  $('fn_cRef').value=(k.refacciones!=null&&k.refacciones!=='')?k.refacciones:'';
+  $('fn_cMo').value=(k.manoObra!=null&&k.manoObra!=='')?k.manoObra:'';
+  $('fn_cOtros').value=(k.otros!=null&&k.otros!=='')?k.otros:'';
+  $('fn_cProv').value=k.proveedor||''; $('fn_cNota').value=k.nota||'';
+  calcUtilidad();
+  curFinPhotos=Array.isArray(f.fotos)?f.fotos.slice():[]; finDirty=false; renderFinThumbs();
+  var b=$('fnTerminar'); if(b) b.textContent=_yaCerrada?'Guardar cambios':'Terminar trabajo';
+  var g=$('fnGuardar'); if(g) g.classList.toggle('hide',_yaCerrada);
+  show('finalizar');
+};
+function v28CostosForm(){
+  var _ref=parseFloat($('fn_cRef').value), _mo=parseFloat($('fn_cMo').value), _ot=parseFloat($('fn_cOtros').value);
+  var c={refacciones:isNaN(_ref)?'':_ref, manoObra:isNaN(_mo)?'':_mo, otros:isNaN(_ot)?'':_ot,
+    proveedor:$('fn_cProv').value.trim(), nota:$('fn_cNota').value.trim(), fecha:todayISO(), hora:nowHM()};
+  c.total=costoTotal(c);
+  return c;
+}
+/* Guardar evidencias: fotos y notas (y costos si ya los hay) sin pasar a Terminado */
+async function saveEvidencias(){
+  var o=workOrder; if(!o) return;
+  var prev=o.finalizado||{};
+  o.finalizado={fecha:prev.fecha||'', hora:prev.hora||'', notas:$('fn_notas').value.trim(), fotos:curFinPhotos.slice(), borrador:o.estatus==='aprobado'};
+  var c=v28CostosForm(); if(c.total>0 || c.proveedor || c.nota) o.costos=c;
+  await persistWorkflow(o,{finalizado:finDirty},'Evidencias guardadas');
+  openDetail(o.id);
+}
+saveFinalizar=async function(){
+  var o=workOrder; if(!o) return;
+  var cerrada=(o.estatus==='finalizado'||o.estatus==='entregado');
+  var c=v28CostosForm();
+  if(!cerrada){
+    if(!ecEstado(o).puedeTerminar){ toast('⛔ Antes de terminar falta el checklist de la unidad (secciones 1 a 3)'); return; }
+    if(!(curFinPhotos.length || $('fn_notas').value.trim())){ toast('⛔ Agrega fotos o notas del trabajo terminado'); return; }
+    if(!(c.total>0)){ toast('⛔ Faltan los costos. Guarda las evidencias y administración los captura después.'); var cr=$('fn_cRef'); if(cr) cr.focus(); return; }
+  }
+  var prev=o.finalizado||{};
+  o.finalizado={fecha:prev.fecha||todayISO(), hora:prev.hora||nowHM(), notas:$('fn_notas').value.trim(), fotos:curFinPhotos.slice()};
+  o.costos=c;
+  if(o.estatus!=='entregado') o.estatus='finalizado';
+  await persistWorkflow(o,{finalizado:finDirty},cerrada?'Cambios guardados':'Trabajo terminado');
+  openDetail(o.id);
+};
+function v28EvidenciaBorrador(o){
+  var fi=o.finalizado||{};
+  return !!(fi.notas || (Array.isArray(fi.fotos)?fi.fotos.length:fi.fotos) || (Array.isArray(fi.fotosUrls)&&fi.fotosUrls.length));
+}
+function renderCierre(o){
+  var st=o.estatus||'recepcion';
+  if(['aprobado','finalizado','entregado'].indexOf(st)<0)
+    return '<div class="miniinfo">Esta parte empieza cuando la cotización está <b>aprobada</b>. Aquí vas a llevar, en orden: '
+      +'<b>1</b> checklist de la unidad · <b>2</b> evidencias del trabajo terminado · <b>3</b> costos. Después sigue la pestaña <b>Entrega, pago y encuesta</b>.</div>';
+  var e=ecEstado(o), fi=o.finalizado||{}, fin=(st==='finalizado'||st==='entregado'), cos=costoTotal(o.costos||{}), ev=v28EvidenciaBorrador(o);
+  var h='<div class="ci-wrap">';
+  h+=v265Paso(1,'Checklist de la unidad', e.puedeTerminar?'hecho':'aqui', e.puedeTerminar?'Completo':(e.iniciado?'Incompleto':'Pendiente'), ecBotonDetalle(o));
+  var b2=ev?(renderFinalizadoCard(o)||''):'<div class="ci-hint">Notas y fotos de cómo quedó. Se pueden guardar aunque todavía no estén los costos.</div>';
+  b2+='<button class="'+(ev?'btn-light':'btn-primary')+'" onclick="openFinalizar()">'+(fin?'🔒 Editar evidencias':(ev?'📷 Editar evidencias':'📷 Subir evidencias'))+'</button>';
+  h+=v265Paso(2,'Evidencias del trabajo terminado', ev?'hecho':(e.puedeTerminar?'aqui':''), ev?(fin?'Finalizado '+fmtDate(fi.fecha):'Guardadas'):'', b2);
+  var b3;
+  if(cos>0) b3=renderRentabilidad(o);
+  else b3='<div class="ci-hint">'+(ev?'Las evidencias ya están. Administración captura aquí los costos (refacciones, mano de obra pagada y otros) y termina el trabajo.':'Refacciones, mano de obra pagada y otros gastos. Se pueden capturar después de las evidencias.')+'</div>'
+     +(ev && !fin?'<button class="btn-primary" onclick="openFinalizar()">💲 Capturar costos y terminar</button>':'');
+  h+=v265Paso(3,'Costos del servicio', cos>0?'hecho':(ev?'aqui':''), cos>0?money(cos):(ev?'Costos pendientes':''), b3);
+  if(!fin && e.puedeTerminar && ev && cos>0) h+='<button class="btn-primary ci-sig" onclick="openFinalizar()">Terminar trabajo →</button>';
+  if(st==='finalizado') h+='<button class="btn-primary ci-sig" onclick="switchDetailTab(\'entrega\');window.scrollTo(0,0)">Siguiente: Entrega, pago y encuesta →</button>';
+  return h+'</div>';
+}
+function v265FlagCierre(o){
+  var st=o.estatus||'';
+  return st==='aprobado' || ((st==='finalizado'||st==='entregado') && !(costoTotal(o.costos||{})>0));
+}
+function renderEntregaTab(o){
+  var st=o.estatus||'recepcion', e=ecEstado(o), ec=o.entregaCheck||{};
+  if(['finalizado','entregado'].indexOf(st)<0)
+    return '<div class="miniinfo">Se habilita cuando el trabajo está <b>terminado</b> (pestaña <b>Checklist, evidencias y costos</b>).</div>';
+  var h='<div class="ci-wrap">';
+  // 4 · Entrega con el cliente
+  var a5=EN_SECCIONES.filter(function(s){ return s.s==='s5'; })[0], resp=a5.items.filter(function(_,i){ var it=(ec.items||{})['s5_'+i]; return it&&it.e; }).length;
+  var b4='';
+  if(e.entregaIniciada){
+    b4+='<div class="mpres" style="margin:2px 0 8px;grid-template-columns:repeat(3,1fr)"><div class="'+(resp===a5.items.length?'v':'a')+'"><b>'+resp+'/'+a5.items.length+'</b><small>Preguntas</small></div>'
+      +'<div class="'+(e.fotos===5?'v':'a')+'"><b>'+e.fotos+'/5</b><small>Fotos de salida</small></div>'
+      +'<div class="'+(e.firmaC?'v':'a')+'"><b>'+(e.firmaC?'✓':'—')+'</b><small>Firma del cliente</small></div></div>';
+    if(ec.noRealizados) b4+='<div class="mpalert a"><b>Pendientes que se le comentaron</b>'+esc(ec.noRealizados).replace(/\n/g,'<br>')+'</div>';
+  } else b4+='<div class="ci-hint">Con el cliente presente: las 5 preguntas, lo que no se reparó, las fotos de salida y su firma de conformidad.</div>';
+  b4+='<button class="'+(e.puedeEntregar?'btn-light':'btn-primary')+'" onclick="openEntregaCheck(\'entrega\')">'+(e.entregaIniciada?'Editar entrega con el cliente':'🤝 Entrega con el cliente')+'</button>';
+  h+=v265Paso(4,'Entrega con el cliente', e.puedeEntregar?'hecho':'aqui', e.puedeEntregar?'Firmado':(e.entregaIniciada?'Incompleto':'Pendiente'), b4);
+  // 5 · Registro de salida, pago y encuesta
+  var b5='', e5='', t5='';
+  if(st==='entregado'){
+    e5=v265PagoPend(o)?'parcial':'hecho'; t5=v265PagoPend(o)?'Entregado · pago pendiente':'Entregado';
+    if(o.salida) b5+='<div class="dgrid">'+di('Fecha salida',fmtDate(o.salida.fecha))+di('Hora salida',o.salida.hora)+di('Km salida',o.salida.km)+di('','')+'</div>';
+    b5+=renderCobro(o)+renderEncuestaCard(o);
+  } else {
+    e5=e.puedeEntregar?'aqui':''; t5='Pendiente';
+    if(!e.puedeEntregar) b5+='<div class="ci-hint">Primero el paso 4: preguntas y firma del cliente.</div>';
+    b5+=renderCobro(o)+'<button class="'+(e.puedeEntregar?'btn-primary':'btn-light')+'" onclick="openEntrega()">🚗 Registrar salida, pago y encuesta</button>';
+  }
+  h+=v265Paso(5,'Salida, pago y encuesta', e5, t5, b5);
+  return h+'</div>';
+}
+
+/* ---------- 7) IA ---------- */
+function v28b64Blob(u){
+  var m=/^data:([^;]+);base64,(.*)$/.exec(String(u||'')); if(!m) return null;
+  var bin=atob(m[2]), a=new Uint8Array(bin.length); for(var i=0;i<bin.length;i++) a[i]=bin.charCodeAt(i);
+  return new Blob([a],{type:m[1]});
+}
+async function v28aDataUrl(u){
+  if(typeof u!=='string' || !u) return '';
+  if(u.indexOf('data:')===0) return u;
+  try{ var r=await fetch(u); var b=await r.blob(); return await new Promise(function(res){ var fr=new FileReader(); fr.onload=function(){ res(String(fr.result||'')); }; fr.onerror=function(){ res(''); }; fr.readAsDataURL(b); }); }catch(e){ return ''; }
+}
+async function v28iaPedir(tipo, datos, imagenes){
+  if(window.__AM_IA_LOCAL) return await window.__AM_IA_LOCAL(tipo, datos, imagenes||[]);
+  try{ return await apiPost({action:'ia', tipo:tipo, datos:datos, imagenes:imagenes||[]}, 30000); }
+  catch(e){ return {ok:false, error:'Sin conexión: no se pudo hablar con la IA.'}; }
+}
+function v28TipoCliOrden(o){ return prTipoDeOrden(o)==='particular'?'particular':'flotilla'; }
+function v28VehOrden(o){ var v=(o&&o.vehiculo)||{}; return {marca:v.marca||'',modelo:v.modelo||'',anio:v.anio||''}; }
+function v28iaOv(){
+  var el=$('iaOv');
+  if(!el){ el=document.createElement('div'); el.id='iaOv'; el.className='ov hide'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true');
+    el.onclick=function(e){ if(e.target===el) v28iaCerrar(); }; document.body.appendChild(el); }
+  return el;
+}
+function v28iaCerrar(){ var el=$('iaOv'); if(el){ el.classList.add('hide'); el.innerHTML=''; } window._iaCtx=null; IAR={tarjeta:'', tablero:'', fotos:[], res:null}; }   // la tarjeta no se queda
+function v28iaTextoHtml(t){
+  var out='', li=[];
+  function cierra(){ if(li.length){ out+='<ul>'+li.map(function(x){ return '<li>'+esc(x)+'</li>'; }).join('')+'</ul>'; li=[]; } }
+  String(t||'').split(/\n/).forEach(function(l){ var s=l.trim(); if(!s){ cierra(); return; } var m=/^[-•*]\s*(.+)$/.exec(s); if(m){ li.push(m[1]); return; } cierra(); out+='<p>'+esc(s)+'</p>'; });
+  cierra(); return out;
+}
+/* Abre la propuesta de la IA para un texto. ctx = {tipo, titulo, actual, datos, aplicar(texto)} */
+async function v28iaTexto(ctx){
+  window._iaCtx=ctx;
+  var el=v28iaOv();
+  el.innerHTML='<div class="ov-card ia-card"><div class="ov-h">✨ '+esc(ctx.titulo)+'</div><div class="ia-load" role="status">Pensando… (unos segundos)</div></div>';
+  el.classList.remove('hide');
+  var j=await v28iaPedir(ctx.tipo, ctx.datos);
+  if(window._iaCtx!==ctx) return;
+  if(!(j&&j.ok)){
+    el.innerHTML='<div class="ov-card ia-card"><div class="ov-h">✨ '+esc(ctx.titulo)+'</div><div class="ia-err">'+esc((j&&j.error)||'No se pudo hablar con la IA.')+'</div>'
+      +(j&&j.sinLlave?'<div class="fmini">Pide a dirección que agregue la llave de IA en Netlify (variable ANTHROPIC_API_KEY).</div>':'')
+      +'<div class="ov-btns"><button class="cancel" onclick="v28iaCerrar()">Cerrar</button>'+(j&&j.sinLlave?'':'<button class="save" onclick="v28iaTexto(window._iaCtxPrev)">Intentar otra vez</button>')+'</div></div>';
+    window._iaCtxPrev=ctx; return;
+  }
+  var r=j.resultado||{};
+  ctx.propuesta=r.texto||'';
+  window._iaCtxPrev=ctx;
+  el.innerHTML='<div class="ov-card ia-card"><div class="ov-h">✨ '+esc(ctx.titulo)+'</div>'
+    +(ctx.actual?'<div class="ia-lbl">Lo que escribió el taller</div><div class="ia-antes">'+esc(ctx.actual)+'</div>':'')
+    +'<div class="ia-lbl">Propuesta para el cliente <span>(la puedes corregir)</span></div>'
+    +'<textarea id="ia_txt" class="ia-txt" rows="8">'+esc(ctx.propuesta)+'</textarea>'
+    +'<div class="ia-prev" id="ia_prev">'+v28iaTextoHtml(ctx.propuesta)+'</div>'
+    +(r.aviso?'<div class="ia-aviso"><b>Aviso para oficina · no lo ve el cliente</b>'+esc(r.aviso)+'</div>':'')
+    +'<div class="ov-btns"><button class="cancel" onclick="v28iaCerrar()">Dejar el mío</button><button class="cancel" onclick="v28iaTexto(window._iaCtxPrev)">Otra versión</button>'
+    +'<button class="save" onclick="v28iaUsar()">Usar este texto</button></div></div>';
+  var ta=$('ia_txt'); if(ta) ta.oninput=function(){ var p=$('ia_prev'); if(p) p.innerHTML=v28iaTextoHtml(ta.value); };
+}
+function v28iaUsar(){
+  var ctx=window._iaCtxPrev||window._iaCtx; if(!ctx) return;
+  var t=($('ia_txt')||{}).value; if(t==null) t=ctx.propuesta||'';
+  ctx.aplicar(String(t).trim());
+  v28iaCerrar(); toast('Texto aplicado. Revísalo y guarda.');
+}
+function v28iaDiag(){
+  var o=workOrder||{}, pts=((o.multipuntos||{}).puntos)||[];
+  var rev=pts.filter(function(p){ return p.estatus==='rojo'||p.estatus==='amarillo'; }).map(function(p){
+    var d=mpDef(p.id)||{}; return '- '+(d.t||p.punto||('Punto '+p.id))+' ('+(p.estatus==='rojo'?'atención':'revisar pronto')+')'+(p.nota?': '+p.nota:''); }).join('\n');
+  var actual=$('cz_diag').value.trim();
+  if(!actual){ toast('Primero escribe el diagnóstico del taller, aunque sea corto'); return; }
+  v28iaTexto({tipo:'diagnostico', titulo:'Mejorar diagnóstico con IA', actual:actual,
+    datos:{texto:actual, motivo:((o.servicio||{}).motivo)||'', vehiculo:v28VehOrden(o), tipoCliente:v28TipoCliOrden(o),
+      partidas:curItems.filter(itemTocado).map(function(it){ return {concepto:it.concepto,tipoTrabajo:it.tipoTrabajo,cantidad:it.cantidad}; }), revision:rev},
+    aplicar:function(t){ $('cz_diag').value=t; }});
+}
+function v28iaTrabajo(i){
+  var it=curItems[i]; if(!it) return;
+  var trs=v26trabajos({items:curItems},[]), tr=trs.filter(function(t){ return t.idx.indexOf(i)>=0; })[0];
+  var partidas=(tr?tr.idx:[i]).map(function(k){ var x=curItems[k]||{}; return {concepto:x.concepto,tipoTrabajo:x.tipoTrabajo,cantidad:x.cantidad}; }).filter(function(p){ return String(p.concepto||'').trim(); });
+  if(!partidas.length){ toast('Primero escribe la descripción de la partida'); return; }
+  var o=workOrder||{};
+  v28iaTexto({tipo:'trabajo', titulo:'Explicación para el cliente', actual:it.explicacion||'',
+    datos:{titulo:(tr&&tr.titulo)||it.concepto, partidas:partidas, texto:it.explicacion||'', diagnostico:$('cz_diag').value.trim(), vehiculo:v28VehOrden(o), tipoCliente:v28TipoCliOrden(o)},
+    aplicar:function(t){ if(!curItems[i]) return; curItems[i].explicacion=t; renderItems(); recalc(); }});
+}
+function v28iaTerminado(){
+  var o=workOrder||{}, co=o.cotizacion||{}, no=(co.noAutorizados||[]).map(function(x){ return x.concepto; });
+  var actual=$('fn_notas').value.trim();
+  var ec=o.entregaCheck||{}, items=ec.items||{}, obs=[];
+  EN_SECCIONES.forEach(function(sc){ if(!sc.bloquea) return; sc.items.forEach(function(t,k){ var x=items[sc.s+'_'+k]; if(x&&x.e==='atencion') obs.push('- '+t+(x.n?': '+x.n:'')); }); });
+  if(!actual && !(co.items||[]).length){ toast('Escribe primero qué se hizo'); return; }
+  v28iaTexto({tipo:'terminado', titulo:'Notas de trabajo terminado', actual:actual,
+    datos:{texto:actual, vehiculo:v28VehOrden(o), tipoCliente:v28TipoCliOrden(o),
+      partidas:(co.items||[]).filter(function(x){ return no.indexOf(x.concepto)<0; }).map(function(x){ return {concepto:x.concepto,tipoTrabajo:x.tipoTrabajo,cantidad:x.cantidad}; }),
+      checklist:obs.join('\n')},
+    aplicar:function(t){ $('fn_notas').value=t; }});
+}
+/* Explicación por trabajo: botón ✨ junto a "Fotos" */
+filaCliente=function(i){
+  var h=filaClienteV27(i); if(!h) return h;
+  return h.replace('<button type="button" class="mo-btn" onclick="fotosItem('+i+')">','<button type="button" class="mo-btn ia-mini" onclick="v28iaTrabajo('+i+')" title="Mejorar con IA">✨ IA</button><button type="button" class="mo-btn" onclick="fotosItem('+i+')">');
+};
+
+/* ---- Recepción: llenar datos con fotos ---- */
+var IAR={tarjeta:'', tablero:'', fotos:[], res:null};
+function v28iaRecep(){
+  IAR={tarjeta:'', tablero:'', fotos:(curPhotos||[]).filter(function(x){ return typeof x==='string' && x; }).slice(0,6), res:null};
+  v28iaRecepPintar();
+  v28iaOv().classList.remove('hide');
+}
+function v28iaRecepSlot(k, titulo, desc){
+  var u=IAR[k];
+  return '<div class="iar-slot"><div class="iar-t"><b>'+titulo+'</b><span>'+desc+'</span></div>'
+    +(u?'<div class="iar-img"><img src="'+u+'" alt="'+esc(titulo)+'"><button type="button" class="del" aria-label="Quitar" onclick="IAR.'+k+'=\'\';v28iaRecepPintar()">&times;</button></div>'
+       :'<div class="iar-btns"><button type="button" class="photobtn" onclick="$(\'iar_c_'+k+'\').click()">📷 Tomar</button><button type="button" class="photobtn alt" onclick="$(\'iar_g_'+k+'\').click()">📂 Galería</button></div>')
+    +'<input type="file" id="iar_c_'+k+'" accept="image/*" capture="environment" hidden onchange="v28iaRecepFoto(\''+k+'\',event)">'
+    +'<input type="file" id="iar_g_'+k+'" accept="image/*" hidden onchange="v28iaRecepFoto(\''+k+'\',event)"></div>';
+}
+function v28iaRecepFoto(k, ev){
+  var arr=[];
+  compressAdd(ev, arr, k==='fotos'?6:1, function(){
+    if(k==='fotos'){ IAR.fotos=IAR.fotos.concat(arr).slice(0,6); } else if(arr[0]) IAR[k]=arr[0];
+    v28iaRecepPintar();
+  });
+}
+function v28iaRecepPintar(){
+  var el=v28iaOv();
+  var h='<div class="ov-card ia-card"><div class="ov-h">✨ Llenar con IA desde fotos</div>'
+    +'<div class="fmini" style="margin:-6px 0 10px">La IA lee las fotos y propone los datos. Tú decides qué se usa. La foto de la tarjeta no se guarda en la orden.</div>';
+  if(!IAR.res){
+    h+=v28iaRecepSlot('tarjeta','Tarjeta de circulación','Marca, modelo, año, placas y número de serie')
+      +v28iaRecepSlot('tablero','Tablero','Kilometraje y gasolina')
+      +'<div class="iar-slot"><div class="iar-t"><b>Fotos del vehículo</b><span>Color y daños visibles · '+IAR.fotos.length+'/6</span></div>'
+      +(IAR.fotos.length?'<div class="iar-fotos">'+IAR.fotos.map(function(u,i){ return '<div class="iar-img sm"><img src="'+u+'" alt="Foto '+(i+1)+'"><button type="button" class="del" aria-label="Quitar" onclick="IAR.fotos.splice('+i+',1);v28iaRecepPintar()">&times;</button></div>'; }).join('')+'</div>':'')
+      +(IAR.fotos.length<6?'<div class="iar-btns"><button type="button" class="photobtn" onclick="$(\'iar_c_fotos\').click()">📷 Tomar</button><button type="button" class="photobtn alt" onclick="$(\'iar_g_fotos\').click()">📂 Galería</button></div>':'')
+      +'<input type="file" id="iar_c_fotos" accept="image/*" capture="environment" hidden onchange="v28iaRecepFoto(\'fotos\',event)">'
+      +'<input type="file" id="iar_g_fotos" accept="image/*" multiple hidden onchange="v28iaRecepFoto(\'fotos\',event)"></div>'
+      +'<div id="iar_msg"></div>'
+      +'<div class="ov-btns"><button class="cancel" onclick="v28iaCerrar()">Cancelar</button><button class="save" id="iar_go" onclick="v28iaRecepLeer()">Leer con IA</button></div>';
+  } else {
+    var r=IAR.res, filas=[
+      ['marca','Marca',getMarcaVal(),r.marca],['modelo','Modelo',getModeloVal(),r.modelo],['anio','Año',$('f_veh_anio').value,r.anio],
+      ['placas','Placas',$('f_veh_placas').value,r.placas],['vin','No. de serie',$('f_veh_vin').value,r.vin],['color','Color',$('f_veh_color').value,r.color],
+      ['km','Kilometraje',$('f_veh_km').value,r.km],['gasolina','Gasolina',FUEL[Number($('f_veh_fuel').value)]||'',r.gasolina!==''?FUEL[r.gasolina]:'']];
+    h+='<div class="iar-tab" role="table">'+filas.map(function(f){
+      var hay=String(f[3]||'').trim()!=='', igual=hay && v28n(f[2])===v28n(f[3]);
+      return '<label class="iar-row'+(hay?'':' vacio')+'"><input type="checkbox" data-k="'+f[0]+'"'+(hay&&!igual?' checked':'')+(hay?'':' disabled')+'>'
+        +'<span class="iar-c">'+f[1]+'</span><span class="iar-a">'+esc(f[2]||'—')+'</span><span class="iar-n">'+(hay?esc(f[3]):'No se leyó')+'</span></label>';
+    }).join('')+'</div>';
+    if(r.danos&&r.danos.length) h+='<label class="iar-row iar-danos"><input type="checkbox" data-k="danos" checked><span class="iar-c">Daños vistos</span><span class="iar-n">'+r.danos.map(esc).join('<br>')+'</span></label>';
+    if(r.aviso) h+='<div class="ia-aviso"><b>Aviso</b>'+esc(r.aviso)+'</div>';
+    h+='<div class="ov-btns"><button class="cancel" onclick="IAR.res=null;v28iaRecepPintar()">Volver</button><button class="save" onclick="v28iaRecepUsar()">Pasar a la orden</button></div>';
+  }
+  el.innerHTML=h+'</div>';
+}
+async function v28iaRecepLeer(){
+  var fotos=[], imgs=[];
+  if(IAR.tarjeta){ fotos.push('tarjeta'); imgs.push(IAR.tarjeta); }
+  if(IAR.tablero){ fotos.push('tablero'); imgs.push(IAR.tablero); }
+  IAR.fotos.forEach(function(u){ fotos.push('vehiculo'); imgs.push(u); });
+  if(!imgs.length){ $('iar_msg').innerHTML='<div class="ia-err">Agrega al menos una foto.</div>'; return; }
+  var b=$('iar_go'); if(b){ b.disabled=true; b.textContent='Leyendo…'; }
+  $('iar_msg').innerHTML='<div class="ia-load" role="status">La IA está leyendo '+imgs.length+' foto(s)…</div>';
+  for(var i=0;i<imgs.length;i++) imgs[i]=await v28aDataUrl(imgs[i]);
+  var j=await v28iaPedir('recepcion',{fotos:fotos},imgs.filter(Boolean));
+  if(!(j&&j.ok)){ if(b){ b.disabled=false; b.textContent='Leer con IA'; } $('iar_msg').innerHTML='<div class="ia-err">'+esc((j&&j.error)||'No se pudo leer')+'</div>'; return; }
+  IAR.res=j.resultado||{}; v28iaRecepPintar();
+}
+function v28iaRecepUsar(){
+  var r=IAR.res||{}, on={};
+  document.querySelectorAll('#iaOv input[type=checkbox][data-k]').forEach(function(c){ on[c.getAttribute('data-k')]=c.checked; });
+  if(on.marca||on.modelo||on.anio){
+    var marca=on.marca?r.marca:getMarcaVal(), modelo=on.modelo?r.modelo:getModeloVal(), anio=on.anio?r.anio:$('f_veh_anio').value;
+    var mk=Object.keys(CARS).filter(function(k){ return v28n(k)===v28n(marca); })[0]||marca;
+    var md=(CARS[mk]||[]).filter(function(x){ return v28n(x)===v28n(modelo); })[0]||modelo;
+    setVehiculo(mk, md, anio);
+  }
+  if(on.placas) $('f_veh_placas').value=r.placas;
+  if(on.vin) $('f_veh_vin').value=r.vin;
+  if(on.color) $('f_veh_color').value=r.color;
+  if(on.km) $('f_veh_km').value=r.km;
+  if(on.gasolina && r.gasolina!==''){ $('f_veh_fuel').value=r.gasolina; updateFuel(); }
+  if(on.danos && r.danos && r.danos.length){ var est=$('f_estado'); est.value=(est.value.trim()?est.value.trim()+'\n':'')+r.danos.join('\n'); }
+  v28iaCerrar(); toast('Datos pasados a la orden. Revísalos antes de guardar.');
 }
 
 </script>

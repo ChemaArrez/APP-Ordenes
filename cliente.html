@@ -61,6 +61,22 @@ p.lead{color:var(--muted);margin:0 0 16px}
 .item p{margin:8px 0 0;max-width:62ch}
 .item ul,.expl ul{margin:8px 0 0;padding-left:22px;display:grid;gap:3px}
 .item .p small{display:block;text-align:right;font-family:var(--body);font-size:11px;font-weight:400;color:var(--muted);letter-spacing:.02em}
+/* v28 · checklists para el cliente */
+.chk{display:grid;gap:0;margin:10px 0 0;padding:0;list-style:none;border-top:1px solid var(--line)}
+.chk li{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line);font-size:15px;line-height:1.4}
+.chk li small{display:block;color:var(--muted);font-size:13.5px;margin-top:2px}
+.chk .m{flex:0 0 22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-top:1px;color:#fff;background:var(--ok)}
+.chk .m.warn{background:#c98a00}.chk .m.bad{background:var(--red)}.chk .m.na,.chk .m.no{background:var(--soft);color:var(--muted)}
+.chk .med{margin-left:auto;white-space:nowrap;color:var(--muted);font-size:13.5px;font-family:var(--mono)}
+.cuenta{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.cuenta span{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:4px 11px;font-size:14px;background:var(--card)}
+.cuenta i{width:10px;height:10px;border-radius:50%;background:var(--ok)}.cuenta i.warn{background:#c98a00}.cuenta i.bad{background:var(--red)}
+.inv{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.inv span{border:1px solid var(--line);border-radius:8px;padding:4px 9px;font-size:14px;background:var(--card)}
+.inv span.no{color:var(--muted);text-decoration:line-through}
+.sub2{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:14px 0 2px}
+.firma{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px;max-width:320px;margin-top:8px}
+.firma img{display:block;width:100%;height:auto}
 /* v27.2 · desglose de cada trabajo */
 .pz{margin:12px 0 2px;padding:0;display:grid;gap:0;border-top:1px solid var(--line)}
 .pz div{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
@@ -279,7 +295,7 @@ function fotosRecep(o){
 function plegable(titulo,cont){ return cont? '<details class="mas"><summary>'+titulo+'</summary><div class="mas-b">'+cont+'</div></details>' : ''; }
 function verLlegada(o){
   var n=(o.fotosRecepcion||[]).length;
-  return plegable('Cómo llegó su vehículo'+(n?' · '+n+' fotos':''), fotosRecep(o)+(o.danos?'<div class="note"><b>Detalles al recibirlo</b>'+esc(o.danos)+'</div>':''));
+  return plegable('Cómo llegó su vehículo'+(n?' · '+n+' fotos':''), fotosRecep(o)+(o.danos?'<div class="note"><b>Detalles al recibirlo</b>'+esc(o.danos)+'</div>':'')+invHtml(o));   // v28: + inventario
 }
 function verRevision(o){
   var c=(o.diagnostico&&!hayExplic(o))?'<div class="txt">'+esc(o.diagnostico)+'</div>':'', n=0;
@@ -323,6 +339,65 @@ function desgloseTotal(o,keys){
   if(!hay) return null;
   r.ref=v26r2(r.ref); r.serv=v26r2(r.serv); r.mo=v26r2(r.mo);
   return r;
+}
+/* ---- v28 · checklists para el cliente ---- */
+var MP_TXT={verde:['ok','✓','Bien'],amarillo:['warn','!','Revisar pronto'],rojo:['bad','!','Atención'],na:['na','–','No aplica']};
+function invHtml(o){
+  var inv=o.inventario||[]; if(!inv.length) return '';
+  var si=inv.filter(function(x){ return x.v==='si'; }), no=inv.filter(function(x){ return x.v==='no'; });
+  return (si.length?'<div class="sub2">Lo que traía</div><div class="inv">'+si.map(function(x){ return '<span>'+esc(x.t)+'</span>'; }).join('')+'</div>':'')
+    +(no.length?'<div class="sub2">No traía</div><div class="inv">'+no.map(function(x){ return '<span class="no">'+esc(x.t)+'</span>'; }).join('')+'</div>':'');
+}
+function inspCuenta(p){
+  var c={verde:0,amarillo:0,rojo:0}; p.forEach(function(x){ if(x.estatus in c) c[x.estatus]++; });
+  return c;
+}
+function inspHtml(o){
+  var ins=o.inspeccion; if(!ins||!ins.puntos||!ins.puntos.length) return '';
+  var p=ins.puntos, c=inspCuenta(p);
+  var orden={rojo:0,amarillo:1,verde:2,na:3};
+  var lista=p.slice().sort(function(a,b){ return (orden[a.estatus]==null?4:orden[a.estatus])-(orden[b.estatus]==null?4:orden[b.estatus]) || a.id-b.id; });
+  var h='<div class="cuenta">'+(c.rojo?'<span><i class="bad"></i>'+c.rojo+' requieren atención</span>':'')+(c.amarillo?'<span><i class="warn"></i>'+c.amarillo+' revisar pronto</span>':'')
+    +'<span><i></i>'+c.verde+' en buen estado</span></div><ul class="chk">';
+  lista.forEach(function(x){
+    var m=MP_TXT[x.estatus]||['na','–',''];
+    h+='<li><span class="m '+m[0]+'" aria-hidden="true">'+m[1]+'</span><span>'+esc(x.t)+'<small>'+esc(m[2])+(x.nota?' · '+esc(x.nota):'')+'</small></span>'
+      +(x.medicion!==''?'<span class="med">'+esc(x.medicion)+(x.u?' '+esc(x.u):'')+'</span>':'')+'</li>';
+  });
+  return h+'</ul>';
+}
+function verInspeccion(o){
+  var ins=o.inspeccion; if(!ins||!ins.puntos||!ins.puntos.length) return '';
+  var c=inspCuenta(ins.puntos), a=c.rojo+c.amarillo;
+  return plegable('Revisión de 25 puntos'+(a?' · '+a+' a vigilar':' · todo bien'), '<p class="lead" style="margin:0">Lo que revisamos al recibir su vehículo'+(ins.fecha?' ('+esc(fecha(ins.fecha))+')':'')+'.</p>'+inspHtml(o));
+}
+function salidaHtml(o){
+  var sl=o.salida; if(!sl||!sl.secciones||!sl.secciones.length) return '';
+  return sl.secciones.map(function(sc){
+    return '<div class="sub2">'+esc(sc.titulo)+'</div><ul class="chk">'+sc.items.map(function(x){
+      var ok=x.e==='ok';
+      return '<li><span class="m '+(ok?'':'warn')+'" aria-hidden="true">'+(ok?'✓':'!')+'</span><span>'+esc(x.t)+(x.n?'<small>'+esc(x.n)+'</small>':'')+'</span></li>';
+    }).join('')+'</ul>';
+  }).join('');
+}
+function verSalida(o){
+  var c=salidaHtml(o); if(!c) return '';
+  return plegable('Revisión antes de entregar', '<p class="lead" style="margin:0">Lo que revisamos al terminar el trabajo.</p>'+c);
+}
+function entregaHtml(o){
+  var e=o.entrega; if(!e) return '';
+  var h='';
+  if(e.fecha||e.km) h+='<div class="cuenta">'+(e.fecha?'<span>Entregado '+esc(fecha(e.fecha,e.hora))+'</span>':'')+(e.km?'<span>'+esc(kmTxt(e.km))+' km</span>':'')+(e.gasolina?'<span>Gasolina '+esc(e.gasolina)+'</span>':'')+'</div>';
+  if(e.fotos&&e.fotos.length) h+='<div class="sub2">Así se lo entregamos</div>'+strip(e.fotos.map(function(f){ return f.u; }),'Entrega');
+  var pr=(e.preguntas||[]).filter(function(x){ return x.e; });
+  if(pr.length) h+='<div class="sub2">Al entregarle su vehículo</div><ul class="chk">'+pr.map(function(x){
+      var ok=x.e==='ok';
+      return '<li><span class="m '+(ok?'':'no')+'" aria-hidden="true">'+(ok?'✓':'–')+'</span><span>'+esc(x.t)+(x.n?'<small>'+esc(x.n)+'</small>':'')+'</span></li>';
+    }).join('')+'</ul>';
+  var pend=[].concat(e.noRealizados?[e.noRealizados]:[], e.pendientes||[]);
+  if(pend.length) h+='<div class="note"><b>Para que lo tenga en cuenta</b>'+pend.map(function(x){ return esc(x); }).join('<br>')+'</div>';
+  if(e.firma) h+='<div class="sub2">Su firma de conformidad'+(e.recibio?' · '+esc(e.recibio):'')+'</div><div class="firma"><img src="'+esc(e.firma)+'" alt="Firma de conformidad"></div>';
+  return h;
 }
 function hayExplic(o){ return o.trabajos.some(function(t){ return String(t.explicacion||'').trim(); }); }
 function precio(o,n){ return '<span class="p num">'+fmt(n)+(o.iva?'<small>+ IVA</small>':'')+'</span>'; }
@@ -378,6 +453,7 @@ function pintar(){
     h+='<h2 class="s">Así llegó</h2><p class="lead">Fotos tomadas al recibirlo, para su tranquilidad.</p>'+fotosRecep(o);
     if(o.danos) h+='<div class="note"><b>Detalles al recibirlo</b>'+esc(o.danos)+'</div>';
     if(o.motivo) h+='<div class="note ok"><b>Lo que nos pidió revisar</b>'+esc(o.motivo)+'</div>';
+    var _inv=invHtml(o); if(_inv) h+='<h2 class="s">Inventario de su vehículo</h2>'+_inv;   // v28
     h+='<div class="sigue"><b>¿Qué sigue?</b>'+siguePaso(f)+'</div>';
     h+=verDatos(o);
   }
@@ -400,7 +476,7 @@ function pintar(){
       +'<label class="terms" for="terms"><input type="checkbox" id="terms"><span>Autorizo todos los trabajos y precios de esta cotización.</span></label>'
       +'<button class="btn" id="send" type="submit" disabled>Autorizar cotización</button>'
       +'<p class="err" id="why" style="color:var(--muted);font-weight:400;font-size:13px"></p></form></section>';
-    h+=verLlegada(o)+verDatos(o);
+    h+=verInspeccion(o)+verLlegada(o)+verDatos(o);   // v28
     bar.hidden=false;
   }
   else {
@@ -413,12 +489,12 @@ function pintar(){
       h+='<div class="sigue"><b>¿Qué sigue?</b>'+siguePaso(f)+'</div>';
       h+='<div class="acts no-print"><a class="btn wa" target="_blank" rel="noopener" href="'+esc(waLink(msgAut(o,au.trabajos,au.nombre,au.comentario)))+'">Avisar al taller por WhatsApp</a>'
         +'</div><p class="lead" style="margin-top:10px">Si tiene alguna duda sobre la cotización o algún comentario, escríbanos por WhatsApp y con gusto le atendemos.</p>';
-      h+=verRevision(o)+verLlegada(o);
+      h+=verRevision(o)+verInspeccion(o)+verLlegada(o);   // v28
     }
     else if(f==='aprobado'){
       h+='<h2 class="s">Lo que le estamos haciendo</h2>'+lista(o,keys,false);
       h+='<div class="sigue"><b>¿Qué sigue?</b>'+siguePaso(f)+'</div>';
-      h+=verRevision(o)+verLlegada(o);
+      h+=verRevision(o)+verInspeccion(o)+verLlegada(o);   // v28
     }
     else {
       var fi=o.finalizado||{};
@@ -427,7 +503,8 @@ function pintar(){
       h+=fi.fotos&&fi.fotos.length? strip(fi.fotos,'Trabajo terminado') : '<div class="nofoto">Las fotos del trabajo terminado se agregan en un momento.</div>';
       if(f==='listo') h+='<div class="acts no-print"><a class="btn wa" target="_blank" rel="noopener" href="'+esc(waLink('Hola, ¿a qué hora puedo pasar por mi '+veh(o)+(o.vehiculo&&o.vehiculo.placas?' ('+o.vehiculo.placas+')':'')+'? Folio '+o.folio+'.'))+'">Coordinar la entrega por WhatsApp</a></div>';
       h+='<h2 class="s">Lo que le hicimos</h2>'+lista(o,keys,false);
-      h+=verRevision(o)+verLlegada(o);
+      if(f==='entregado' && o.entrega) h+='<h2 class="s">La entrega</h2>'+entregaHtml(o);   // v28
+      h+=verSalida(o)+verRevision(o)+verInspeccion(o)+verLlegada(o);   // v28
     }
   }
   h+=pie(o,f);
@@ -500,7 +577,7 @@ function cargar(subir){
 cargar(false);
 /* v26.5: la liga se actualiza sola (al volver a la pestaña y cada 2 min), sin borrar lo que el cliente está escribiendo */
 var _ultFirma='';
-function firmaDe(o){ return o?JSON.stringify([o.estatus,o.autorizacion,o.entregado,o.finalizado&&o.finalizado.fecha,(o.trabajos||[]).length,o.huella||'']):''; }
+function firmaDe(o){ return o?JSON.stringify([o.estatus,o.autorizacion,o.entregado,o.finalizado&&o.finalizado.fecha,(o.trabajos||[]).length,o.huella||'',o.salida||null,o.entrega||null,o.inspeccion?o.inspeccion.puntos.length:0]):''; }
 function escribiendo(){
   var n=document.getElementById('nombre'), c=document.getElementById('coment');
   var a=document.activeElement; if(a&&(a.tagName==='INPUT'||a.tagName==='TEXTAREA')) return true;
