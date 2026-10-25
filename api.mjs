@@ -35,7 +35,7 @@
  ****************************************************************/
 import { getStore } from "@netlify/blobs";
 
-const BACKEND_VERSION = "2026-10-25-v28";
+const BACKEND_VERSION = "2026-10-25-v28.1";
 const ETAPAS_ORDEN = ["cita", "recepcion", "cotizado", "aprobado", "finalizado", "entregado"];
 const CANDADO_DESDE = "aprobado";
 const HORAS_SESION = 12;
@@ -1760,7 +1760,8 @@ function proyeccionCliente(o) { return { ...proyeccionClienteV27(o), ...v28proye
 async function iaServidor(b, ses) {
   const tipo = String((b && b.tipo) || "");
   if (V28_IA_TIPOS.indexOf(tipo) < 0) return { ok: false, error: "Tipo de texto desconocido" };
-  const key = env("ANTHROPIC_API_KEY");
+  // v28.1: limpia espacios, saltos de línea o comillas que se cuelan al pegar la llave en Netlify
+  const key = String(env("ANTHROPIC_API_KEY") || "").trim().replace(/^["']+|["']+$/g, "").trim();
   if (!key) return { ok: false, sinLlave: true, error: "La IA todavía no está activada: falta la llave ANTHROPIC_API_KEY en Netlify." };
   const prompt = v28iaPrompt(tipo, (b && b.datos) || {});
   const imgs = (Array.isArray(b.imagenes) ? b.imagenes : []).slice(0, 8).map((u) => /^data:(image\/(?:jpeg|png|webp|gif));base64,(.+)$/s.exec(String(u || ""))).filter((m) => m && m[2].length < 6e6)
@@ -1768,16 +1769,20 @@ async function iaServidor(b, ses) {
   const model = tipo === "recepcion" ? env("IA_MODELO_FOTOS", "claude-haiku-5-5") : env("IA_MODELO_TEXTO", "claude-sonnet-5-5");
   const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), 9000);
   try {
-    const r = await fetch("https://api.anthropic.com/v1/messages", { method: "POST", signal: ctl.signal,
-      headers: { "authorization": "Bearer " + key, "anthropic-version": "2023-06-01", "content-type": "application/json",
-        ...(env("ANTHROPIC_WORKSPACE_ID") ? { "anthropic-workspace-id": env("ANTHROPIC_WORKSPACE_ID") } : {}) },
-      body: JSON.stringify({ model, max_tokens: 1200, messages: [{ role: "user", content: [...imgs, { type: "text", text: prompt }] }] }) });
+    const ws = env("ANTHROPIC_WORKSPACE_ID") ? { "anthropic-workspace-id": env("ANTHROPIC_WORKSPACE_ID") } : {};
+    const cuerpo = JSON.stringify({ model, max_tokens: 1200, messages: [{ role: "user", content: [...imgs, { type: "text", text: prompt }] }] });
+    const llamar = (auth) => fetch("https://api.anthropic.com/v1/messages", { method: "POST", signal: ctl.signal,
+      headers: { ...auth, "anthropic-version": "2023-06-01", "content-type": "application/json", ...ws }, body: cuerpo });
+    // v28.1: la forma documentada es Authorization: Bearer; si la llave la rechaza, se intenta con x-api-key (forma anterior)
+    let r = await llamar({ authorization: "Bearer " + key });
+    if (r.status === 401) r = await llamar({ "x-api-key": key });
     let j = null; try { j = await r.json(); } catch {}
     if (!r.ok) {
       const t = (j && j.error && j.error.type) || r.status, msg = String((j && j.error && j.error.message) || "");
+      console.log("IA error", r.status, t, msg.slice(0, 300));
       if (/workspace/i.test(msg)) return { ok: false, error: "La llave de IA no está asignada a un workspace. Crea la llave eligiendo un workspace (ver PASOS_IA)." };
       if (/credit|billing|balance/i.test(msg)) return { ok: false, error: "La cuenta de Claude no tiene saldo. Recarga créditos en platform.claude.com → Billing." };
-      return { ok: false, error: t === "authentication_error" ? "La llave de IA no es válida o ya venció. Revisa ANTHROPIC_API_KEY en Netlify."
+      return { ok: false, detalle: (r.status + " " + msg).slice(0, 200), error: t === "authentication_error" ? "La llave de IA no es válida o ya venció. Revisa ANTHROPIC_API_KEY en Netlify. (Respuesta: " + (msg || r.status) + " · llave de " + key.length + " caracteres)"
         : t === "rate_limit_error" || t === 429 ? "La IA está saturada en este momento. Intenta en un minuto."
         : "La IA no respondió (" + t + "). Intenta otra vez." };
     }
